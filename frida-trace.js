@@ -1,17 +1,9 @@
 //from  https://gitee.com/x619920921/frida-js/raw/main/frida-trace.js
 
-// ---------------------------------------------------------------------------------------
-
-// traceNativeFunction
-// ---------------------------------------------------------------------------------------
-// 打印调用堆栈
-function traceFunction(addr, base_addr){
     
     let moduleMap = new ModuleMap();
     let base_size = moduleMap.find(addr).size;
 
-    Interceptor.attach(addr, {
-        onEnter: function(args) {
             this.tid = Process.getCurrentThreadId();
             Stalker.follow(this.tid, {
                 events: {
@@ -47,8 +39,5 @@ function traceFunction(addr, base_addr){
                     }
                 }
             })
-        }, onLeave: function(retval) {
+            
             Stalker.unfollow(this.tid);
-        }
-    })
-}
