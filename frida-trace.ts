@@ -36,8 +36,8 @@ import assert from "assert";
                                     is_first = false;
                                     first_depth = depth;
                                 }
-                                let location_description = ' [' + ptr(location).sub(base_addr) + '] ';
-                                let target_description = ' [' + ptr(target).sub(base_addr) + ']';
+                                let location_description = ' [' + location.sub(base_addr) + '] ';
+                                let target_description = ' [' + location.sub(base_addr) + ']';
                                 let length = (depth - first_depth);
                                 for (let j = 0; j < length; j++) {
                                     space_num = space_num + ' ';
@@ -50,4 +50,4 @@ import assert from "assert";
                 }
             })
             
-            Stalker.unfollow(this.tid);
+            Stalker.unfollow(threadId);
