@@ -30,3 +30,24 @@ npx frida-compile frida-trace.ts --output frida-trace.js
 frida --load  /fridaAnlzAp/frida_js/frida-trace.js   --file  /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf  #若要进frida的js命令行，再加选项  --debug --pause
 
 ```
+
+###  frida 运行报超时错误 解决
+
+frida 运行报超时错误 ```Failed to load script: timeout was reached``` 解决
+
+####  ~~错误的解决办法： 命令行加选项timeout ~~
+
+~~```frida --timeout 0或-1或很大的数 --file ... ```~~
+
+#### 正确的解决办法是，像下面这样  用 函数setTimeout(... , 0) 包裹 业务代码
+
+
+参考  https://github.com/frida/frida/issues/113#issuecomment-187134331
+
+```js
+setTimeout(function () {
+    //业务代码
+    deveFunc()
+
+  }, 0);
+```
