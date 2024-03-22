@@ -1,8 +1,8 @@
 📦
-1169 /frida-trace.js.map
-2317 /frida-trace.js
+908 /frida-trace.js.map
+2133 /frida-trace.js
 ✄
-{"version":3,"file":"frida-trace.js","sourceRoot":"/fridaAnlzAp/frida_js/","sources":["frida-trace.ts"],"names":[],"mappings":"AACA,SAAS,QAAQ;IAEb,yEAAyE;IAEzE,uDAAuD;IACvD,eAAe;IACf,MAAM,YAAY,GAAiB,WAAW,CAAC,qBAAqB,CAAC,GAAG,CAAC,CAAA;IACzE,OAAO,CAAC,GAAG,CAAC,aAAa,YAAY,CAAC,MAAM,EAAE,CAAC,CAAA;IAE/C,MAAM;IACN,MAAM,OAAO,GAAa,IAAI,GAAG,EAAE,CAAC;IAEpC,cAAc;IACd,KAAK,IAAI,MAAM,IAAI,YAAY,EAAE;QAC7B,UAAU;QACV,MAAM,GAAG,GAAa,WAAW,CAAC,WAAW,CAAC,MAAM,CAAC,CAAC;QAEtD,MAAM,KAAK,GAAa,GAAG,CAAC,UAAU,CAAC;QACvC,MAAM,MAAM,GAAa,GAAG,CAAC,QAAQ,CAAC;QACtC,+BAA+B;QAC/B,IACI,CAAC,CAAC,MAAM,EAAE,UAAU,CAAC,kBAAkB,CAAC,CAAC;YACzC,CAAC,CAAC,MAAM,EAAE,UAAU,CAAC,mCAAmC,CAAC,CAAC,EAC7D;YACG,SAAS;YACT,OAAO,CAAC,GAAG,CAAC,IAAI,CAAC,SAAS,CAAC,GAAG,CAAC,CAAC,CAAC;SACpC;QAED,iBAAiB;QACjB,IAAI,KAAK,IAAI,CAAC,OAAO,CAAC,GAAG,CAAC,KAAK,CAAC,IAAI,CAAC,GAAG,CAAC,QAAQ,EAAE,UAAU,CAAC,kBAAkB,CAAC,EAAC;YAC9E,OAAO,CAAC,GAAG,CAAC,aAAa,KAAK,EAAE,CAAC,CAAA;YACjC,OAAO,CAAC,GAAG,CAAC,KAAK,CAAC,CAAA;SACrB;KACJ;IAED,OAAO,CAAC,GAAG,CAAC,aAAa,OAAO,EAAE,CAAC,CAAA;AAEvC,CAAC;AAED;;;;;;;;;;;;;;GAcG;AAGH;;;;;;GAMG;AACH,0EAA0E;AAC1E,UAAU,CAAC;IACP,MAAM;IACN,QAAQ,EAAE,CAAA;AAEZ,CAAC,EAAE,CAAC,CAAC,CAAC"}
+{"version":3,"file":"frida-trace.js","sourceRoot":"/fridaAnlzAp/frida_js/","sources":["frida-trace.ts"],"names":[],"mappings":"AACA,SAAS,QAAQ;IAEb,yEAAyE;IAEzE,uDAAuD;IACvD,eAAe;IACf,MAAM,YAAY,GAAiB,WAAW,CAAC,qBAAqB,CAAC,GAAG,CAAC,CAAA;IACzE,OAAO,CAAC,GAAG,CAAC,aAAa,YAAY,CAAC,MAAM,EAAE,CAAC,CAAA;IAG/C,cAAc;IACd,KAAK,IAAI,MAAM,IAAI,YAAY,EAAE;QAC7B,UAAU;QACV,MAAM,GAAG,GAAa,WAAW,CAAC,WAAW,CAAC,MAAM,CAAC,CAAC;QAEtD,MAAM,KAAK,GAAa,GAAG,CAAC,UAAU,CAAC;QACvC,MAAM,MAAM,GAAa,GAAG,CAAC,QAAQ,CAAC;QACtC,GAAG;QACH;QACI,0BAA0B;QAC1B,MAAM,IAAI,IAAI,IAAI,MAAM,IAAI,SAAS,IAAI,MAAM,IAAI,EAAE;YACrD,+BAA+B;YAC/B,MAAM,EAAE,UAAU,CAAC,kBAAkB,CAAC;YACtC,MAAM,EAAE,UAAU,CAAC,mCAAmC,CAAC,EAC1D;YACG,SAAS;SACZ;QAED,SAAS;QACT,OAAO,CAAC,GAAG,CAAC,IAAI,CAAC,SAAS,CAAC,GAAG,CAAC,CAAC,CAAC;KAEpC;AAGL,CAAC;AAED;;;;;;;;;;;;;;GAcG;AAGH;;;;;;GAMG;AACH,0EAA0E;AAC1E,UAAU,CAAC;IACP,MAAM;IACN,QAAQ,EAAE,CAAA;AAEZ,CAAC,EAAE,CAAC,CAAC,CAAC"}
 ✄
 function deveFunc() {
     // Process.enumerateModules().forEach(m=>console.log(`module=${m.name}`))
@@ -10,27 +10,24 @@ function deveFunc() {
     //获取调试信息中全部函数地址
     const fnLsInDbgSym = DebugSymbol.findFunctionsMatching("*");
     console.log(`调试信心中函数个数=${fnLsInDbgSym.length}`);
-    //模块名集
-    const mdNmSet = new Set();
     //遍历调试信息中的全部函数
     for (let fnAdrK of fnLsInDbgSym) {
         //函数地址k的详情
         const fnK = DebugSymbol.fromAddress(fnAdrK);
         const modNm = fnK.moduleName;
         const fileNm = fnK.fileName;
-        // 忽略/usr/include/c++/等下的相关源文件名
-        if ((!fileNm?.startsWith("/usr/include/c++")) &&
-            (!fileNm?.startsWith("/usr/include/x86_64-linux-gnu/c++"))) {
-            //打印函数地址k
-            console.log(JSON.stringify(fnK));
+        // 
+        if (
+        // 忽略 空文件名, 空文件名的是其他用途的符号？
+        fileNm == null || fileNm == undefined || fileNm == "" ||
+            // 忽略/usr/include/c++/等下的相关源文件名
+            fileNm?.startsWith("/usr/include/c++") ||
+            fileNm?.startsWith("/usr/include/x86_64-linux-gnu/c++")) {
+            continue;
         }
-        //函数k的模块名 加入 模块名集
-        if (modNm && !mdNmSet.has(modNm) && !fnK.fileName?.startsWith("/usr/include/c++")) {
-            console.log(`调试信息中的新模块，${modNm}`);
-            mdNmSet.add(modNm);
-        }
+        //打印函数地址k
+        console.log(JSON.stringify(fnK));
     }
-    console.log(`调试信息中模块列表=${mdNmSet}`);
 }
 /**
 调试信心中函数个数=289146

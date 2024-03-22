@@ -16,14 +16,19 @@ function deveFunc(){
 
         const modNm:string|null=fnK.moduleName;
         const fileNm:string|null=fnK.fileName;
-        // 忽略/usr/include/c++/等下的相关源文件名
-        if ( 
-            (!fileNm?.startsWith("/usr/include/c++")) &&
-            (!fileNm?.startsWith("/usr/include/x86_64-linux-gnu/c++"))
+        // 
+        if (
+            // 忽略 空文件名, 空文件名的是其他用途的符号？
+            fileNm == null || fileNm == undefined || fileNm == "" ||
+            // 忽略/usr/include/c++/等下的相关源文件名
+            fileNm?.startsWith("/usr/include/c++") ||
+            fileNm?.startsWith("/usr/include/x86_64-linux-gnu/c++")
         ){
-            //打印函数地址k
-            console.log(JSON.stringify(fnK));
+            continue;
         }
+
+        //打印函数地址k
+        console.log(JSON.stringify(fnK));
 
     }
 
