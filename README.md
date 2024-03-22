@@ -29,7 +29,38 @@ source bash-complete--frida.sh
 ```
 
 
-frida载入此脚本frida-trace.js例子命令，
+### 使用举例
 ```shell
+
+#安装依赖
+npm install
+
+#用frida-compile将ts编译为js
+npx frida-compile frida-trace.ts --output frida-trace.js
+#npm run build #也可以用调用写在package.json中的build代词 
+
+#frida载入此脚本frida-trace.js例子命令
 frida --load  /fridaAnlzAp/frida_js/frida-trace.js   --file  /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf  #若要进frida的js命令行，再加选项  --debug --pause
+
+```
+
+输入如下， typeof获得的类型名字都是无意义的object， 为什么输出这么少？只有这么少的函数调用？
+```txt
+eventLsTypeName=object
+eventTypeName=object
+eventTypeName=object
+eventTypeName=object
+eventTypeName=object
+eventTypeName=object
+eventTypeName=object
+eventTypeName=object
+eventTypeName=object
+eventTypeName=object
+eventTypeName=object
+eventTypeName=object
+eventTypeName=object
+eventTypeName=object
+eventTypeName=object
+eventTypeName=object
+eventTypeName=object
 ```
