@@ -23,5 +23,14 @@ function findFnDbgSym(fnAdr:NativePointer){
 
 }
 
+function fridaTraceJsOnEnterBusz(thiz:InvocationContext, log:any, args:any[], state:any){
+  // log==console.log
 
+  var fnSym = findFnDbgSym(thiz.context.pc)
+  log(`在OnEnter中获得本函数的fnSym=${JSON.stringify(fnSym)}`)
 
+}
+function fridaTraceJsOnLeaveBusz(thiz:InvocationContext, log:any, retval:any, statea:any){
+  // log==console.log
+
+}
