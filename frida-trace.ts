@@ -1,6 +1,6 @@
 //from  https://gitee.com/x619920921/frida-js/raw/main/frida-trace.js
 
-function myFunc(){
+function followFunc(){
 
     //{ TODO 请用正确的值
     const base_addr:NativePointer =  new NativePointer(0);
@@ -52,6 +52,11 @@ function myFunc(){
                 }
             })
             
-            Stalker.unfollow(threadId);
 
+}
+
+
+function unfollowFunc(){
+    const threadId:ThreadId = Process.getCurrentThreadId();
+    Stalker.unfollow(threadId);
 }
