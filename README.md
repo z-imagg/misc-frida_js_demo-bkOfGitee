@@ -2,14 +2,17 @@
 
 
 
-### 使用 frida 的正确时机 
+### ~~使用 frida 的正确时机~~
 
-使用 frida 的正确时机   大约是 ： 
+使用 frida 的正确时机   大约是 ：  
 
-1. 孵化(以肉鸡ELF孵化spawn出肉鸡进程pid) ---> 
-2. 附加(附加attach到该肉鸡进程pid) ---> 
-3. 加载js脚本(到肉鸡进程pid) ---> 
-4. 苏醒(苏醒resume目标进程pid)
+所谓正确时机  py的frida脚本依然没让Stalker.follow正常 , https://gitcode.net/pubz/frida_develop/-/tree/76e8bad20b6ebcc4c5322b2314644221ce653352  ==  http://giteaz:3000/frida_analyze_app_src/frida_develop/src/commit/76e8bad20b6ebcc4c5322b2314644221ce653352
+
+
+1. 孵化(以肉鸡ELF孵化spawn出肉鸡进程pid) 对应 ```frida --file zzz.elf ```
+2. 附加(附加attach到该肉鸡进程pid) 
+3. 加载js脚本(到肉鸡进程pid) 对应 ```frida --load xxx.js```
+4. 苏醒(苏醒resume目标进程pid)   对应 若 ```frida --pause``` 则进入终端后 输入 ```%resume``` 即为 苏醒
 
 #### 正确的时机 具体 请参考
 
