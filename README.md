@@ -21,37 +21,17 @@ source bash-complete--frida.sh
 simple_nn.elf   来自， https://gitee.com/frida_analyze_app_src/torch-cpp/blob/master/v1.0.0/readme.md
 
 
+安装依赖, ```npm install```
+
+
 ```shell
 
-#安装依赖
-npm install
+#0. 删除 上次 frida-trace生成的所有 .js 脚本
+rm -fr __handlers__/                    && \
+#1. frida-trace新生成的所有 .js 脚本
+#2. 用InsertCall.py对这些 新 .js 脚本  插入 调用业务函数语句
+bash -x run.sh
 
-#用frida-compile将ts编译为js
-npx frida-compile frida-trace.ts --output frida-trace.js
-#npm run build #也可以用调用写在package.json中的build代词 
-
-#frida载入此脚本frida-trace.js例子命令
-frida --load  /fridaAnlzAp/frida_js/frida-trace.js   --file  /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf  #若要进frida的js命令行，再加选项  --debug --pause
-
-```
-
-###  frida 运行报超时错误 解决
-
-frida 运行报超时错误 ```Failed to load script: timeout was reached``` 解决
-
-####  ~~错误的解决办法： 命令行加选项timeout ~~
-
-~~```frida --timeout 0或-1或很大的数 --file ... ```~~
-
-#### 正确的解决办法是，像下面这样  用 函数setTimeout(... , 0) 包裹 业务代码
-
-
-参考  https://github.com/frida/frida/issues/113#issuecomment-187134331
-
-```js
-setTimeout(function () {
-    //业务代码
-    deveFunc()
-
-  }, 0);
+#3. 此时frida-trace发现已经有目录__handlers__, 将使用该目录下被修改后的 .js   , 从而 间接利用frida-trace 调用了 业务函数语句
+bash -x run.sh
 ```

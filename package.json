@@ -1,12 +1,12 @@
 {
-  "name": "frida-agent-example",
+  "name": "frida-ts-example",
   "version": "1.0.0",
-  "description": "Example Frida agent written in TypeScript",
+  "description": "Example Frida TypeScript ",
   "private": true,
-  "main": "agent/index.ts",
+  "main": "DebugSymbolUtil.ts",
   "scripts": {
     "prepare": "npm run build",
-    "build": "frida-compile frida-trace.ts --output frida-trace.js "
+    "build": "frida-compile DebugSymbolUtil.ts --output DebugSymbolUtil.js "
   },
   "devDependencies": {
     "@types/frida-gum": "^18.5.1",
