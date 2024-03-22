@@ -44,23 +44,24 @@ frida --load  /fridaAnlzAp/frida_js/frida-trace.js   --file  /fridaAnlzAp/torch-
 
 ```
 
-输入如下， typeof获得的类型名字都是无意义的object， 为什么输出这么少？只有这么少的函数调用？
+输入如下， x.constructor.name获得的类型名字都是无意义的Array， 为什么输出这么少？只有这么少的函数调用？
 ```txt
-eventLsTypeName=object
-eventTypeName=object
-eventTypeName=object
-eventTypeName=object
-eventTypeName=object
-eventTypeName=object
-eventTypeName=object
-eventTypeName=object
-eventTypeName=object
-eventTypeName=object
-eventTypeName=object
-eventTypeName=object
-eventTypeName=object
-eventTypeName=object
-eventTypeName=object
-eventTypeName=object
-eventTypeName=object
+eventLsTypeName=Array
+eventTypeName=Array
+eventTypeName=Array
+eventTypeName=Array
+eventTypeName=Array
+eventTypeName=Array
+eventTypeName=Array
+eventTypeName=Array
+eventTypeName=Array
+eventTypeName=Array
+eventTypeName=Array
+eventTypeName=Array
+eventTypeName=Array
+eventTypeName=Array
+eventTypeName=Array
+eventTypeName=Array
+eventTypeName=Array
+eventTypeName=Array
 ```
