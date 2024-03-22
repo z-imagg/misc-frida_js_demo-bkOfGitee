@@ -2,6 +2,8 @@
 
 安装依赖，```npm install```
 
+将ts编译为js, ```npx frida-compile frida-trace.ts --output frida-trace.js``` 也可以用调用写在package.json中的build代词 ```npm run build```
+
 
 frida的ts编译为js专用编译器为frida-compile, ```npx frida-compile --help```
 ```txt
