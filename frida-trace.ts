@@ -8,8 +8,6 @@ function deveFunc(){
     const fnLsInDbgSym:NativePointer[]=DebugSymbol.findFunctionsMatching("*")
     console.log(`调试信心中函数个数=${fnLsInDbgSym.length}`)
     
-    //模块名集
-    const mdNmSet:Set<string>=new Set();
     
     //遍历调试信息中的全部函数
     for (let fnAdrK of fnLsInDbgSym) {
@@ -27,14 +25,8 @@ function deveFunc(){
             console.log(JSON.stringify(fnK));
         }
 
-        //函数k的模块名 加入 模块名集
-        if (modNm && !mdNmSet.has(modNm) && !fnK.fileName?.startsWith("/usr/include/c++")){
-            console.log(`调试信息中的新模块，${modNm}`)
-            mdNmSet.add(modNm)
-        }
     }
 
-    console.log(`调试信息中模块列表=${mdNmSet}`)
 
 }
 
