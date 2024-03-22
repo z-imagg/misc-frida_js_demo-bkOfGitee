@@ -9,8 +9,12 @@ Stalker.follow(threadId, {
     },
     onReceive: function(events:ArrayBuffer) {
         const eventLs: StalkerEventFull[] | StalkerEventBare[] = Stalker.parse(events);
+        const eventLsTypeName:string=typeof(eventLs)
+        console.log(`eventLsTypeName=${eventLsTypeName}`)
         for (let i = 0; i < eventLs.length; i++) {
-            const evt: StalkerEventFull | StalkerEventBare=eventLs[i]; 
+            const evt: StalkerEventFull | StalkerEventBare=eventLs[i];
+            const eventTypeName:string=typeof(evt)
+            console.log(`eventTypeName=${eventTypeName}`)
         }
     }
 })
