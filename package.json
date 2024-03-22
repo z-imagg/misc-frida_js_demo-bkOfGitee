@@ -6,7 +6,7 @@
   "main": "agent/index.ts",
   "scripts": {
     "prepare": "npm run build",
-    "build": "frida-compile frida-trace.ts -o frida-trace.js -c"
+    "build": "frida-compile frida-trace.ts --output frida-trace.js --compress"
   },
   "devDependencies": {
     "@types/frida-gum": "^18.5.1",
