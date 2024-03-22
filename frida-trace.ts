@@ -11,8 +11,12 @@ function createFnSymTab(){
     const fnLsInDbgSym:NativePointer[]=DebugSymbol.findFunctionsMatching("*")
     console.log(`调试信心中函数个数=${fnLsInDbgSym.length}`)
     
+    let k:number = 0;
     //遍历调试信息中的全部函数
     for (let fnAdrK of fnLsInDbgSym) {
+        //想要通过日志打印 人工知道 哪个函数的 DebugSymbol.fromAddress 很卡？
+        console.log(`k=${k++},fnAdr=${fnAdrK}`);
+
         //函数地址k的详情
         const fnSymK:DebugSymbol=DebugSymbol.fromAddress(fnAdrK);
 
@@ -30,7 +34,7 @@ function createFnSymTab(){
         }
 
         //打印函数地址k
-        // console.log(JSON.stringify(fnSymK));
+        console.log(JSON.stringify(fnSymK));
 
         //该函数地址插入表格: 建立 函数地址 到 函数调试符号详情 的 表格
         gFnSymTab.set(fnAdrK, fnSymK);
