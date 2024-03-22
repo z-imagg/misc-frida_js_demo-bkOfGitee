@@ -18,7 +18,7 @@ function findFnDbgSym(fnAdr) {
 function fridaTraceJsOnEnterBusz(thiz, log, args, state) {
     // log==console.log
     var fnSym = findFnDbgSym(thiz.context.pc);
-    log(`在OnEnter中获得本函数的fnSym=${JSON.stringify(fnSym)}`);
+    console.log(`源文件名=${fnSym?.fileName}`);
 }
 function fridaTraceJsOnLeaveBusz(thiz, log, retval, statea) {
     // log==console.log

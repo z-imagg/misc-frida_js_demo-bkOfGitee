@@ -27,7 +27,8 @@ function fridaTraceJsOnEnterBusz(thiz:InvocationContext, log:any, args:any[], st
   // log==console.log
 
   var fnSym = findFnDbgSym(thiz.context.pc)
-  log(`在OnEnter中获得本函数的fnSym=${JSON.stringify(fnSym)}`)
+  //  被frida-trace工具生成的.js函数中的onEnter调用的函数中 可以使用 console.log
+  console.log(`源文件名=${fnSym?.fileName}`)
 
 }
 function fridaTraceJsOnLeaveBusz(thiz:InvocationContext, log:any, retval:any, statea:any){
