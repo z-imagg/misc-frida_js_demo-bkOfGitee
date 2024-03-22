@@ -20,11 +20,11 @@ Stalker.follow(threadId, {
         call: true
     },
     onReceive: function(events:ArrayBuffer) {
-        const eventLs:StalkerEventFull[] = (Stalker.parse(events) as StalkerEventFull[]);
+        const eventLs: StalkerEventFull[] | StalkerEventBare[] = Stalker.parse(events);
         let first_depth = 0;
         let is_first = true;
         for (let i = 0; i < eventLs.length; i++) {
-            const evt=eventLs[i]; 
+            const evt: StalkerEventFull | StalkerEventBare=eventLs[i]; 
             // 调用的流程, location是哪里发生的调用, target是调用到了哪里
             if (evt[0] === "call") {
                 const scEvt:StalkerCallEventFull=(evt as StalkerCallEventFull)
