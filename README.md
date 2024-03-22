@@ -2,7 +2,32 @@
 
 
 
-frida命令bash补全脚本生成
+### 使用 frida 的正确时机 
+
+使用 frida 的正确时机   大约是 ： 
+
+1. 孵化(以肉鸡ELF孵化spawn出肉鸡进程pid) ---> 
+2. 附加(附加attach到该肉鸡进程pid) ---> 
+3. 加载js脚本(到肉鸡进程pid) ---> 
+4. 苏醒(苏醒resume目标进程pid)
+
+#### 正确的时机 具体 请参考
+
+思路版 py和js：
+  https://gitcode.net/pubz/frida_develop/-/blob/d4f336d1add4541bcee02769a5b4fe78514f6e10/firda_example/attach_operator_new__constructor.py
+，  https://gitcode.net/pubz/frida_develop/-/blob/d4f336d1add4541bcee02769a5b4fe78514f6e10/firda_example/script/attach_operator_new.js
+
+
+估计能正常使用的py , 但js所在子模块找不到了（估计js可以参考上面的js），
+https://gitcode.net/pubz/frida_develop/-/blob/21a6e2d3d8c75eccd1eca8b1865713c0631e09be/frida_main/frida_run_app.py
+
+#### 现状错误原因分析
+
+用 命令```frida``` 即 ```/app/Miniconda3-py310_22.11.1-1/lib/python3.10/site-packages/frida/__init__.py```无法形成正确时机， 所以只能跟踪到frida-agent.so ，  正确的时机需要像上面说的自己编制py脚本
+
+备注：  ```pip install frida==16.0.7 frida-tools==12.0.4```  提供的 命令 ```frida```
+
+### frida命令bash补全脚本生成
 ```shell
 source /app/Miniconda3-py310_22.11.1-1/bin/activate
 pip install frida==16.0.7 frida-tools==12.0.4
