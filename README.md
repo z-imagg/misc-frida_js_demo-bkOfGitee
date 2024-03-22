@@ -27,11 +27,11 @@ simple_nn.elf   来自， https://gitee.com/frida_analyze_app_src/torch-cpp/blob
 npm install
 
 #用frida-compile将ts编译为js
-npx frida-compile frida-trace.ts --output frida-trace.js
+npx frida-compile DebugSymbolUtil.ts --output DebugSymbolUtil.js
 #npm run build #也可以用调用写在package.json中的build代词 
 
-#frida载入此脚本frida-trace.js例子命令
-frida --load  /fridaAnlzAp/frida_js/frida-trace.js   --file  /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf  #若要进frida的js命令行，再加选项  --debug --pause
+#frida载入此脚本DebugSymbolUtil.js例子命令
+frida --load  /fridaAnlzAp/frida_js/DebugSymbolUtil.js   --file  /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf  #若要进frida的js命令行，再加选项  --debug --pause
 
 ```
 
