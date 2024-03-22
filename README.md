@@ -1,6 +1,10 @@
 来源： https://github.com/oleavr/frida-agent-example.git
 
 
+###  临时关闭Linux的ASLR(地址空间随机化) ， 否则 x.so 中的函数地址 每次都不同
+
+https://blog.csdn.net/counsellor/article/details/81543197
+
 
 ### frida命令bash补全脚本生成
 ```shell
