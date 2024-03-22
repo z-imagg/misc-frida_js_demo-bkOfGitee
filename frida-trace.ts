@@ -27,3 +27,6 @@ function unfollowFunc(){
     const threadId:ThreadId = Process.getCurrentThreadId();
     Stalker.unfollow(threadId);
 }
+
+
+followFunc()
