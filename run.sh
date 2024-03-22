@@ -5,7 +5,7 @@
 echo 0 | sudo tee   /proc/sys/kernel/randomize_va_space
 cat  /proc/sys/kernel/randomize_va_space  #0
 
-npx frida-compile frida-trace.ts --output frida-trace.js  && \
+# npx frida-compile frida-trace.ts --output frida-trace.js  && \
 frida-trace  --decorate  --include  "simple_nn.elf!*Linear*"  --include "libtorch.so.1!*tensor*"  --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
 
 
