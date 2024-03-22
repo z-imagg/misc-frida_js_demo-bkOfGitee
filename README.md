@@ -47,21 +47,28 @@ frida --load  /fridaAnlzAp/frida_js/frida-trace.js   --file  /fridaAnlzAp/torch-
 输入如下， x.constructor.name获得的类型名字都是无意义的Array， 为什么输出这么少？只有这么少的函数调用？
 ```txt
 eventLs.constructor.name=Array
-evt.constructor.name=Array
-evt.constructor.name=Array
-evt.constructor.name=Array
-evt.constructor.name=Array
-evt.constructor.name=Array
-evt.constructor.name=Array
-evt.constructor.name=Array
-evt.constructor.name=Array
-evt.constructor.name=Array
-evt.constructor.name=Array
-evt.constructor.name=Array
-evt.constructor.name=Array
-evt.constructor.name=Array
-evt.constructor.name=Array
-evt.constructor.name=Array
-evt.constructor.name=Array
-evt.constructor.name=Array
+evt.constructor.name=Array, evt.length=4
+evt.constructor.name=Array, evt.length=4
+evt.constructor.name=Array, evt.length=4
+evt.constructor.name=Array, evt.length=4
+evt.constructor.name=Array, evt.length=4
+evt.constructor.name=Array, evt.length=4
+evt.constructor.name=Array, evt.length=4
+evt.constructor.name=Array, evt.length=4
+evt.constructor.name=Array, evt.length=4
+evt.constructor.name=Array, evt.length=4
+evt.constructor.name=Array, evt.length=4
+evt.constructor.name=Array, evt.length=4
+evt.constructor.name=Array, evt.length=4
+evt.constructor.name=Array, evt.length=4
+evt.constructor.name=Array, evt.length=4
+evt.constructor.name=Array, evt.length=4
+evt.constructor.name=Array, evt.length=4
 ```
+```js
+// /fridaAnlzAp/frida_js/node_modules/@types/frida-gum/index.d.ts
+
+type StalkerCallEventFull = ["call", NativePointer | string, NativePointer | string, number];  //长度为 4
+type StalkerCallEventBare = [NativePointer | string, NativePointer | string, number];          //长度为 3
+```
+```evt.length=4``` 表明 evt的类型是 ```StalkerCallEventFull```

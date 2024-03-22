@@ -12,7 +12,7 @@ Stalker.follow(threadId, {
         console.log(`eventLs.constructor.name=${eventLs.constructor.name}`)
         for (let i = 0; i < eventLs.length; i++) {
             const evt: StalkerEventFull | StalkerEventBare=eventLs[i];
-            console.log(`evt.constructor.name=${evt.constructor.name}`)
+            console.log(`evt.constructor.name=${evt.constructor.name}, evt.length=${evt.length}`)
         }
     }
 })
