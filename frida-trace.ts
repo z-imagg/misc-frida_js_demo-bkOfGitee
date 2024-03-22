@@ -28,10 +28,14 @@ function deveFunc(){
         }
 
         //打印函数地址k
-        console.log(JSON.stringify(fnSymK));
+        // console.log(JSON.stringify(fnSymK));
 
         //该函数地址插入表格: 建立 函数地址 到 函数调试符号详情 的 表格
         fnSymTab.set(fnAdrK, fnSymK);
+
+        if(fnSymTab.size % 1000 == 0 ){
+            console.log(`函数表格尺寸:${fnSymTab.size}`)
+        }
 
     }
 
