@@ -44,6 +44,31 @@ function createFnSymTab(){
 
 }
 
+//拦截 函数符号表格 中的 每个函数
+function interceptFnLs(){
+    const fnAdrLs=gFnSymTab.keys();
+    for (let fnAdrK of fnAdrLs) {
+        
+        // https://frida.re/docs/javascript-api/#interceptor
+        Interceptor.attach(fnAdrK, {
+          onEnter: function (this,args) {
+            // send(args);
+        //    console.log('args:'+args);
+            // console.log('Context information:');
+            console.log('Context  : ' + JSON.stringify(this.context));
+            console.log('Return   : ' + this.returnAddress);
+            console.log('ThreadId : ' + this.threadId);
+            console.log('Depth    : ' + this.depth);
+            console.log('Errornr  : ' + this.err);
+          },
+          onLeave(this,retval) {
+            // Show argument 1 (buf), saved during onEnter.
+            // const retvalInt32 = retval.toInt32();
+            // console.log('retvalInt32   : ' + retvalInt32);
+          }
+        });
+        }
+}
 /**
 frida 运行报超时错误 "Failed to load script: timeout was reached" 解决
 
@@ -55,7 +80,7 @@ frida 运行报超时错误 "Failed to load script: timeout was reached" 解决
 setTimeout(function () {
     //业务代码
     createFnSymTab()
-
+    interceptFnLs()
   }, 0);
 
 
