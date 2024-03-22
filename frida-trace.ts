@@ -1,6 +1,6 @@
 //from  https://gitee.com/x619920921/frida-js/raw/main/frida-trace.js
 
-import assert from "assert";
+function myFunc(){
 
     //{ TODO 请用正确的值
     const base_addr:NativePointer =  new NativePointer(0);
@@ -9,7 +9,9 @@ import assert from "assert";
 
     const moduleMap:ModuleMap = new ModuleMap();
     const _module:Module|null=moduleMap.find(addr);
-    assert(_module !=null)
+    if(_module ==null){
+        return
+    }
     const base_size:number = _module.size;
 
             const threadId:ThreadId = Process.getCurrentThreadId();
@@ -51,3 +53,5 @@ import assert from "assert";
             })
             
             Stalker.unfollow(threadId);
+
+}
