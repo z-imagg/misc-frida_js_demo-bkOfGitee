@@ -5,7 +5,10 @@ function followFunc(){
     const threadId:ThreadId = Process.getCurrentThreadId();
 Stalker.follow(threadId, {
     events: {
-        call: true
+        call: true,
+//frida文档  https://frida.re/docs/javascript-api/#stalker
+        block: true, 
+        compile: true  
     },
     onReceive: function(events:ArrayBuffer) {
         const eventLs: StalkerEventFull[] | StalkerEventBare[] = Stalker.parse(events);
