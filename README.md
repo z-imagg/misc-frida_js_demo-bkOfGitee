@@ -30,6 +30,10 @@ source bash-complete--frida.sh
 
 
 ### 使用举例
+
+simple_nn.elf   来自， https://gitee.com/frida_analyze_app_src/torch-cpp/blob/master/v1.0.0/readme.md
+
+
 ```shell
 
 #安装依赖
