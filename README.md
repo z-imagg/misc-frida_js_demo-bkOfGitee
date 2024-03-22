@@ -27,3 +27,9 @@ helpTxt2bashComplete.py --progFile frida
 source bash-complete--frida.sh
 #frida --<tab><tab> 可获得补全
 ```
+
+
+frida载入此脚本frida-trace.js例子命令，
+```shell
+frida --load  /fridaAnlzAp/frida_js/frida-trace.js   --file  /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf  #若要进frida的js命令行，再加选项  --debug --pause
+```
