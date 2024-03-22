@@ -1,7 +1,13 @@
 //from  https://gitee.com/x619920921/frida-js/raw/main/frida-trace.js
 
 function followFunc(){
-    const _mod:Module | null=Process.findModuleByName("simple_nn.elf");
+    Process.enumerateModules().forEach(m=>console.log(`module=${m.name}`))
+
+    const moduleName:string = "frida-agent-64.so"
+    // Stalker.follow  【simple_nn.elf,  libtorch.so.1 , libc10.so , libcaffe2.so 】未获得任何call event
+    // Stalker.follow 【 frida-agent-64.so 】有获得call event
+
+    const _mod:Module | null=Process.findModuleByName(moduleName);
     if (!_mod ){
         return ;
     }

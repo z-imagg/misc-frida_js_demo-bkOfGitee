@@ -31,8 +31,28 @@ frida --load  /fridaAnlzAp/frida_js/frida-trace.js   --file  /fridaAnlzAp/torch-
 
 ```
 
-无输出
+Stalker.follow  【simple_nn.elf,  libtorch.so.1 , libc10.so , libcaffe2.so 】未获得任何call event，
+
+而 Stalker.follow 【 frida-agent-64.so 】有获得call event 如下
 ```txt
+ [0x2cf59e]( [0x2cf59e] ) -- 0
+ [0x2b5b5d]( [0x2b5b5d] ) -- 0
+ [0x22eaa8]( [0x22eaa8] ) -- -1
+ [0x22eab0]( [0x22eab0] ) -- -1
+ [0x22ead0]( [0x22ead0] ) -- 0
+  [0x22eaec]( [0x22eaec] ) -- 1
+   [0x22eafc]( [0x22eafc] ) -- 2
+    [0x22eb0b]( [0x22eb0b] ) -- 3
+     [0x22eb13]( [0x22eb13] ) -- 4
+     [0x22ec7c]( [0x22ec7c] ) -- 4
+      [0x22ec84]( [0x22ec84] ) -- 5
+      [0x22ee78]( [0x22ee78] ) -- 5
+       [0x22ee78]( [0x22ee78] ) -- 6
+        [0x22ee78]( [0x22ee78] ) -- 7
+         [0x22ee78]( [0x22ee78] ) -- 8
+          [0x22ee78]( [0x22ee78] ) -- 9
+           [0x22ee78]( [0x22ee78] ) -- 10
+
 ```
 
 ```js
