@@ -20,6 +20,8 @@
    * use "this" which is an object for keeping state local to an invocation.
    */
   onEnter(log, args, state) {
+    var fnSym = findFnDbgSym(this.context.pc)
+    log(`在OnEnter中获得本函数的fnSym=${JSON.stringify(fnSym)}`)
     //在frida-trace所生成的js脚本的OnEnter中： this.context.pc == onEnter所拦截的函数地址
     log(`[simple_nn.elf] ${this.context.pc}`); // 
   },
