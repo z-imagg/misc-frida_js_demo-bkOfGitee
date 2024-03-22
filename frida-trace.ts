@@ -3,22 +3,29 @@ function deveFunc(){
 
     // Process.enumerateModules().forEach(m=>console.log(`module=${m.name}`))
 
-    const Mod=Process.findModuleByName("libtorch.so.1");
-    const funcAddrLs:NativePointer[]=DebugSymbol.findFunctionsMatching("*")
-    console.log(`调试信心中函数个数=${funcAddrLs.length}`)
-    //调试信心中函数个数=289146
+    // const Mod=Process.findModuleByName("libtorch.so.1");
+    //获取调试信息中全部函数地址
+    const fnLsInDbgSym:NativePointer[]=DebugSymbol.findFunctionsMatching("*")
+    console.log(`调试信心中函数个数=${fnLsInDbgSym.length}`)
     
-    const moduleNameSet:Set<string>=new Set();
-    for (let funcAddr of funcAddrLs) {
-        const funcK:DebugSymbol=DebugSymbol.fromAddress(funcAddr);
-        if (funcK.moduleName && !moduleNameSet.has(funcK.moduleName) ){
-            console.log(`调试信息中的新模块，${funcK.moduleName}`)
-            moduleNameSet.add(funcK.moduleName)
-        }
+    //模块名集
+    const mdNmSet:Set<string>=new Set();
+    
+    //遍历调试信息中的全部函数
+    for (let fnAdrK of fnLsInDbgSym) {
+        //打印函数地址k
         // console.log(funcK);
+        //函数地址k的详情
+        const fnK:DebugSymbol=DebugSymbol.fromAddress(fnAdrK);
+        const modNm:string|null=fnK.moduleName;
+        //函数k的模块名 加入 模块名集
+        if (modNm && !mdNmSet.has(modNm) ){
+            console.log(`调试信息中的新模块，${modNm}`)
+            mdNmSet.add(modNm)
+        }
     }
 
-    console.log(`调试信息中模块列表=${moduleNameSet}`)
+    console.log(`调试信息中模块列表=${mdNmSet}`)
 
 }
 
