@@ -13,13 +13,22 @@ function deveFunc(){
     
     //遍历调试信息中的全部函数
     for (let fnAdrK of fnLsInDbgSym) {
-        //打印函数地址k
-        // console.log(funcK);
         //函数地址k的详情
         const fnK:DebugSymbol=DebugSymbol.fromAddress(fnAdrK);
+
         const modNm:string|null=fnK.moduleName;
+        const fileNm:string|null=fnK.fileName;
+        // 忽略/usr/include/c++/等下的相关源文件名
+        if ( 
+            (!fileNm?.startsWith("/usr/include/c++")) &&
+            (!fileNm?.startsWith("/usr/include/x86_64-linux-gnu/c++"))
+        ){
+            //打印函数地址k
+            console.log(JSON.stringify(fnK));
+        }
+
         //函数k的模块名 加入 模块名集
-        if (modNm && !mdNmSet.has(modNm) ){
+        if (modNm && !mdNmSet.has(modNm) && !fnK.fileName?.startsWith("/usr/include/c++")){
             console.log(`调试信息中的新模块，${modNm}`)
             mdNmSet.add(modNm)
         }
