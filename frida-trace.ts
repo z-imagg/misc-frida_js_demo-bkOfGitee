@@ -1,6 +1,9 @@
 
-function deveFunc(){
-
+//函数符号表格 全局变量
+const gFnSymTab:Map<NativePointer,DebugSymbol> = new Map();
+//填充函数符号表格
+function createFnSymTab(){
+    //打印模块列表
     // Process.enumerateModules().forEach(m=>console.log(`module=${m.name}`))
 
     // const Mod=Process.findModuleByName("libtorch.so.1");
@@ -8,7 +11,6 @@ function deveFunc(){
     const fnLsInDbgSym:NativePointer[]=DebugSymbol.findFunctionsMatching("*")
     console.log(`调试信心中函数个数=${fnLsInDbgSym.length}`)
     
-    const fnSymTab:Map<NativePointer,DebugSymbol> = new Map();
     //遍历调试信息中的全部函数
     for (let fnAdrK of fnLsInDbgSym) {
         //函数地址k的详情
@@ -31,10 +33,10 @@ function deveFunc(){
         // console.log(JSON.stringify(fnSymK));
 
         //该函数地址插入表格: 建立 函数地址 到 函数调试符号详情 的 表格
-        fnSymTab.set(fnAdrK, fnSymK);
+        gFnSymTab.set(fnAdrK, fnSymK);
 
-        if(fnSymTab.size % 1000 == 0 ){
-            console.log(`函数表格尺寸:${fnSymTab.size}`)
+        if(gFnSymTab.size % 1000 == 0 ){
+            console.log(`函数表格尺寸:${gFnSymTab.size}`)
         }
 
     }
@@ -69,7 +71,7 @@ frida 运行报超时错误 "Failed to load script: timeout was reached" 解决
 // frida  https://github.com/frida/frida/issues/113#issuecomment-187134331
 setTimeout(function () {
     //业务代码
-    deveFunc()
+    createFnSymTab()
 
   }, 0);
 
