@@ -8,11 +8,16 @@ function deveFunc(){
     console.log(`调试信心中函数个数=${funcAddrLs.length}`)
     //调试信心中函数个数=289146
 
+    const moduleNameSet:Set<string>=new Set();
     for (let funcAddr of funcAddrLs) {
         const funcK:DebugSymbol=DebugSymbol.fromAddress(funcAddr);
-        console.log(funcK);
+        if (funcK.moduleName){
+            moduleNameSet.add(funcK.moduleName)
+        }
+        // console.log(funcK);
     }
 
+    console.log(`调试信息中模块列表=${moduleNameSet}`)
 
 }
 
