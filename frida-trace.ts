@@ -12,10 +12,10 @@ function deveFunc(){
     //遍历调试信息中的全部函数
     for (let fnAdrK of fnLsInDbgSym) {
         //函数地址k的详情
-        const fnK:DebugSymbol=DebugSymbol.fromAddress(fnAdrK);
+        const fnSymK:DebugSymbol=DebugSymbol.fromAddress(fnAdrK);
 
-        const modNm:string|null=fnK.moduleName;
-        const fileNm:string|null=fnK.fileName;
+        const modNm:string|null=fnSymK.moduleName;
+        const fileNm:string|null=fnSymK.fileName;
         // 
         if (
             // 忽略 空文件名, 空文件名的是其他用途的符号？
@@ -28,10 +28,10 @@ function deveFunc(){
         }
 
         //打印函数地址k
-        console.log(JSON.stringify(fnK));
+        console.log(JSON.stringify(fnSymK));
 
         //该函数地址插入表格: 建立 函数地址 到 函数调试符号详情 的 表格
-        fnSymTab.set(fnAdrK, fnK);
+        fnSymTab.set(fnAdrK, fnSymK);
 
     }
 
