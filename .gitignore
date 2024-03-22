@@ -2,3 +2,5 @@
 /node_modules
 
 *.log
+
+__handlers__
