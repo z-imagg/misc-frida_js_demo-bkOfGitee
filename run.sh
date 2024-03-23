@@ -7,9 +7,6 @@ cat  /proc/sys/kernel/randomize_va_space  #0
 
 function call_frida_trace() {
 
-#编译出  /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
-bash -x  /fridaAnlzAp/torch-cpp/v1.0.0/build.sh
-
 #开发调试用的命令，为了快速运行结束
 # frida-trace  --output  frida-trace-out-$(date +%s).log --init-session ./DebugSymbolUtil.js  --decorate  --include  "simple_nn.elf!*Linear*"  --include "libtorch.so.1!*tensor*"  --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
 
@@ -18,6 +15,9 @@ frida-trace  --output  frida-trace-out-${LogTitle}-$(date +%s).log --init-sessio
 }
 
 cd /fridaAnlzAp/frida_js/
+
+#编译出  /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
+bash -x  /fridaAnlzAp/torch-cpp/v1.0.0/build.sh
 
 #删除旧日志
 rm -frv *.log
@@ -36,7 +36,7 @@ rm -fr ./__handlers__ && \
 LogTitle="GenEmptyJs" && call_frida_trace
 
 #2. 用InsertCall.py 插入 调用业务函数语句 到 ./__handlers__/*.js
-find ./__handlers__/ -name "*.js" | xargs -I% ./InsertCall.py %
+./InsertCall.py /fridaAnlzAp/frida_js/__handlers__/ && \
 
 #3. 再次运行frida-trace，执行 修改后的 ./__handlers__/*.js
 #   frida-trace 发现 已有 js , 直接 执行 该 js
