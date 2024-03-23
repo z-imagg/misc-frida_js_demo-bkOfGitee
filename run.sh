@@ -14,10 +14,13 @@ bash -x  /fridaAnlzAp/torch-cpp/v1.0.0/build.sh
 # frida-trace  --output  frida-trace-out-$(date +%s).log --init-session ./DebugSymbolUtil.js  --decorate  --include  "simple_nn.elf!*Linear*"  --include "libtorch.so.1!*tensor*"  --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
 
 #生产用的命令，更全面，但运行耗时更久
-frida-trace  --output  frida-trace-out-$(date +%s).log --init-session ./DebugSymbolUtil.js  --decorate   -I "simple_nn.elf"  -I "libtorch.so.1"  -I "libc10.so"  -I "libcaffe2.so"    --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
+frida-trace  --output  frida-trace-out-${LogTitle}-$(date +%s).log --init-session ./DebugSymbolUtil.js  --decorate   -I "simple_nn.elf"  -I "libtorch.so.1"  -I "libc10.so"  -I "libcaffe2.so"    --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
 }
 
 cd /fridaAnlzAp/frida_js/
+
+#删除旧日志
+rm -frv *.log
 
 chmod +x InsertCall.py
 
@@ -30,12 +33,12 @@ rm -fr ./__handlers__ && \
 
 #1. 初次运行frida-trace，用以新生成 ./__handlers__/*.js 
 #   frida-trace 先生成 准空白 js , 再 执行 准空白 js
-call_frida_trace
+LogTitle="GenEmptyJs" && call_frida_trace
 
 #2. 用InsertCall.py 插入 调用业务函数语句 到 ./__handlers__/*.js
 find ./__handlers__/ -name "*.js" | xargs -I% ./InsertCall.py %
 
 #3. 再次运行frida-trace，执行 修改后的 ./__handlers__/*.js
 #   frida-trace 发现 已有 js , 直接 执行 该 js
-call_frida_trace
+LogTitle="RunBuszJs" call_frida_trace
 
