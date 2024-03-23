@@ -15,8 +15,8 @@ onLeave_Insert:str="fridaTraceJsOnLeaveBusz(this, log, retval, state)\n"
 
 LogLn_toDel:str="    log('"
 
-def insertCall(jsFp:Path):
-    # jsFp:Path=Path(jsFpGenByFridaTrace)
+def insertCall(jsFpGenByFridaTrace:str):
+    jsFp:Path=Path(jsFpGenByFridaTrace)
 
     jsTxt:str=jsFp.read_text()
 
@@ -52,4 +52,4 @@ if __name__=="__main__":
     import sys
     assert len(sys.argv) == 2
     jsRootDirStr:str=sys.argv[1] # sys.argv[1] == "/fridaAnlzAp/frida_js/__handlers__/"
-    insertCall(jsRootDirStr)
+    LoopJsFp(jsRootDirStr)
