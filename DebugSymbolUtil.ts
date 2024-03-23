@@ -31,7 +31,7 @@ function fridaTraceJsOnEnterBusz(thiz:InvocationContext, log:any, args:any[], st
   console.log(`源文件名=${fnSym?.fileName}`)
 
 }
-function fridaTraceJsOnLeaveBusz(thiz:InvocationContext, log:any, retval:any, statea:any){
+function fridaTraceJsOnLeaveBusz(thiz:InvocationContext, log:any, retval:any, state:any){
   // log==console.log
 
 }
