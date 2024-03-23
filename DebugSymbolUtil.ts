@@ -46,7 +46,11 @@ class FnLog {
     this.fnAdr = fnAdr;
     this.fnCallId = fnCallId;
     this.fnSym = fnSym;
-}
+  }
+
+  toJson(){
+    return JSON.stringify(this)  
+  }
 }
 
 /**不必用log('xxx'), 直接用console.log('xxx') 即可
@@ -59,11 +63,11 @@ function fridaTraceJsOnEnterBusz(thiz:InvocationContext, log:any, args:any[], st
   var fnAdr=thiz.context.pc;
   var fnSym :DebugSymbol|undefined= findFnDbgSym(thiz.context.pc)
   thiz.fnEnterLog=new FnLog(Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
-  console.log(thiz.fnEnterLog)
+  console.log(thiz.fnEnterLog.toJson())
 
 }
 function fridaTraceJsOnLeaveBusz(thiz:InvocationContext, log:any, retval:any, state:any){
   const fnEnterLog:FnLog=thiz.fnEnterLog;
   const fnLeaveLog:FnLog=new FnLog(Direct.LeaveFn, fnEnterLog.fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);
-  console.log(fnLeaveLog)
+  console.log(fnLeaveLog.toJson())
 }

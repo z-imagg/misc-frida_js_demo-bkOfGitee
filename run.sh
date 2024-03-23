@@ -6,7 +6,7 @@ echo 0 | sudo tee   /proc/sys/kernel/randomize_va_space
 cat  /proc/sys/kernel/randomize_va_space  #0
 
 function call_frida_trace() {
-frida-trace  --init-session ./DebugSymbolUtil.js  --decorate  --include  "simple_nn.elf!*Linear*"  --include "libtorch.so.1!*tensor*"  --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
+frida-trace  --output  frida-trace-out-$(date +%s).log --init-session ./DebugSymbolUtil.js  --decorate  --include  "simple_nn.elf!*Linear*"  --include "libtorch.so.1!*tensor*"  --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
 }
 
 cd /fridaAnlzAp/frida_js/
