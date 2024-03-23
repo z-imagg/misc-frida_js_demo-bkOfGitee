@@ -35,9 +35,9 @@ class FnLog {
         return JSON.stringify(this);
     }
 }
-/**不必用log('xxx'), 直接用console.log('xxx') 即可
- * log==console.log
- * 被frida-trace工具生成的.js函数中的onEnter调用的函数中 可以使用 console.log
+/** 被frida-trace工具生成的.js函数中的onEnter调用
+ * 假设 有命令 'frida-trace --output fr.log', 则 log('xxx') 是 向 fr.log 中写入 'xxx'
+ *   而 console.log 则并不写入到 fr.log
  */
 function fridaTraceJsOnEnterBusz(thiz, log, args, state) {
     var fnAdr = thiz.context.pc;
@@ -45,6 +45,10 @@ function fridaTraceJsOnEnterBusz(thiz, log, args, state) {
     thiz.fnEnterLog = new FnLog(Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
     log(thiz.fnEnterLog.toJson());
 }
+/** 被frida-trace工具生成的.js函数中的OnLeave调用
+ * 假设 有命令 'frida-trace --output fr.log', 则 log('xxx') 是 向 fr.log 中写入 'xxx'
+ *   而 console.log 则并不写入到 fr.log
+ */
 function fridaTraceJsOnLeaveBusz(thiz, log, retval, state) {
     const fnEnterLog = thiz.fnEnterLog;
     const fnLeaveLog = new FnLog(Direct.LeaveFn, fnEnterLog.fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);

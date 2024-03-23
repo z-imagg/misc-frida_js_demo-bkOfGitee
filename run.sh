@@ -6,7 +6,11 @@ echo 0 | sudo tee   /proc/sys/kernel/randomize_va_space
 cat  /proc/sys/kernel/randomize_va_space  #0
 
 function call_frida_trace() {
-frida-trace  --output  frida-trace-out-$(date +%s).log --init-session ./DebugSymbolUtil.js  --decorate  --include  "simple_nn.elf!*Linear*"  --include "libtorch.so.1!*tensor*"  --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
+#开发调试用的命令，为了快速运行结束
+# frida-trace  --output  frida-trace-out-$(date +%s).log --init-session ./DebugSymbolUtil.js  --decorate  --include  "simple_nn.elf!*Linear*"  --include "libtorch.so.1!*tensor*"  --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
+
+#生产用的命令，更全面，但运行耗时更久
+frida-trace  --output  frida-trace-out-$(date +%s).log --init-session ./DebugSymbolUtil.js  --decorate   -I "simple_nn.elf"  -I "libtorch.so.1"  -I "libc10.so"  -I "libcaffe2.so"    --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
 }
 
 cd /fridaAnlzAp/frida_js/
@@ -31,4 +35,3 @@ find ./__handlers__/ -name "*.js" | xargs -I% ./InsertCall.py %
 #   frida-trace 发现 已有 js , 直接 执行 该 js
 call_frida_trace
 
-# frida-trace  --decorate  -I "simple_nn.elf"  -I "libtorch.so.1"  -I "libc10.so"  -I "libcaffe2.so"   --file ./simple_nn.elf
