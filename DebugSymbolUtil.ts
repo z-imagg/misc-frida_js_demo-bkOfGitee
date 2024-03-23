@@ -3,7 +3,7 @@
 const gFnSymTab:Map<NativePointer,DebugSymbol> = new Map();
 let gFnCallId:number = 0;
 //填充函数符号表格
-function findFnDbgSym(fnAdr:NativePointer){
+function findFnDbgSym(fnAdr:NativePointer):DebugSymbol|undefined{
       if(gFnSymTab.has(fnAdr)){
         return gFnSymTab.get(fnAdr);
       }
@@ -15,7 +15,7 @@ function findFnDbgSym(fnAdr:NativePointer){
         const fileNm:string|null=fnSym.fileName;
 
         //打印函数地址k
-        console.log(`只有首次查调试信息文件，${JSON.stringify(fnSym)}`);
+        console.log(`##只有首次查调试信息文件，${JSON.stringify(fnSym)}`);
 
         //该函数地址插入表格: 建立 函数地址 到 函数调试符号详情 的 表格
         gFnSymTab.set(fnAdr, fnSym);
@@ -24,17 +24,46 @@ function findFnDbgSym(fnAdr:NativePointer){
 
 }
 
+//方向枚举: 函数进入 或 函数离开
+enum Direct{
+  // 函数进入
+  EnterFn = 1,
+  // 函数离开
+  LeaveFn = 2,
+}
+
+class FnLog {
+  //方向: 函数进入 或 函数离开
+  direct:Direct;
+  //函数地址
+  fnAdr:NativePointer;
+  //针对此次函数调用的唯一编号
+  fnCallId:number;
+  //函数符号
+  fnSym:DebugSymbol|undefined;
+  constructor (direct:Direct, fnAdr:NativePointer, fnCallId: number,fnSym:DebugSymbol|undefined) {
+    this.direct = direct;
+    this.fnAdr = fnAdr;
+    this.fnCallId = fnCallId;
+    this.fnSym = fnSym;
+}
+}
+
+/**不必用log('xxx'), 直接用console.log('xxx') 即可
+ * log==console.log
+ * 被frida-trace工具生成的.js函数中的onEnter调用的函数中 可以使用 console.log
+ */
+
 function fridaTraceJsOnEnterBusz(thiz:InvocationContext, log:any, args:any[], state:any){
-  // log==console.log
-  var fnSym = findFnDbgSym(thiz.context.pc)
-  console.log(JSON.stringify(fnSym))
-  gFnCallId++;
-  thiz.fnCallId=gFnCallId;
-  //  被frida-trace工具生成的.js函数中的onEnter调用的函数中 可以使用 console.log
-  console.log(`OnEnter_fnCallId=${thiz.fnCallId}`)
+
+  var fnAdr=thiz.context.pc;
+  var fnSym :DebugSymbol|undefined= findFnDbgSym(thiz.context.pc)
+  thiz.fnEnterLog=new FnLog(Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
+  console.log(thiz.fnEnterLog)
 
 }
 function fridaTraceJsOnLeaveBusz(thiz:InvocationContext, log:any, retval:any, state:any){
-  // log==console.log
-  console.log(`OnLeave_fnCallId=${thiz.fnCallId}`)
+  const fnEnterLog:FnLog=thiz.fnEnterLog;
+  const fnLeaveLog:FnLog=new FnLog(Direct.LeaveFn, fnEnterLog.fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);
+  console.log(fnLeaveLog)
 }
