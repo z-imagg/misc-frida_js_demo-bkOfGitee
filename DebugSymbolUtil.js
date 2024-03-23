@@ -43,10 +43,10 @@ function fridaTraceJsOnEnterBusz(thiz, log, args, state) {
     var fnAdr = thiz.context.pc;
     var fnSym = findFnDbgSym(thiz.context.pc);
     thiz.fnEnterLog = new FnLog(Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
-    console.log(thiz.fnEnterLog.toJson());
+    log(thiz.fnEnterLog.toJson());
 }
 function fridaTraceJsOnLeaveBusz(thiz, log, retval, state) {
     const fnEnterLog = thiz.fnEnterLog;
     const fnLeaveLog = new FnLog(Direct.LeaveFn, fnEnterLog.fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);
-    console.log(fnLeaveLog.toJson());
+    log(fnLeaveLog.toJson());
 }
