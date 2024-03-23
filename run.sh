@@ -17,20 +17,18 @@ npx frida-compile  DebugSymbolUtil.ts --no-source-maps --output DebugSymbolUtil.
 #删除frida-compile生成的 js文件开头 乱七八糟的 几行
 sed -i '1,/frida-trace初始化js/d' DebugSymbolUtil.js && \
 
-#0. 删除 上次 frida-trace生成的所有 .js 脚本
-# 删除 ./__handlers__/*.js
+#0. 删除 ./__handlers__/*.js
 rm -fr ./__handlers__ && \
 
-#1. frida-trace新生成的所有 .js 脚本
-# 调用frida-trace 生成 ./__handlers__/*.js
+#1. 初次运行frida-trace，用以新生成 ./__handlers__/*.js 
+#   frida-trace 先生成 准空白 js , 再 执行 准空白 js
 call_frida_trace
 
-#2. 用InsertCall.py对这些 新 .js 脚本  插入 调用业务函数语句
-# 插入 调用业务函数语句 到 ./__handlers__/*.js
+#2. 用InsertCall.py 插入 调用业务函数语句 到 ./__handlers__/*.js
 find ./__handlers__/ -name "*.js" | xargs -I% ./InsertCall.py %
 
-#3. 此时frida-trace发现已经有目录__handlers__, 将使用该目录下被修改后的 .js   , 从而 间接利用frida-trace 调用了 业务函数语句
-# 基于 修改后的 再次调用frida-trace
+#3. 再次运行frida-trace，执行 修改后的 ./__handlers__/*.js
+#   frida-trace 发现 已有 js , 直接 执行 该 js
 call_frida_trace
 
 # frida-trace  --decorate  -I "simple_nn.elf"  -I "libtorch.so.1"  -I "libc10.so"  -I "libcaffe2.so"   --file ./simple_nn.elf
