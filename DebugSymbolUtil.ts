@@ -36,6 +36,7 @@ enum Direct{
 }
 
 class FnLog {
+  curThreadId:ThreadId
   //方向: 函数进入 或 函数离开
   direct:Direct;
   //函数地址
@@ -44,7 +45,8 @@ class FnLog {
   fnCallId:number;
   //函数符号
   fnSym:DebugSymbol|undefined;
-  constructor (direct:Direct, fnAdr:NativePointer, fnCallId: number,fnSym:DebugSymbol|undefined) {
+  constructor (curThreadId:ThreadId, direct:Direct, fnAdr:NativePointer, fnCallId: number,fnSym:DebugSymbol|undefined) {
+    this.curThreadId = curThreadId
     this.direct = direct;
     this.fnAdr = fnAdr;
     this.fnCallId = fnCallId;
@@ -62,9 +64,10 @@ class FnLog {
  */
 
 function fridaTraceJsOnEnterBusz(thiz:InvocationContext, log:any, args:any[], state:any){
+  const curThreadId:ThreadId=Process.getCurrentThreadId()
   var fnAdr=thiz.context.pc;
   var fnSym :DebugSymbol|undefined= findFnDbgSym(thiz.context.pc)
-  thiz.fnEnterLog=new FnLog(Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
+  thiz.fnEnterLog=new FnLog(curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
   log(thiz.fnEnterLog.toJson())
 
 }
@@ -74,7 +77,12 @@ function fridaTraceJsOnEnterBusz(thiz:InvocationContext, log:any, args:any[], st
  *   而 console.log 则并不写入到 fr.log
  */
 function fridaTraceJsOnLeaveBusz(thiz:InvocationContext, log:any, retval:any, state:any){
+  const curThreadId:ThreadId=Process.getCurrentThreadId()
+  var fnAdr=thiz.context.pc;
+  if(fnAdr!=thiz.fnEnterLog.fnAdr){
+    log(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】`)
+  }
   const fnEnterLog:FnLog=thiz.fnEnterLog;
-  const fnLeaveLog:FnLog=new FnLog(Direct.LeaveFn, fnEnterLog.fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);
+  const fnLeaveLog:FnLog=new FnLog(curThreadId, Direct.LeaveFn, fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);
   log(fnLeaveLog.toJson())
 }

@@ -28,7 +28,8 @@ var Direct;
     Direct[Direct["LeaveFn"] = 2] = "LeaveFn";
 })(Direct || (Direct = {}));
 class FnLog {
-    constructor(direct, fnAdr, fnCallId, fnSym) {
+    constructor(curThreadId, direct, fnAdr, fnCallId, fnSym) {
+        this.curThreadId = curThreadId;
         this.direct = direct;
         this.fnAdr = fnAdr;
         this.fnCallId = fnCallId;
@@ -43,9 +44,10 @@ class FnLog {
  *   而 console.log 则并不写入到 fr.log
  */
 function fridaTraceJsOnEnterBusz(thiz, log, args, state) {
+    const curThreadId = Process.getCurrentThreadId();
     var fnAdr = thiz.context.pc;
     var fnSym = findFnDbgSym(thiz.context.pc);
-    thiz.fnEnterLog = new FnLog(Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
+    thiz.fnEnterLog = new FnLog(curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
     log(thiz.fnEnterLog.toJson());
 }
 /** 被frida-trace工具生成的.js函数中的OnLeave调用
@@ -53,7 +55,12 @@ function fridaTraceJsOnEnterBusz(thiz, log, args, state) {
  *   而 console.log 则并不写入到 fr.log
  */
 function fridaTraceJsOnLeaveBusz(thiz, log, retval, state) {
+    const curThreadId = Process.getCurrentThreadId();
+    var fnAdr = thiz.context.pc;
+    if (fnAdr != thiz.fnEnterLog.fnAdr) {
+        log(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】`);
+    }
     const fnEnterLog = thiz.fnEnterLog;
-    const fnLeaveLog = new FnLog(Direct.LeaveFn, fnEnterLog.fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);
+    const fnLeaveLog = new FnLog(curThreadId, Direct.LeaveFn, fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);
     log(fnLeaveLog.toJson());
 }
