@@ -1,11 +1,15 @@
 ////frida-trace初始化js
+
+type FnAdrHex=string;
+
+
 //函数符号表格 全局变量
-const gFnSymTab:Map<string,DebugSymbol> = new Map();
+const gFnSymTab:Map<FnAdrHex,DebugSymbol> = new Map();
 let gFnCallId:number = 0;
 //填充函数符号表格
 function findFnDbgSym(fnAdr:NativePointer):DebugSymbol|undefined{
   // 相同内容的NativePointer可以是不同的对象，因为不能作为Map的key，必须用该NativePointer对应的字符串作为Map的key
-  const fnAdrHex:string=fnAdr.toString();
+  const fnAdrHex:FnAdrHex=fnAdr.toString();
       if(gFnSymTab.has(fnAdrHex)){
         console.log(`##从缓存获得调试信息，${fnAdr}`);
         return gFnSymTab.get(fnAdrHex);
@@ -58,6 +62,23 @@ class FnLog {
   }
 }
 
+//判断两个函数地址值 是否相同
+function adrEq(adr1:NativePointer, adr2:NativePointer){
+  if(adr1==adr2){
+    return true;
+  }
+  const adr1Null:boolean= (adr1 == undefined || adr1 == null)
+  const adr2Null:boolean= (adr2 == undefined || adr2 == null)
+  if( adr1Null || adr2Null){
+    return false;
+  }
+
+  const adr1Hex:FnAdrHex=adr1.toString();//adr1.toInt32()?
+  const adr2Hex:FnAdrHex=adr2.toString();//adr2.toInt32()?
+
+  const eq:boolean= (adr1Hex == adr2Hex);
+  return eq;
+}
 /** 被frida-trace工具生成的.js函数中的onEnter调用
  * 假设 有命令 'frida-trace --output fr.log', 则 log('xxx') 是 向 fr.log 中写入 'xxx'
  *   而 console.log 则并不写入到 fr.log
@@ -79,7 +100,7 @@ function fridaTraceJsOnEnterBusz(thiz:InvocationContext, log:any, args:any[], st
 function fridaTraceJsOnLeaveBusz(thiz:InvocationContext, log:any, retval:any, state:any){
   const curThreadId:ThreadId=Process.getCurrentThreadId()
   var fnAdr=thiz.context.pc;
-  if(fnAdr!=thiz.fnEnterLog.fnAdr){
+  if(!adrEq(fnAdr,thiz.fnEnterLog.fnAdr)){
     log(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】`)
   }
   const fnEnterLog:FnLog=thiz.fnEnterLog;
