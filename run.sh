@@ -16,6 +16,10 @@ frida-trace  --output  frida-trace-out-${LogTitle}-$(date +%s).log --init-sessio
 
 cd /fridaAnlzAp/frida_js/
 
+#安装frida py工具
+source /app/Miniconda3-py310_22.11.1-1/bin/activate
+pip install -r requirements.txt
+
 #编译出  /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
 bash -x  /fridaAnlzAp/torch-cpp/v1.0.0/build.sh
 
