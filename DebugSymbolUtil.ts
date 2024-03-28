@@ -6,6 +6,9 @@ function isNil(x:any):boolean{
 }
 
 type FnAdrHex=string;
+function adrToHex(fnAdr:NativePointer):FnAdrHex{
+  return fnAdr.toString();
+}
 
 
 //函数符号表格 全局变量
@@ -14,7 +17,7 @@ let gFnCallId:number = 0;
 //填充函数符号表格
 function findFnDbgSym(fnAdr:NativePointer):DebugSymbol|undefined{
   // 相同内容的NativePointer可以是不同的对象，因为不能作为Map的key，必须用该NativePointer对应的字符串作为Map的key
-  const fnAdrHex:FnAdrHex=fnAdr.toString();
+  const fnAdrHex:FnAdrHex=adrToHex(fnAdr);
   let fnSym:DebugSymbol|undefined=gFnSymTab.get(fnAdrHex);
       if(!isNil(fnSym)){
         console.log(`##从缓存获得调试信息，${fnAdr}`);
@@ -79,8 +82,8 @@ function adrEq(adr1:NativePointer, adr2:NativePointer){
     return false;
   }
 
-  const adr1Hex:FnAdrHex=adr1.toString();//adr1.toInt32()?
-  const adr2Hex:FnAdrHex=adr2.toString();//adr2.toInt32()?
+  const adr1Hex:FnAdrHex=adrToHex(adr1);//adr1.toInt32()?
+  const adr2Hex:FnAdrHex=adrToHex(adr2);//adr2.toInt32()?
 
   const eq:boolean= (adr1Hex == adr2Hex);
   return eq;
