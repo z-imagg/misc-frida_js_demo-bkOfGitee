@@ -50,11 +50,11 @@ let gLogId:number = 0;
 const gTmPntTb:Map<AbsThrdId,TimePoint> = new Map();
 
 //填充函数符号表格
-function findFnDbgSym(fnAdr:NativePointer):DebugSymbol|undefined{
+function findFnDbgSym(fnAdr:NativePointer):DebugSymbol {
   // 相同内容的NativePointer可以是不同的对象，因为不能作为Map的key，必须用该NativePointer对应的字符串作为Map的key
   const fnAdrHex:FnAdrHex=adrToHex(fnAdr);
   let fnSym:DebugSymbol|undefined=gFnSymTab.get(fnAdrHex);
-      if(!isNil(fnSym)){
+      if(fnSym!=null && fnSym!=undefined){ // !isNil(fnSym)
         console.log(`##从缓存获得调试信息，${fnAdr}`);
         return fnSym;
       }
