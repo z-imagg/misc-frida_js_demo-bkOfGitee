@@ -1,5 +1,10 @@
 ////frida-trace初始化js
 
+function isNil(x:any):boolean{
+  const empty=(x == undefined || x==null);
+  return empty;
+}
+
 type FnAdrHex=string;
 
 
@@ -10,16 +15,17 @@ let gFnCallId:number = 0;
 function findFnDbgSym(fnAdr:NativePointer):DebugSymbol|undefined{
   // 相同内容的NativePointer可以是不同的对象，因为不能作为Map的key，必须用该NativePointer对应的字符串作为Map的key
   const fnAdrHex:FnAdrHex=fnAdr.toString();
-      if(gFnSymTab.has(fnAdrHex)){
+  let fnSym:DebugSymbol|undefined=gFnSymTab.get(fnAdrHex);
+      if(!isNil(fnSym)){
         console.log(`##从缓存获得调试信息，${fnAdr}`);
-        return gFnSymTab.get(fnAdrHex);
+        return fnSym;
       }
 
         //函数地址k的详情
-        const fnSym:DebugSymbol=DebugSymbol.fromAddress(fnAdr);
+        fnSym=DebugSymbol.fromAddress(fnAdr);
 
-        const modNm:string|null=fnSym.moduleName;
-        const fileNm:string|null=fnSym.fileName;
+        // const modNm:string|null=fnSym.moduleName;
+        // const fileNm:string|null=fnSym.fileName;
 
         //打印函数地址k
         console.log(`##只有首次查调试信息文件，${JSON.stringify(fnSym)}`);
