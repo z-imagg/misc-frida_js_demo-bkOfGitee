@@ -15,7 +15,11 @@ function call_frida_trace() {
 # frida-trace  --output  frida-trace-out-$(date +%s).log --init-session ./DebugSymbolUtil.js  --decorate  --include  "simple_nn.elf!*Linear*"  --include "libtorch.so.1!*tensor*"  --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
 
 #生产用的命令，更全面，但运行耗时更久
-frida-trace  --output  frida-trace-out-${LogTitle}-$(date +%s).log --init-session ./DebugSymbolUtil.js  --decorate   -I "simple_nn.elf"  -I "libtorch.so.1"  -I "libc10.so"  -I "libcaffe2.so"    --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
+_LogFP="frida-trace-out-${LogTitle}-$(date +%s).log"
+frida-trace  --output  $_LogFP --init-session ./DebugSymbolUtil.js  --decorate   -I "simple_nn.elf"  -I "libtorch.so.1"  -I "libc10.so"  -I "libcaffe2.so"    --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
+
+#记录产生的日志文件的数字签名,防止后续被认为破坏却不知道
+md5sum $_LogFP > $_LogFP.md5sum.txt
 }
 
 cd /fridaAnlzAp/frida_js/
