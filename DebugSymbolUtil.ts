@@ -73,8 +73,8 @@ function adrEq(adr1:NativePointer, adr2:NativePointer){
   if(adr1==adr2){
     return true;
   }
-  const adr1Null:boolean= (adr1 == undefined || adr1 == null)
-  const adr2Null:boolean= (adr2 == undefined || adr2 == null)
+  const adr1Null:boolean=  isNil(adr1)
+  const adr2Null:boolean=  isNil(adr2)
   if( adr1Null || adr2Null){
     return false;
   }
