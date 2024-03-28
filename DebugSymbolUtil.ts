@@ -55,7 +55,7 @@ function findFnDbgSym(fnAdr:NativePointer):DebugSymbol {
   const fnAdrHex:FnAdrHex=adrToHex(fnAdr);
   let fnSym:DebugSymbol|undefined=gFnSymTab.get(fnAdrHex);
       if(fnSym!=null && fnSym!=undefined){ // !isNil(fnSym)
-        console.log(`##从缓存获得调试信息，${fnAdr}`);
+        // console.log(`##从缓存获得调试信息，${fnAdr}`);
         return fnSym;
       }
 
@@ -85,12 +85,14 @@ function nextTmPnt(processId:number, thrdId:ThreadId):TmPntVal{
   const absThrdId:AbsThrdId=toAbsThrdId(processId,thrdId)
   let tmPnt:TimePoint|undefined=gTmPntTb.get(absThrdId);
   if(tmPnt){ // !isNil(tmPnt)
-    console.log(`##从缓存获得时刻tmPnt，　${absThrdId}:${tmPnt}`);
+    // console.log(`##从缓存获得时刻tmPnt，　${absThrdId}:${JSON.stringify(tmPnt)}`);
     return tmPnt.nextVal();
   }
 
   tmPnt=TimePoint.initTmPntVal(processId,thrdId)
   gTmPntTb.set(absThrdId, tmPnt);
+
+  console.log(`##只有首次新建对象tmPnt，${JSON.stringify(tmPnt)}`);
 
   return tmPnt.nextVal()
 
