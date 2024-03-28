@@ -7,7 +7,7 @@ function isNil(x:any):boolean{
 
 type FnAdrHex=string;
 function adrToHex(fnAdr:NativePointer):FnAdrHex{
-  return fnAdr.toString();
+  return fnAdr.toString(16);
 }
 
 
