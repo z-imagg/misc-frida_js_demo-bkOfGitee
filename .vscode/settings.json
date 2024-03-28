@@ -1,0 +1,17 @@
+{
+    "files.exclude": {
+        // {默认
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        // }
+        // {新增
+        "node_modules":true,
+        "__handlers__":true,
+        "*.log":true,
+        // }
+    }
+}

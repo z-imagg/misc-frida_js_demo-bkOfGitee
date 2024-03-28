@@ -5,17 +5,56 @@
 echo 0 | sudo tee   /proc/sys/kernel/randomize_va_space
 cat  /proc/sys/kernel/randomize_va_space  #0
 
+function get_bash_en_dbg() {
+  bash_en_dbg=false; [[ $- == *x* ]] && bash_en_dbg=true #记录bash是否启用了调试模式
+}
+
+function call_frida_trace() {
+
+#开发调试用的命令，为了快速运行结束
+# frida-trace  --output  frida-trace-out-$(date +%s).log --init-session ./DebugSymbolUtil.js  --decorate  --include  "simple_nn.elf!*Linear*"  --include "libtorch.so.1!*tensor*"  --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
+
+#生产用的命令，更全面，但运行耗时更久
+_LogFP="frida-trace-out-${LogTitle}-$(date +%s).log"
+frida-trace  --output  $_LogFP --init-session ./DebugSymbolUtil.js  --decorate   -I "simple_nn.elf"  -I "libtorch.so.1"  -I "libc10.so"  -I "libcaffe2.so"    --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
+
+#记录产生的日志文件的数字签名,防止后续被认为破坏却不知道
+md5sum $_LogFP > $_LogFP.md5sum.txt
+}
+
 cd /fridaAnlzAp/frida_js/
+
+#安装frida py工具
+# 临时关闭bash调试模式， 是 由于 miniconda 的 activate 脚本内容太大，从而减少视觉干扰
+get_bash_en_dbg  #记录bash是否启用了调试模式
+$bash_en_dbg && set +x #如果启用了调试模式, 则关闭调试模式
+source /app/Miniconda3-py310_22.11.1-1/bin/activate
+$bash_en_dbg && set -x #如果启用了调试模式, 则打开调试模式
+pip install -r requirements.txt
+
+#编译出  /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
+bash -x  /fridaAnlzAp/torch-cpp/v1.0.0/build.sh
+
+#删除旧日志
+rm -frv *.log
 
 chmod +x InsertCall.py
 
 npx frida-compile  DebugSymbolUtil.ts --no-source-maps --output DebugSymbolUtil.js  && \
 #删除frida-compile生成的 js文件开头 乱七八糟的 几行
 sed -i '1,/frida-trace初始化js/d' DebugSymbolUtil.js && \
-frida-trace  --init-session ./DebugSymbolUtil.js  --decorate  --include  "simple_nn.elf!*Linear*"  --include "libtorch.so.1!*tensor*"  --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
 
-#对frida-trace生成的 .js 文件 ，插入 调用业务函数语句
-find ./__handlers__/ -name "*.js" | xargs -I% ./InsertCall.py %
+#0. 删除 ./__handlers__/*.js
+rm -fr ./__handlers__ && \
 
+#1. 初次运行frida-trace，用以新生成 ./__handlers__/*.js 
+#   frida-trace 先生成 准空白 js , 再 执行 准空白 js
+LogTitle="GenEmptyJs" && call_frida_trace
 
-# frida-trace  --decorate  -I "simple_nn.elf"  -I "libtorch.so.1"  -I "libc10.so"  -I "libcaffe2.so"   --file ./simple_nn.elf
+#2. 用InsertCall.py 插入 调用业务函数语句 到 ./__handlers__/*.js
+./InsertCall.py /fridaAnlzAp/frida_js/__handlers__/ && \
+
+#3. 再次运行frida-trace，执行 修改后的 ./__handlers__/*.js
+#   frida-trace 发现 已有 js , 直接 执行 该 js
+LogTitle="RunBuszJs" call_frida_trace
+

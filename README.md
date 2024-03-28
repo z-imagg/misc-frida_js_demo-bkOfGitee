@@ -25,13 +25,5 @@ simple_nn.elf   来自， https://gitee.com/frida_analyze_app_src/torch-cpp/blob
 
 
 ```shell
-
-#0. 删除 上次 frida-trace生成的所有 .js 脚本
-rm -fr __handlers__/                    && \
-#1. frida-trace新生成的所有 .js 脚本
-#2. 用InsertCall.py对这些 新 .js 脚本  插入 调用业务函数语句
-bash -x run.sh
-
-#3. 此时frida-trace发现已经有目录__handlers__, 将使用该目录下被修改后的 .js   , 从而 间接利用frida-trace 调用了 业务函数语句
 bash -x run.sh
 ```

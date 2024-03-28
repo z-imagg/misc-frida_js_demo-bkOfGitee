@@ -1,36 +1,188 @@
 ////frida-trace初始化js
+
+// ［术语］　
+// ［简写］ AbsThrdId==AbsoluteThreadId==绝对线程id==进程id_线程id , gTmPntTb == globalTimePointTable == 全局时刻表格
+function isNil(x:any):boolean{
+  const empty=(x == undefined || x==null);
+  return empty;
+}
+
+type FnAdrHex=string;
+function adrToHex(fnAdr:NativePointer):FnAdrHex{
+  return fnAdr.toString(16);
+}
+
+type AbsThrdId=string;
+//时刻
+type TmPntVal=number;
+class TimePoint {
+  static initTmPntVal(processId:number,thrdId:ThreadId){
+    return new TimePoint(processId,thrdId,0)
+  }
+  //进程id
+  processId:number
+  //线程id
+  thrdId:ThreadId
+  //进程_线程　对应的　最新时刻值
+  curTmPnt:TmPntVal
+  constructor (processId:number,thrdId:ThreadId,tmPnt:TmPntVal) {
+    this.processId = processId
+    this.thrdId = thrdId
+    this.curTmPnt = tmPnt
+  }
+
+  nextVal():TmPntVal{
+    ++this.curTmPnt
+    return this.curTmPnt
+  }
+  toJson(){
+    return JSON.stringify(this)  
+  }
+}
 //函数符号表格 全局变量
-const gFnSymTab:Map<NativePointer,DebugSymbol> = new Map();
+const gFnSymTab:Map<FnAdrHex,DebugSymbol> = new Map();
+//函数调用id
+let gFnCallId:number = 0;
+//日志id
+let gLogId:number = 0;
+//时刻表格 全局变量
+//  进程_线程　对应的　最新时刻值
+const gTmPntTb:Map<AbsThrdId,TimePoint> = new Map();
+
 //填充函数符号表格
-function findFnDbgSym(fnAdr:NativePointer){
-      if(gFnSymTab.has(fnAdr)){
-        return gFnSymTab.get(fnAdr);
+function findFnDbgSym(fnAdr:NativePointer):DebugSymbol {
+  // 相同内容的NativePointer可以是不同的对象，因为不能作为Map的key，必须用该NativePointer对应的字符串作为Map的key
+  const fnAdrHex:FnAdrHex=adrToHex(fnAdr);
+  let fnSym:DebugSymbol|undefined=gFnSymTab.get(fnAdrHex);
+      if(fnSym!=null && fnSym!=undefined){ // !isNil(fnSym)
+        // console.log(`##从缓存获得调试信息，${fnAdr}`);
+        return fnSym;
       }
 
         //函数地址k的详情
-        const fnSym:DebugSymbol=DebugSymbol.fromAddress(fnAdr);
+        fnSym=DebugSymbol.fromAddress(fnAdr);
 
-        const modNm:string|null=fnSym.moduleName;
-        const fileNm:string|null=fnSym.fileName;
+        // const modNm:string|null=fnSym.moduleName;
+        // const fileNm:string|null=fnSym.fileName;
 
         //打印函数地址k
-        console.log(`只有首次查调试信息文件，${JSON.stringify(fnSym)}`);
+        console.log(`##只有首次查调试信息文件，${JSON.stringify(fnSym)}`);
 
         //该函数地址插入表格: 建立 函数地址 到 函数调试符号详情 的 表格
-        gFnSymTab.set(fnAdr, fnSym);
+        gFnSymTab.set(fnAdrHex, fnSym);
 
         return fnSym
 
 }
 
-function fridaTraceJsOnEnterBusz(thiz:InvocationContext, log:any, args:any[], state:any){
-  // log==console.log
+function toAbsThrdId(processId:number, thrdId:ThreadId):AbsThrdId{
+  const _absThrdId:AbsThrdId=`${processId}_${thrdId}`;
+  return _absThrdId
+}
 
-  var fnSym = findFnDbgSym(thiz.context.pc)
-  log(`在OnEnter中获得本函数的fnSym=${JSON.stringify(fnSym)}`)
+//填充时刻表格
+function nextTmPnt(processId:number, thrdId:ThreadId):TmPntVal{
+  const absThrdId:AbsThrdId=toAbsThrdId(processId,thrdId)
+  let tmPnt:TimePoint|undefined=gTmPntTb.get(absThrdId);
+  if(tmPnt){ // !isNil(tmPnt)
+    // console.log(`##从缓存获得时刻tmPnt，　${absThrdId}:${JSON.stringify(tmPnt)}`);
+    return tmPnt.nextVal();
+  }
+
+  tmPnt=TimePoint.initTmPntVal(processId,thrdId)
+  gTmPntTb.set(absThrdId, tmPnt);
+
+  console.log(`##只有首次新建对象tmPnt，${JSON.stringify(tmPnt)}`);
+
+  return tmPnt.nextVal()
 
 }
-function fridaTraceJsOnLeaveBusz(thiz:InvocationContext, log:any, retval:any, statea:any){
-  // log==console.log
 
+//方向枚举: 函数进入 或 函数离开
+enum Direct{
+  // 函数进入
+  EnterFn = 1,
+  // 函数离开
+  LeaveFn = 2,
+}
+
+class FnLog {
+  //进程_线程　下的　时刻值
+  tmPnt:TmPntVal
+  //日志id
+  logId:number
+  //当前进程id
+  processId:number
+  //当前线程id
+  curThreadId:ThreadId
+  //方向: 函数进入 或 函数离开
+  direct:Direct;
+  //函数地址
+  fnAdr:NativePointer;
+  //针对此次函数调用的唯一编号
+  fnCallId:number;
+  //函数符号
+  fnSym:DebugSymbol|undefined;
+  constructor (tmPntVal:TmPntVal, logId:number,processId:number,curThreadId:ThreadId, direct:Direct, fnAdr:NativePointer, fnCallId: number,fnSym:DebugSymbol|undefined) {
+    this.tmPnt=tmPntVal
+    this.logId = logId
+    this.processId=processId
+    this.curThreadId = curThreadId
+    this.direct = direct;
+    this.fnAdr = fnAdr;
+    this.fnCallId = fnCallId;
+    this.fnSym = fnSym;
+  }
+
+  toJson(){
+    return JSON.stringify(this)  
+  }
+}
+
+//判断两个函数地址值 是否相同
+function adrEq(adr1:NativePointer, adr2:NativePointer){
+  if(adr1==adr2){
+    return true;
+  }
+  const adr1Null:boolean=  isNil(adr1)
+  const adr2Null:boolean=  isNil(adr2)
+  if( adr1Null || adr2Null){
+    return false;
+  }
+
+  const adr1Hex:FnAdrHex=adrToHex(adr1);//adr1.toInt32()?
+  const adr2Hex:FnAdrHex=adrToHex(adr2);//adr2.toInt32()?
+
+  const eq:boolean= (adr1Hex == adr2Hex);
+  return eq;
+}
+/** 被frida-trace工具生成的.js函数中的onEnter调用
+ * 假设 有命令 'frida-trace --output fr.log', 则 log('xxx') 是 向 fr.log 中写入 'xxx'
+ *   而 console.log 则并不写入到 fr.log
+ */
+
+function fridaTraceJsOnEnterBusz(thiz:InvocationContext, log:any, args:any[], state:any){
+  const curThreadId:ThreadId=Process.getCurrentThreadId()
+  const tmPntVal:TmPntVal=nextTmPnt(Process.id,curThreadId)
+  var fnAdr=thiz.context.pc;
+  var fnSym :DebugSymbol|undefined= findFnDbgSym(thiz.context.pc)
+  thiz.fnEnterLog=new FnLog(tmPntVal,++gLogId,Process.id,curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
+  log(thiz.fnEnterLog.toJson())
+
+}
+
+/** 被frida-trace工具生成的.js函数中的OnLeave调用
+ * 假设 有命令 'frida-trace --output fr.log', 则 log('xxx') 是 向 fr.log 中写入 'xxx'
+ *   而 console.log 则并不写入到 fr.log
+ */
+function fridaTraceJsOnLeaveBusz(thiz:InvocationContext, log:any, retval:any, state:any){
+  const curThreadId:ThreadId=Process.getCurrentThreadId()
+  const tmPnt:TmPntVal=nextTmPnt(Process.id,curThreadId)
+  var fnAdr=thiz.context.pc;
+  if(!adrEq(fnAdr,thiz.fnEnterLog.fnAdr)){
+    log(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】`)
+  }
+  const fnEnterLog:FnLog=thiz.fnEnterLog;
+  const fnLeaveLog:FnLog=new FnLog(tmPnt,++gLogId,Process.id,curThreadId, Direct.LeaveFn, fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);
+  log(fnLeaveLog.toJson())
 }

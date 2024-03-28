@@ -38,12 +38,18 @@ def insertCall(jsFpGenByFridaTrace:str):
     jsTxtNew:str="\n".join(lnLs1)
     
     jsFp.write_text(jsTxtNew)
-    print(f"正常frida-trace生成的js文件,{jsFpGenByFridaTrace}")
+    print(f"正常插入语句到js文件,{jsFpGenByFridaTrace}")
     return
 
+
+def LoopJsFp(jsRootDirStr:str):
+    # jsRootDir:Path=Path("/fridaAnlzAp/frida_js/__handlers__/")
+    jsRootDir:Path=Path(jsRootDirStr)
+    for jsPth in jsRootDir.glob("**/*.js"):
+        insertCall(jsPth)
 
 if __name__=="__main__":
     import sys
     assert len(sys.argv) == 2
-    jsFpGenByFridaTrace:str=sys.argv[1]
-    insertCall(jsFpGenByFridaTrace)
+    jsRootDirStr:str=sys.argv[1] # sys.argv[1] == "/fridaAnlzAp/frida_js/__handlers__/"
+    LoopJsFp(jsRootDirStr)
