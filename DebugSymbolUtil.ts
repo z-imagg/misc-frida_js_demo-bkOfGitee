@@ -13,7 +13,11 @@ function adrToHex(fnAdr:NativePointer):FnAdrHex{
 
 //函数符号表格 全局变量
 const gFnSymTab:Map<FnAdrHex,DebugSymbol> = new Map();
+//函数调用id
 let gFnCallId:number = 0;
+//日志id
+let gLogId:number = 0;
+
 //填充函数符号表格
 function findFnDbgSym(fnAdr:NativePointer):DebugSymbol|undefined{
   // 相同内容的NativePointer可以是不同的对象，因为不能作为Map的key，必须用该NativePointer对应的字符串作为Map的key
@@ -49,6 +53,7 @@ enum Direct{
 }
 
 class FnLog {
+  logId:number
   curThreadId:ThreadId
   //方向: 函数进入 或 函数离开
   direct:Direct;
@@ -58,7 +63,8 @@ class FnLog {
   fnCallId:number;
   //函数符号
   fnSym:DebugSymbol|undefined;
-  constructor (curThreadId:ThreadId, direct:Direct, fnAdr:NativePointer, fnCallId: number,fnSym:DebugSymbol|undefined) {
+  constructor (logId:number,curThreadId:ThreadId, direct:Direct, fnAdr:NativePointer, fnCallId: number,fnSym:DebugSymbol|undefined) {
+    this.logId = logId
     this.curThreadId = curThreadId
     this.direct = direct;
     this.fnAdr = fnAdr;
@@ -97,7 +103,7 @@ function fridaTraceJsOnEnterBusz(thiz:InvocationContext, log:any, args:any[], st
   const curThreadId:ThreadId=Process.getCurrentThreadId()
   var fnAdr=thiz.context.pc;
   var fnSym :DebugSymbol|undefined= findFnDbgSym(thiz.context.pc)
-  thiz.fnEnterLog=new FnLog(curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
+  thiz.fnEnterLog=new FnLog(++gLogId,curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
   log(thiz.fnEnterLog.toJson())
 
 }
@@ -113,6 +119,6 @@ function fridaTraceJsOnLeaveBusz(thiz:InvocationContext, log:any, retval:any, st
     log(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】`)
   }
   const fnEnterLog:FnLog=thiz.fnEnterLog;
-  const fnLeaveLog:FnLog=new FnLog(curThreadId, Direct.LeaveFn, fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);
+  const fnLeaveLog:FnLog=new FnLog(++gLogId,curThreadId, Direct.LeaveFn, fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);
   log(fnLeaveLog.toJson())
 }
