@@ -38,8 +38,8 @@ function findFnDbgSym(fnAdr) {
     // 相同内容的NativePointer可以是不同的对象，因为不能作为Map的key，必须用该NativePointer对应的字符串作为Map的key
     const fnAdrHex = adrToHex(fnAdr);
     let fnSym = gFnSymTab.get(fnAdrHex);
-    if (!isNil(fnSym)) {
-        console.log(`##从缓存获得调试信息，${fnAdr}`);
+    if (fnSym != null && fnSym != undefined) { // !isNil(fnSym)
+        // console.log(`##从缓存获得调试信息，${fnAdr}`);
         return fnSym;
     }
     //函数地址k的详情
@@ -61,11 +61,12 @@ function nextTmPnt(processId, thrdId) {
     const absThrdId = toAbsThrdId(processId, thrdId);
     let tmPnt = gTmPntTb.get(absThrdId);
     if (tmPnt) { // !isNil(tmPnt)
-        console.log(`##从缓存获得时刻tmPnt，　${absThrdId}:${tmPnt}`);
+        // console.log(`##从缓存获得时刻tmPnt，　${absThrdId}:${JSON.stringify(tmPnt)}`);
         return tmPnt.nextVal();
     }
     tmPnt = TimePoint.initTmPntVal(processId, thrdId);
     gTmPntTb.set(absThrdId, tmPnt);
+    console.log(`##只有首次新建对象tmPnt，${JSON.stringify(tmPnt)}`);
     return tmPnt.nextVal();
 }
 //方向枚举: 函数进入 或 函数离开
@@ -78,7 +79,7 @@ var Direct;
 })(Direct || (Direct = {}));
 class FnLog {
     constructor(tmPntVal, logId, processId, curThreadId, direct, fnAdr, fnCallId, fnSym) {
-        this.tmPntVal = tmPntVal;
+        this.tmPnt = tmPntVal;
         this.logId = logId;
         this.processId = processId;
         this.curThreadId = curThreadId;

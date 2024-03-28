@@ -108,7 +108,7 @@ enum Direct{
 
 class FnLog {
   //进程_线程　下的　时刻值
-  tmPntVal:TmPntVal
+  tmPnt:TmPntVal
   //日志id
   logId:number
   //当前进程id
@@ -124,7 +124,7 @@ class FnLog {
   //函数符号
   fnSym:DebugSymbol|undefined;
   constructor (tmPntVal:TmPntVal, logId:number,processId:number,curThreadId:ThreadId, direct:Direct, fnAdr:NativePointer, fnCallId: number,fnSym:DebugSymbol|undefined) {
-    this.tmPntVal=tmPntVal
+    this.tmPnt=tmPntVal
     this.logId = logId
     this.processId=processId
     this.curThreadId = curThreadId
