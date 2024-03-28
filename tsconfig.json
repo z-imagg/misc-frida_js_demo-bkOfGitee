@@ -1,4 +1,4 @@
-{
+{"exclude": ["__handlers__/**","node_modules/**"],
   "compilerOptions": {
     "target": "es2020",
     "lib": ["es2020"],
