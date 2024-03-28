@@ -3,3 +3,4 @@
 *.log
 
 __handlers__
+*.md5sum.txt
