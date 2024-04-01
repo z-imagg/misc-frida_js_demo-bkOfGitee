@@ -138,12 +138,6 @@ function _main_() {
     for (let [k, fnAdr] of fnAdrLs.entries()) {
         const fnSym = DebugSymbol.fromAddress(fnAdr);
         console.log(`##Interceptor.attach fnAdr=${fnAdr};  ${fnSym.name}, ${fnSym.address}, ${fnSym.moduleName}, ${fnSym.fileName}, ${fnSym.lineNumber} `);
-        if (k >= 10) {
-            /**
-      只拦截了前10个函数，是为了 显现出 报错 _enter_buffered_busy: could not acquire lock for
-             */
-            break;
-        }
         Interceptor.attach(fnAdr, {
             onEnter: function (args) {
                 OnFnEnterBusz(this, args);
