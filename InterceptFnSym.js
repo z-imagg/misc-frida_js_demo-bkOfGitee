@@ -107,30 +107,44 @@ function adrEq(adr1, adr2) {
     const eq = (adr1Hex == adr2Hex);
     return eq;
 }
-/** 被frida-trace工具生成的.js函数中的onEnter调用
- * 假设 有命令 'frida-trace --output fr.log', 则 log('xxx') 是 向 fr.log 中写入 'xxx'
- *   而 console.log 则并不写入到 fr.log
+//日志开头标记
+//  以换行开头的理由是，避开应用程序日志中不换行的日志 造成的干扰。
+const LogLinePrefix = "\n__@__@";
+/** onEnter ， 函数进入
  */
-function fridaTraceJsOnEnterBusz(thiz, log, args, state) {
+function OnFnEnterBusz(thiz, args) {
     const curThreadId = Process.getCurrentThreadId();
     const tmPntVal = nextTmPnt(Process.id, curThreadId);
     var fnAdr = thiz.context.pc;
     var fnSym = findFnDbgSym(thiz.context.pc);
     thiz.fnEnterLog = new FnLog(tmPntVal, ++gLogId, Process.id, curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
-    log(thiz.fnEnterLog.toJson());
+    console.log(`${LogLinePrefix}${thiz.fnEnterLog.toJson()}`);
 }
-/** 被frida-trace工具生成的.js函数中的OnLeave调用
- * 假设 有命令 'frida-trace --output fr.log', 则 log('xxx') 是 向 fr.log 中写入 'xxx'
- *   而 console.log 则并不写入到 fr.log
+/**  OnLeave ，函数离开
  */
-function fridaTraceJsOnLeaveBusz(thiz, log, retval, state) {
+function OnFnLeaveBusz(thiz, retval) {
     const curThreadId = Process.getCurrentThreadId();
     const tmPnt = nextTmPnt(Process.id, curThreadId);
     var fnAdr = thiz.context.pc;
     if (!adrEq(fnAdr, thiz.fnEnterLog.fnAdr)) {
-        log(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】`);
+        console.log(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】`);
     }
     const fnEnterLog = thiz.fnEnterLog;
     const fnLeaveLog = new FnLog(tmPnt, ++gLogId, Process.id, curThreadId, Direct.LeaveFn, fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);
-    log(fnLeaveLog.toJson());
+    console.log(`${LogLinePrefix}${fnLeaveLog.toJson()}`);
 }
+function _main_() {
+    const fnAdrLs = DebugSymbol.findFunctionsMatching("*");
+    for (let fnAdr of fnAdrLs) {
+        console.log(`Interceptor.attach fnAdr=${fnAdr}`);
+        Interceptor.attach(fnAdr, {
+            onEnter: function (args) {
+                OnFnEnterBusz(this, args);
+            },
+            onLeave: function (retval) {
+                OnFnLeaveBusz(this, retval);
+            }
+        });
+    }
+}
+_main_();
