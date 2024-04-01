@@ -186,37 +186,62 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
   console.log(`${LogLinePrefix}${fnLeaveLog.toJson()}`)
 }
 
+const modules_include=[
+  "simple_nn.elf",
+  "libtorch.so.1",
+  "libc10.so",
+  "libcaffe2.so",
+];
+const modules_exclude=[
+  "libstdc++.so.6.0.30", //?如果libstdc++的代码 穿插在业务代码中， 若忽略之 则调用链条断裂
+  "linux-vdso.so.1",
+  "libstdc++.so.6.0.30",
+  "libgcc_s.so.1",
+  "libc.so.6",
+  "libm.so.6",
+  "ld-linux-x86-64.so.2",
+  "libnuma.so.1.0.0",
+  "libmpi_cxx.so.40.30.1",
+  "libmpi.so.40.30.2",
+  "libopen-pal.so.40.30.2",
+  "libopen-rte.so.40.30.2",
+  "libhwloc.so.15.5.2",
+  "libevent_core-2.1.so.7.0.1",
+  "libevent_pthreads-2.1.so.7.0.1",
+  "libz.so.1.2.11",
+  "libudev.so.1.7.2",
+  "libpthread.so.0",
+  "frida-agent-64.so",
+  "libdl.so.2",
+  "librt.so.1",
+];
+function focus_fnAdr(fnAdr:NativePointer){
+  const fnSym=DebugSymbol.fromAddress(fnAdr);
+  const moduleName = fnSym.moduleName
+  if(moduleName==null){
+    throw new Error(`【断言失败】moduleName为null`)
+  }
+  if(modules_include.includes(moduleName)){
+    return true;
+  }
+  if(modules_exclude.includes(moduleName)){
+    return false;
+  }
+}
+
 function _main_(){
   const fnAdrLs:NativePointer[]=DebugSymbol.findFunctionsMatching("*");
   for (let [k,fnAdr] of  fnAdrLs.entries()){
     const fnSym=DebugSymbol.fromAddress(fnAdr);
-    console.log(`##Interceptor.attach fnAdr=${fnAdr};  ${fnSym.name}, ${fnSym.address}, ${fnSym.moduleName}, ${fnSym.fileName}, ${fnSym.lineNumber} `)
-/*
-若拦截全部函数，则在拦截libc.so.6 pthread_getschedparam时抛出异常说进程已终止并停在frida终端， 原因是 不应该拦截 比如libc.so、frida-agent.so等底层 模块？
+    console.log(`##Interceptor.attach fnAdr=${fnAdr};  `)
+    
+    /*修复 在拦截libc.so.6 pthread_getschedparam时抛出异常说进程已终止并停在frida终端 ： 不拦截 比如libc.so、frida-agent.so等底层*/
+    if(!focus_fnAdr(fnAdr)){
+      continue;
+    }
+    console.log(` sym: ${fnSym.name}, ${fnSym.address}, ${fnSym.moduleName}, ${fnSym.fileName}, ${fnSym.lineNumber} `)
 
-##Interceptor.attach fnAdr=0x7ffff20962c0;  pthread_getschedparam, 0x7ffff20962c0, libc.so.6, , 0 
-Spawned `/fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf`. Resuming main thread!
-Process terminated
-Exception in thread Thread-1 (_run):
-Traceback (most recent call last):
-  File "/app/Miniconda3-py310_22.11.1-1/lib/python3.10/threading.py", line 1016, in _bootstrap_inner
-[Local::simple_nn.elf ]->     self.run()
-  File "/app/Miniconda3-py310_22.11.1-1/lib/python3.10/threading.py", line 953, in run
-    self._target(*self._args, **self._kwargs)
-  File "/app/Miniconda3-py310_22.11.1-1/lib/python3.10/site-packages/frida_tools/reactor.py", line 70, in _run
-    work()
-  File "/app/Miniconda3-py310_22.11.1-1/lib/python3.10/site-packages/frida_tools/_repl_magic.py", line 34, in <lambda>
-    repl._reactor.schedule(lambda: repl._resume())
-  File "/app/Miniconda3-py310_22.11.1-1/lib/python3.10/site-packages/frida_tools/application.py", line 477, in _resume
-    self._device.resume(self._spawned_pid)
-  File "/app/Miniconda3-py310_22.11.1-1/lib/python3.10/site-packages/frida/core.py", line 76, in wrapper
-    return f(*args, **kwargs)
-  File "/app/Miniconda3-py310_22.11.1-1/lib/python3.10/site-packages/frida/core.py", line 776, in resume
-    self._impl.resume(self._pid_of(target))
-frida.NotSupportedError: process not found
-[Local::simple_nn.elf ]->
 
-*/
     Interceptor.attach(fnAdr,{
       onEnter:function  (this: InvocationContext, args: InvocationArguments) {
         OnFnEnterBusz(this,args)
