@@ -156,33 +156,116 @@ function adrEq(adr1:NativePointer, adr2:NativePointer){
   const eq:boolean= (adr1Hex == adr2Hex);
   return eq;
 }
-/** 被frida-trace工具生成的.js函数中的onEnter调用
- * 假设 有命令 'frida-trace --output fr.log', 则 log('xxx') 是 向 fr.log 中写入 'xxx'
- *   而 console.log 则并不写入到 fr.log
- */
+//日志开头标记
+//  以换行开头的理由是，避开应用程序日志中不换行的日志 造成的干扰。
+const LogLinePrefix:string="\n__@__@";
 
-function fridaTraceJsOnEnterBusz(thiz:InvocationContext, log:any, args:any[], state:any){
+/** onEnter ， 函数进入
+ */
+function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
   const curThreadId:ThreadId=Process.getCurrentThreadId()
   const tmPntVal:TmPntVal=nextTmPnt(Process.id,curThreadId)
   var fnAdr=thiz.context.pc;
   var fnSym :DebugSymbol|undefined= findFnDbgSym(thiz.context.pc)
   thiz.fnEnterLog=new FnLog(tmPntVal,++gLogId,Process.id,curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
-  log(thiz.fnEnterLog.toJson())
+  console.log(`${LogLinePrefix}${thiz.fnEnterLog.toJson()}`)
 
 }
 
-/** 被frida-trace工具生成的.js函数中的OnLeave调用
- * 假设 有命令 'frida-trace --output fr.log', 则 log('xxx') 是 向 fr.log 中写入 'xxx'
- *   而 console.log 则并不写入到 fr.log
+/**  OnLeave ，函数离开
  */
-function fridaTraceJsOnLeaveBusz(thiz:InvocationContext, log:any, retval:any, state:any){
+function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
   const curThreadId:ThreadId=Process.getCurrentThreadId()
   const tmPnt:TmPntVal=nextTmPnt(Process.id,curThreadId)
   var fnAdr=thiz.context.pc;
   if(!adrEq(fnAdr,thiz.fnEnterLog.fnAdr)){
-    log(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】`)
+    console.log(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】`)
   }
   const fnEnterLog:FnLog=thiz.fnEnterLog;
   const fnLeaveLog:FnLog=new FnLog(tmPnt,++gLogId,Process.id,curThreadId, Direct.LeaveFn, fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);
-  log(fnLeaveLog.toJson())
+  console.log(`${LogLinePrefix}${fnLeaveLog.toJson()}`)
 }
+
+const modules_include=[
+  "simple_nn.elf",
+  "libtorch.so.1",
+  "libc10.so",
+  "libcaffe2.so",
+];
+const modules_exclude=[
+  "libstdc++.so.6.0.30", //?如果libstdc++的代码 穿插在业务代码中， 若忽略之 则调用链条断裂
+  "linux-vdso.so.1",
+  "libstdc++.so.6.0.30",
+  "libgcc_s.so.1",
+  "libc.so.6",
+  "libm.so.6",
+  "ld-linux-x86-64.so.2",
+  "libnuma.so.1.0.0",
+  "libmpi_cxx.so.40.30.1",
+  "libmpi.so.40.30.2",
+  "libopen-pal.so.40.30.2",
+  "libopen-rte.so.40.30.2",
+  "libhwloc.so.15.5.2",
+  "libevent_core-2.1.so.7.0.1",
+  "libevent_pthreads-2.1.so.7.0.1",
+  "libz.so.1.2.11",
+  "libudev.so.1.7.2",
+  "libpthread.so.0",
+  "frida-agent-64.so",
+  "libdl.so.2",
+  "librt.so.1",
+];
+function focus_fnAdr(fnAdr:NativePointer){
+  const fnSym=DebugSymbol.fromAddress(fnAdr);
+  const moduleName = fnSym.moduleName
+  if(moduleName==null){
+    throw new Error(`【断言失败】moduleName为null`)
+  }
+  if(modules_include.includes(moduleName)){
+    return true;
+  }
+  if(modules_exclude.includes(moduleName)){
+    return false;
+  }
+}
+
+function _main_(){
+  const fnAdrLs:NativePointer[]=DebugSymbol.findFunctionsMatching("*");
+  for (let [k,fnAdr] of  fnAdrLs.entries()){
+    
+    /*修复 在拦截libc.so.6 pthread_getschedparam时抛出异常说进程已终止并停在frida终端 ： 不拦截 比如libc.so、frida-agent.so等底层*/
+    if(!focus_fnAdr(fnAdr)){
+      continue;
+    }
+    // const fnSym=DebugSymbol.fromAddress(fnAdr);
+    console.log(`##Interceptor.attach fnAdr=${fnAdr};   `)
+
+
+    Interceptor.attach(fnAdr,{
+      onEnter:function  (this: InvocationContext, args: InvocationArguments) {
+        OnFnEnterBusz(this,args)
+      },
+      onLeave:function (this: InvocationContext, retval: InvocationReturnValue) {
+        OnFnLeaveBusz(this,retval)
+      }
+
+    })
+  }
+
+}
+
+
+/**
+frida 运行报超时错误 "Failed to load script: timeout was reached" 解决
+frida 运行报超时错误 "Failed to load script: the connection is closed" 解决
+
+错误的解决办法： 命令行加选项timeout  'frida --timeout 0或-1或很大的数 --file ... '
+
+正确的解决办法是，像下面这样  用 函数setTimeout(... , 0) 包裹 业务代码
+ */
+// frida  https://github.com/frida/frida/issues/113#issuecomment-187134331
+setTimeout(function () {
+  //业务代码
+  _main_()
+
+}, 0);

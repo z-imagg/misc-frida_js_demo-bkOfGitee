@@ -9,14 +9,10 @@ function get_bash_en_dbg() {
   bash_en_dbg=false; [[ $- == *x* ]] && bash_en_dbg=true #记录bash是否启用了调试模式
 }
 
-function call_frida_trace() {
-
-#开发调试用的命令，为了快速运行结束
-# frida-trace  --output  frida-trace-out-$(date +%s).log --init-session ./DebugSymbolUtil.js  --decorate  --include  "simple_nn.elf!*Linear*"  --include "libtorch.so.1!*tensor*"  --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
-
-#生产用的命令，更全面，但运行耗时更久
+function call_frida() {
 _LogFP="frida-trace-out-${LogTitle}-$(date +%s).log"
-frida-trace  --output  $_LogFP --init-session ./DebugSymbolUtil.js  --decorate   -I "simple_nn.elf"  -I "libtorch.so.1"  -I "libc10.so"  -I "libcaffe2.so"    --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
+frida  --load ./InterceptFnSym.js     --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf  --output $_LogFP 
+# 报错 _enter_buffered_busy: could not acquire lock for 是因为 frida ... | tee 的tee导致的
 
 #记录产生的日志文件的数字签名,防止后续被认为破坏却不知道
 md5sum $_LogFP > $_LogFP.md5sum.txt
@@ -38,23 +34,10 @@ bash -x  /fridaAnlzAp/torch-cpp/v1.0.0/build.sh
 #删除旧日志
 rm -frv *.log
 
-chmod +x InsertCall.py
-
-npx frida-compile  DebugSymbolUtil.ts --no-source-maps --output DebugSymbolUtil.js  && \
+npx frida-compile  InterceptFnSym.ts --no-source-maps --output InterceptFnSym.js  && \
 #删除frida-compile生成的 js文件开头 乱七八糟的 几行
-sed -i '1,/frida-trace初始化js/d' DebugSymbolUtil.js && \
+sed -i '1,/frida-trace初始化js/d' InterceptFnSym.js && \
 
-#0. 删除 ./__handlers__/*.js
-rm -fr ./__handlers__ && \
-
-#1. 初次运行frida-trace，用以新生成 ./__handlers__/*.js 
-#   frida-trace 先生成 准空白 js , 再 执行 准空白 js
-LogTitle="GenEmptyJs" && call_frida_trace
-
-#2. 用InsertCall.py 插入 调用业务函数语句 到 ./__handlers__/*.js
-./InsertCall.py /fridaAnlzAp/frida_js/__handlers__/ && \
-
-#3. 再次运行frida-trace，执行 修改后的 ./__handlers__/*.js
-#   frida-trace 发现 已有 js , 直接 执行 该 js
-LogTitle="RunBuszJs" call_frida_trace
+#运行frida
+LogTitle="RunBuszJs" call_frida
 

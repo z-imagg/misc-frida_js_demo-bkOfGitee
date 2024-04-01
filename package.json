@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Example Frida TypeScript ",
   "private": true,
-  "main": "DebugSymbolUtil.ts",
+  "main": "InterceptFnSym.ts",
   "scripts": {
     "prepare": "npm run build",
-    "build": "frida-compile DebugSymbolUtil.ts --output DebugSymbolUtil.js "
+    "build": "frida-compile InterceptFnSym.ts --output InterceptFnSym.js "
   },
   "devDependencies": {
     "@types/frida-gum": "^18.5.1",
