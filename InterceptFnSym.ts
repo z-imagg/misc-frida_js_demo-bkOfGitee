@@ -189,7 +189,9 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
 function _main_(){
   const fnAdrLs:NativePointer[]=DebugSymbol.findFunctionsMatching("*");
   for (let fnAdr of fnAdrLs){
-    console.log(`Interceptor.attach fnAdr=${fnAdr}`)
+    const fnSym=DebugSymbol.fromAddress(fnAdr);
+    console.log(`##Interceptor.attach fnAdr=${fnAdr};  ${fnSym.name}, ${fnSym.address}, ${fnSym.moduleName}, ${fnSym.fileName}, ${fnSym.lineNumber} `)
+    
     Interceptor.attach(fnAdr,{
       onEnter:function  (this: InvocationContext, args: InvocationArguments) {
         OnFnEnterBusz(this,args)

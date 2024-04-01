@@ -136,7 +136,8 @@ function OnFnLeaveBusz(thiz, retval) {
 function _main_() {
     const fnAdrLs = DebugSymbol.findFunctionsMatching("*");
     for (let fnAdr of fnAdrLs) {
-        console.log(`Interceptor.attach fnAdr=${fnAdr}`);
+        const fnSym = DebugSymbol.fromAddress(fnAdr);
+        console.log(`##Interceptor.attach fnAdr=${fnAdr};  ${fnSym.name}, ${fnSym.address}, ${fnSym.moduleName}, ${fnSym.fileName}, ${fnSym.lineNumber} `);
         Interceptor.attach(fnAdr, {
             onEnter: function (args) {
                 OnFnEnterBusz(this, args);
