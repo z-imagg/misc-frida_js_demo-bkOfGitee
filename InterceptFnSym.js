@@ -182,8 +182,8 @@ function _main_() {
         if (!focus_fnAdr(fnAdr)) {
             continue;
         }
-        const fnSym = DebugSymbol.fromAddress(fnAdr);
-        console.log(`##Interceptor.attach fnAdr=${fnAdr}; ${fnSym.name}, ${fnSym.address}, ${fnSym.moduleName}, ${fnSym.fileName}, ${fnSym.lineNumber}  `);
+        // const fnSym=DebugSymbol.fromAddress(fnAdr);
+        console.log(`##Interceptor.attach fnAdr=${fnAdr};   `);
         Interceptor.attach(fnAdr, {
             onEnter: function (args) {
                 OnFnEnterBusz(this, args);
