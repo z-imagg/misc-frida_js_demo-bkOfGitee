@@ -191,7 +191,32 @@ function _main_(){
   for (let [k,fnAdr] of  fnAdrLs.entries()){
     const fnSym=DebugSymbol.fromAddress(fnAdr);
     console.log(`##Interceptor.attach fnAdr=${fnAdr};  ${fnSym.name}, ${fnSym.address}, ${fnSym.moduleName}, ${fnSym.fileName}, ${fnSym.lineNumber} `)
-    
+/*
+若拦截全部函数，则在拦截libc.so.6 pthread_getschedparam时抛出异常说进程已终止并停在frida终端， 原因是 不应该拦截 比如libc.so、frida-agent.so等底层 模块？
+
+##Interceptor.attach fnAdr=0x7ffff20962c0;  pthread_getschedparam, 0x7ffff20962c0, libc.so.6, , 0 
+Spawned `/fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf`. Resuming main thread!
+Process terminated
+Exception in thread Thread-1 (_run):
+Traceback (most recent call last):
+  File "/app/Miniconda3-py310_22.11.1-1/lib/python3.10/threading.py", line 1016, in _bootstrap_inner
+[Local::simple_nn.elf ]->     self.run()
+  File "/app/Miniconda3-py310_22.11.1-1/lib/python3.10/threading.py", line 953, in run
+    self._target(*self._args, **self._kwargs)
+  File "/app/Miniconda3-py310_22.11.1-1/lib/python3.10/site-packages/frida_tools/reactor.py", line 70, in _run
+    work()
+  File "/app/Miniconda3-py310_22.11.1-1/lib/python3.10/site-packages/frida_tools/_repl_magic.py", line 34, in <lambda>
+    repl._reactor.schedule(lambda: repl._resume())
+  File "/app/Miniconda3-py310_22.11.1-1/lib/python3.10/site-packages/frida_tools/application.py", line 477, in _resume
+    self._device.resume(self._spawned_pid)
+  File "/app/Miniconda3-py310_22.11.1-1/lib/python3.10/site-packages/frida/core.py", line 76, in wrapper
+    return f(*args, **kwargs)
+  File "/app/Miniconda3-py310_22.11.1-1/lib/python3.10/site-packages/frida/core.py", line 776, in resume
+    self._impl.resume(self._pid_of(target))
+frida.NotSupportedError: process not found
+[Local::simple_nn.elf ]->
+
+*/
     Interceptor.attach(fnAdr,{
       onEnter:function  (this: InvocationContext, args: InvocationArguments) {
         OnFnEnterBusz(this,args)
