@@ -232,14 +232,13 @@ function focus_fnAdr(fnAdr:NativePointer){
 function _main_(){
   const fnAdrLs:NativePointer[]=DebugSymbol.findFunctionsMatching("*");
   for (let [k,fnAdr] of  fnAdrLs.entries()){
-    const fnSym=DebugSymbol.fromAddress(fnAdr);
-    console.log(`##Interceptor.attach fnAdr=${fnAdr};  `)
     
     /*修复 在拦截libc.so.6 pthread_getschedparam时抛出异常说进程已终止并停在frida终端 ： 不拦截 比如libc.so、frida-agent.so等底层*/
     if(!focus_fnAdr(fnAdr)){
       continue;
     }
-    console.log(` sym: ${fnSym.name}, ${fnSym.address}, ${fnSym.moduleName}, ${fnSym.fileName}, ${fnSym.lineNumber} `)
+    const fnSym=DebugSymbol.fromAddress(fnAdr);
+    console.log(`##Interceptor.attach fnAdr=${fnAdr}; ${fnSym.name}, ${fnSym.address}, ${fnSym.moduleName}, ${fnSym.fileName}, ${fnSym.lineNumber}  `)
 
 
     Interceptor.attach(fnAdr,{
