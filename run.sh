@@ -9,15 +9,6 @@ function get_bash_en_dbg() {
   bash_en_dbg=false; [[ $- == *x* ]] && bash_en_dbg=true #记录bash是否启用了调试模式
 }
 
-function call_frida() {
-_LogFP="frida-trace-out-${LogTitle}-$(date +%s).log"
-frida  --load ./InterceptFnSym.js     --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf  --output $_LogFP 
-# 报错 _enter_buffered_busy: could not acquire lock for 是因为 frida ... | tee 的tee导致的
-
-#记录产生的日志文件的数字签名,防止后续被认为破坏却不知道
-md5sum $_LogFP > $_LogFP.md5sum.txt
-}
-
 cd /fridaAnlzAp/frida_js/
 
 #安装frida py工具
@@ -39,5 +30,21 @@ npx frida-compile  InterceptFnSym.ts --no-source-maps --output InterceptFnSym.js
 sed -i '1,/frida-trace初始化js/d' InterceptFnSym.js && \
 
 #运行frida
-LogTitle="RunBuszJs" call_frida
+now="$(date +%s)"
+FridaOut="frida-out"
+_LogFP_Mix="${FridaOut}-Mix-${now}.log"
+_LogFP_PrefPure="${FridaOut}-PrefixPure-${now}.log"
+_LogFP_Pure="${FridaOut}-Pure-${now}.log"
+# 运行frida , 产生日志文件 ， 并 记录日志文件的数字签名
+frida  --load ./InterceptFnSym.js     --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf  --output $_LogFP_Mix 
+md5sum $_LogFP_Mix > $_LogFP_Mix.md5sum.txt
+# 日志后处理
+#   提取出带前缀的纯净日志， 并 记录日志文件的数字签名
+grep __@__@   $_LogFP_Mix >  $_LogFP_PrefPure
+md5sum $_LogFP_PrefPure > $_LogFP_PrefPure.md5sum.txt
+#   去掉前缀成为纯净日志， 并 记录日志文件的数字签名
+sed 's/^__@__@//' $_LogFP_PrefPure > $_LogFP_Pure
+md5sum $_LogFP_Pure > $_LogFP_Pure.md5sum.txt
 
+#最终产物日志文件名举例： frida-out-Pure-1712031317.log  
+#    其数字签名举例： frida-out-Pure-1712031317.log.md5sum.txt
