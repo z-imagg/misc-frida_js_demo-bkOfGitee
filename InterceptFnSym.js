@@ -1,5 +1,12 @@
 // ［术语］　
 // ［简写］ AbsThrdId==AbsoluteThreadId==绝对线程id==进程id_线程id , gTmPntTb == globalTimePointTable == 全局时刻表格
+function nowTxt() {
+    const now = new Date();
+    //时区没生效，暂时忽略
+    const localNowTxt = now.toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', });
+    const txt = `${now.getTime()},${localNowTxt}`;
+    return txt;
+}
 function isNil(x) {
     const empty = (x == undefined || x == null);
     return empty;
@@ -184,7 +191,7 @@ function _main_() {
             continue;
         }
         // const fnSym=DebugSymbol.fromAddress(fnAdr);
-        console.log(`##Interceptor.attach fnAdr=${fnAdr};  进度【${k}~${fnAdrCnt} 】`);
+        console.log(`##${nowTxt()};Interceptor.attach fnAdr=${fnAdr};  进度【${k}~${fnAdrCnt} 】`);
         Interceptor.attach(fnAdr, {
             onEnter: function (args) {
                 OnFnEnterBusz(this, args);
