@@ -177,13 +177,14 @@ function focus_fnAdr(fnAdr) {
 }
 function _main_() {
     const fnAdrLs = DebugSymbol.findFunctionsMatching("*");
+    const fnAdrCnt = fnAdrLs.length;
     for (let [k, fnAdr] of fnAdrLs.entries()) {
         /*修复 在拦截libc.so.6 pthread_getschedparam时抛出异常说进程已终止并停在frida终端 ： 不拦截 比如libc.so、frida-agent.so等底层*/
         if (!focus_fnAdr(fnAdr)) {
             continue;
         }
         // const fnSym=DebugSymbol.fromAddress(fnAdr);
-        console.log(`##Interceptor.attach fnAdr=${fnAdr};   `);
+        console.log(`##Interceptor.attach fnAdr=${fnAdr};  进度【${k}~${fnAdrCnt} 】`);
         Interceptor.attach(fnAdr, {
             onEnter: function (args) {
                 OnFnEnterBusz(this, args);
