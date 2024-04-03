@@ -230,6 +230,11 @@ function focus_fnAdr(fnAdr:NativePointer){
   if(moduleName==null){
     throw new Error(`【断言失败】moduleName为null`)
   }
+  //  拦截 __call_tls_dtors 可合并被__call_tls_dtors调用而导致的 若干孤立群
+  if(moduleName=="libc.so.6" && fnSym.name=="__call_tls_dtors"){
+    return true;
+  }
+
   if(modules_include.includes(moduleName)){
     return true;
   }
