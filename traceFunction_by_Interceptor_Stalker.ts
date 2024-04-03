@@ -114,3 +114,26 @@ frida退出代码=1
 
 
 */
+
+
+
+/*
+函数 _ZN5torch3jit6tracer13ArgumentStashD1Ev 经demangle解码（http://demangler.com/）后为  torch::jit::tracer::ArgumentStash::~ArgumentStash()
+
+进入 函数  torch::jit::tracer::ArgumentStash::~ArgumentStash()   0x7ffff766da32 内 ， 
+
+   调用栈深度Depth为1, 表明该函数的上层只有1个函数
+
+   而 返回地址returnAddress  == 0x7ffff2045d9f == "__call_tls_dtors+0x3f" 
+     而 __call_tls_dtors == 调用线程本地存储（TLS）相关的析构函数
+
+     通常情况下，  __call_tls_dtors 函数不会由用户直接调用，而是由编译器生成并在适当的时机调用。该函数的具体实现可能取决于编译器和操作系统的不同。
+
+   由此 可知 函数  __call_tls_dtors 是孤立的  而被 __call_tls_dtors 调用的 函数 _ZN5torch3jit6tracer13ArgumentStashD1Ev 'torch::jit::tracer::ArgumentStash::~ArgumentStash()'  0x7ffff766da32 当然 也就是孤立的了 ， 这是正常的
+
+
+   
+
+
+  
+ */
