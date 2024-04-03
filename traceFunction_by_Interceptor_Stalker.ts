@@ -32,46 +32,7 @@ function traceFunction(addr:NativePointer, base_addr:NativePointer){
 
 
             this.tid = Process.getCurrentThreadId();
-            Stalker.follow(this.tid, {
-                events: {
-                    call: true
-                },
-                onReceive: function(events:ArrayBuffer) {
-                    console.log(`events:${events}`)
-                    let allEvents = Stalker.parse(events);
-                    let first_depth = 0;
-                    let is_first = true;
-                    for (let i = 0; i < allEvents.length; i++) {
-                        const evt=allEvents[i]; 
-                        // 调用的流程, location是哪里发生的调用, target是调用到了哪里
-                        if (allEvents[i][0] === "call") {
-                            const scEvt:StalkerCallEventFull=(evt as StalkerCallEventFull)
-                            // let location = allEvents[i][1]; // 调用地址
-                            // let target = allEvents[i][2];   // 目标地址
-                            // let depth = allEvents[i][3];    // depth
-                            let location: NativePointer  = (scEvt[1] as NativePointer); // 调用地址
-                            let target: NativePointer = (scEvt[2] as NativePointer);   // 目标地址
-                            let depth = scEvt[3];    // depth
-                            let description = '';
-                            let space_num = '';
-                            if (target.compare(base_addr) >= 0 && target.compare(base_addr.add(base_size)) < 0) {
-                                if (is_first) {
-                                    is_first = false;
-                                    first_depth = depth;
-                                }
-                                let location_description = ' [' + location.sub(base_addr) + '] ';
-                                let target_description = ' [' + target.sub(base_addr) + ']';
-                                let length = (depth - first_depth);
-                                for (let j = 0; j < length; j++) {
-                                    space_num = space_num + ' ';
-                                }
-                                description = space_num + target_description + '(' + location_description + ')' + ' -- ' + length;
-                                console.log(description); 
-                            } 
-                        }
-                    }
-                }
-            })
+            
         }, onLeave: function(this: InvocationContext, retval: InvocationReturnValue) {
             Stalker.unfollow(this.tid);
         }
