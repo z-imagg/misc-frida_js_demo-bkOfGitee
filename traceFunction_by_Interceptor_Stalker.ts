@@ -132,7 +132,7 @@ frida退出代码=1
    由此 可知 函数  __call_tls_dtors 是孤立的  而被 __call_tls_dtors 调用的 函数 _ZN5torch3jit6tracer13ArgumentStashD1Ev 'torch::jit::tracer::ArgumentStash::~ArgumentStash()'  0x7ffff766da32 当然 也就是孤立的了 ， 这是正常的
 
 
-   
+   由此可知 frida_js 需要 拦截 __call_tls_dtors 能聚拢 因 没拦截 __call_tls_dtors 导致的 若干孤立群
 
 
   
