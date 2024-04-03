@@ -128,3 +128,28 @@ function traceFunctionWrap(fnAdrTxt:string,target_moduleName:string){
 
 // 打印函数  _ZN5torch3jit6tracer13ArgumentStashD1Ev 0x7ffff766da32 调用栈
 traceFunctionWrap("0x7ffff766da32","libtorch.so.1")
+
+/* 运行 bash   traceFunction_run.sh ，输出如下:
+
+Spawning `/fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf`...               
+fnSym_traceFunctionWrap:0x7ffff766da32, {"address":"0x7ffff766da32","name":"_ZN5torch3jit6tracer13ArgumentStashD1Ev","moduleName":"libtorch.so.1","fileName":"","lineNumber":0,"column":0}
+Spawned `/fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf`. Resuming main thread!
+[Local::simple_nn.elf ]-> Output Tensor:  0.1386 -0.4827  0.1269 -0.0685 -0.0272  0.0821  0.0785  0.6181 -0.0262  0.0397
+-0.0992  0.1011  0.2460 -0.0704  0.1555 -0.1089 -0.1402  0.5968 -0.0470 -0.0401
+-0.2823  0.0758  0.1778  0.1900 -0.2641 -0.0145  0.0480  0.6706 -0.3447  0.0226
+-0.2822 -0.1493  0.0282 -0.3610  0.0147 -0.0944  0.0223  0.4218  0.0296 -0.1638
+-0.0074  0.2171  0.3331  0.1860 -0.0489 -0.1112  0.0765  0.3027  0.0966 -0.1042
+[ Variable[CPUFloatType]{5,10} ]
+Context  :  {"pc":"0x7ffff766da32","sp":"0x7fffffffd988","rax":"0x7ffff766da32","rcx":"0x1","rdx":"0x5555557821f0","rbx":"0xfffffffffffffe30","rsp":"0x7fffffffd988","rbp":"0x55555586f550","rsi":"0x7ffff221a838","rdi":"0x7ffff264c838","r8":"0x5555559e1ca0","r9":"0x7fffffffd500","r10":"0x555555555f60","r11":"0x86ca2c97ef53121c","r12":"0x7ffff221a838","r13":"0x555555565d4a","r14":"0x55555557d718","r15":"0x7ffff7ffd040","rip":"0x7ffff766da32"} ; 返回地址returnAddress   :  0x7ffff2045d9f ; ThreadId :  19098 ; 调用栈深度Depth    :  1 ; Errornr  :  undefined
+fnAdr_OnEnter:0x7ffff766da32, DebugSymbol: {"address":"0x7ffff766da32","name":"_ZN5torch3jit6tracer13ArgumentStashD1Ev","moduleName":"libtorch.so.1","fileName":"","lineNumber":0,"column":0}
+retAdr_OnEnter:0x7ffff2045d9f, DebugSymbol: {"address":"0x7ffff2045d9f","name":"__call_tls_dtors+0x3f","moduleName":"libc.so.6","fileName":"","lineNumber":0,"column":0}
+Process terminated
+[Local::simple_nn.elf ]->
+
+Thank you for using Frida!
+frida退出代码=1
+
+
+
+
+*/
