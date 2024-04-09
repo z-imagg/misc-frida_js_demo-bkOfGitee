@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-[[ $# -le 0 ]] && { echo "usage:me.sh /.../app.elf" && exit 1 ;} 
-app_elf_path=$1
+[[ "X${app_elf_path}" == "X" ]] && { echo "usage:app_elf_path=/.../app.elf me.sh " && exit 1 ;} 
 #app_elf_path==/fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
 
 #临时关闭Linux的ASLR(地址空间随机化) ， 否则 x.so 中的函数地址 每次都不同， 

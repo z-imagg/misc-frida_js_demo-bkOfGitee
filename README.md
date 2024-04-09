@@ -57,5 +57,5 @@ cgsecurity--testdisk   来自， https://gitee.com/disk_recovery/cgsecurity--tes
 
 #编译出  /fridaAnlzAp/cgsecurity--testdisk/src/testdisk
 
-bash fridaJs_runApp.sh /fridaAnlzAp/cgsecurity--testdisk/src/testdisk
+app_elf_path=/fridaAnlzAp/cgsecurity--testdisk/src/testdisk bash fridaJs_runApp.sh 
 ```
