@@ -10,30 +10,6 @@
  2. frida命令bash补全脚本生成
 
 
-### 使用举例1
-
-simple_nn.elf   来自， https://gitee.com/frida_analyze_app_src/torch-cpp/blob/master/v1.0.0/readme.md
-
-
-#### 安装依赖
-
-```npm install```
-
-#### 编译目标应用
-```shell
-
-#编译出  /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
-bash -x  /fridaAnlzAp/torch-cpp/v1.0.0/build.sh
-
-```
-
-#### 用frida_js运行编译出 应用程序 simple_nn.elf
-
-```shell
-app_elf_path__args=/fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf bash fridaJs_runApp.sh 
-```
-
-
 
 ### 使用举例2
 
@@ -49,6 +25,14 @@ cgsecurity--testdisk   来自， https://gitee.com/disk_recovery/cgsecurity--tes
 
 有cmd-wrap时testdisk编译步骤 ，```-O2 -g``` --> ```-O1 -g1``` [cmd-wrap.git/v2.2.simpl/build_testdisk.md](http://giteaz:3000/bal/cmd-wrap/src/tag/v2.2.simpl/build_testdisk.md)  , [cmd-wrap.git/7fc35/build_testdisk.md](http://giteaz:3000/bal/cmd-wrap/src/commit/7fc355dd259b847f14b9b8db61d649d3ff3df3b6/build_testdisk.md)
 
+```shell
+ldd /fridaAnlzAp/cgsecurity--testdisk/src/testdisk
+	# linux-vdso.so.1 (0x00007ffff7fc1000)
+	# libncursesw.so.6 => /lib/x86_64-linux-gnu/libncursesw.so.6 (0x00007ffff7f00000)
+	# libtinfo.so.6 => /lib/x86_64-linux-gnu/libtinfo.so.6 (0x00007ffff7ece000)
+	# libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007ffff7c00000)
+	# /lib64/ld-linux-x86-64.so.2 (0x00007ffff7fc3000)
+```
 
 #### 用frida_js运行编译出 应用程序 simple_nn.elf
 
@@ -56,5 +40,5 @@ cgsecurity--testdisk   来自， https://gitee.com/disk_recovery/cgsecurity--tes
 
 #编译出  /fridaAnlzAp/cgsecurity--testdisk/src/testdisk
 
-app_elf_path__args="/fridaAnlzAp/cgsecurity--testdisk/src/testdisk /fridaAnlzAp/cgsecurity--testdisk/hd.img" bash /fridaAnlzAp/frida_js/fridaJs_runApp.sh 
+bash /fridaAnlzAp/frida_js/fridaJs_runApp.sh 
 ```
