@@ -30,8 +30,7 @@ bash -x  /fridaAnlzAp/torch-cpp/v1.0.0/build.sh
 #### 用frida_js运行编译出 应用程序 simple_nn.elf
 
 ```shell
-
-bash fridaJs_runApp.sh /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
+app_elf_path__args=/fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf bash fridaJs_runApp.sh 
 ```
 
 
@@ -57,5 +56,5 @@ cgsecurity--testdisk   来自， https://gitee.com/disk_recovery/cgsecurity--tes
 
 #编译出  /fridaAnlzAp/cgsecurity--testdisk/src/testdisk
 
-app_elf_path=/fridaAnlzAp/cgsecurity--testdisk/src/testdisk bash fridaJs_runApp.sh 
+app_elf_path__args="/fridaAnlzAp/cgsecurity--testdisk/src/testdisk /fridaAnlzAp/cgsecurity--testdisk/hd.img" bash fridaJs_runApp.sh 
 ```
