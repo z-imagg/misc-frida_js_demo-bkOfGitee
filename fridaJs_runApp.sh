@@ -20,6 +20,7 @@ get_bash_en_dbg  #记录bash是否启用了调试模式
 $bash_en_dbg && set +x #如果启用了调试模式, 则关闭调试模式
 source /app/Miniconda3-py310_22.11.1-1/bin/activate
 $bash_en_dbg && set -x #如果启用了调试模式, 则打开调试模式
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 pip install -r requirements.txt
 
 #删除旧日志
