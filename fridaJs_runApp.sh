@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+[[ "X${app_elf_path__args}" == "X" ]] && { echo "usage:app_elf_path=/.../app.elf me.sh " && exit 1 ;} 
+#app_elf_path__args=/fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
+#app_elf_path__args="/fridaAnlzAp/cgsecurity--testdisk/src/testdisk /fridaAnlzAp/cgsecurity--testdisk/hd.img"
+
+#去此脚本所在目录
+f=$(readlink -f ${BASH_SOURCE[0]})  ; d=$(dirname $f)
+cd $d
+
 #临时关闭Linux的ASLR(地址空间随机化) ， 否则 x.so 中的函数地址 每次都不同， 
 #  参考  https://blog.csdn.net/counsellor/article/details/81543197
 echo 0 | sudo tee   /proc/sys/kernel/randomize_va_space
@@ -17,10 +25,8 @@ get_bash_en_dbg  #记录bash是否启用了调试模式
 $bash_en_dbg && set +x #如果启用了调试模式, 则关闭调试模式
 source /app/Miniconda3-py310_22.11.1-1/bin/activate
 $bash_en_dbg && set -x #如果启用了调试模式, 则打开调试模式
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 pip install -r requirements.txt
-
-#编译出  /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
-bash -x  /fridaAnlzAp/torch-cpp/v1.0.0/build.sh
 
 #删除旧日志
 rm -frv *.log
@@ -36,7 +42,9 @@ _LogFP_Mix="${FridaOut}-Mix-${now}.log"
 _LogFP_PrefPure="${FridaOut}-PrefixPure-${now}.log"
 _LogFP_Pure="${FridaOut}-Pure-${now}.log"
 # 运行frida , 产生日志文件 ， 并 记录日志文件的数字签名
-frida  --load ./InterceptFnSym.js     --file /fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf  --output $_LogFP_Mix 
+#  注意　 app_elf_path__args 　比如为 "aaa.elf arg1 arg2" frida不允许其中的参数以中划线开头　否则会被当成是frida的参数, 
+#     即 frida只允许应用携带非中划线参数
+frida  --load ./InterceptFnSym.js    --output $_LogFP_Mix    --file $app_elf_path__args 
 md5sum $_LogFP_Mix > $_LogFP_Mix.md5sum.txt
 # 日志后处理
 #   提取出带前缀的纯净日志， 并 记录日志文件的数字签名
