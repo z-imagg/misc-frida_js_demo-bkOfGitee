@@ -64,7 +64,7 @@ function findFnDbgSym(fnAdr:NativePointer):DebugSymbol {
   const fnAdrHex:FnAdrHex=adrToHex(fnAdr);
   let fnSym:DebugSymbol|undefined=gFnSymTab.get(fnAdrHex);
       if(fnSym!=null && fnSym!=undefined){ // !isNil(fnSym)
-        // console.log(`##从缓存获得调试信息，${fnAdr}`);
+        // send(`##从缓存获得调试信息，${fnAdr}`);
         return fnSym;
       }
 
@@ -75,7 +75,7 @@ function findFnDbgSym(fnAdr:NativePointer):DebugSymbol {
         // const fileNm:string|null=fnSym.fileName;
 
         //打印函数地址k
-        console.log(`##只有首次查调试信息文件，${JSON.stringify(fnSym)}`);
+        send(`##只有首次查调试信息文件，${JSON.stringify(fnSym)}`);
 
         //该函数地址插入表格: 建立 函数地址 到 函数调试符号详情 的 表格
         gFnSymTab.set(fnAdrHex, fnSym);
@@ -94,14 +94,14 @@ function nextTmPnt(processId:number, thrdId:ThreadId):TmPntVal{
   const absThrdId:AbsThrdId=toAbsThrdId(processId,thrdId)
   let tmPnt:TimePoint|undefined=gTmPntTb.get(absThrdId);
   if(tmPnt){ // !isNil(tmPnt)
-    // console.log(`##从缓存获得时刻tmPnt，　${absThrdId}:${JSON.stringify(tmPnt)}`);
+    // send(`##从缓存获得时刻tmPnt，　${absThrdId}:${JSON.stringify(tmPnt)}`);
     return tmPnt.nextVal();
   }
 
   tmPnt=TimePoint.initTmPntVal(processId,thrdId)
   gTmPntTb.set(absThrdId, tmPnt);
 
-  console.log(`##只有首次新建对象tmPnt，${JSON.stringify(tmPnt)}`);
+  send(`##只有首次新建对象tmPnt，${JSON.stringify(tmPnt)}`);
 
   return tmPnt.nextVal()
 
@@ -177,7 +177,7 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
   var fnAdr=thiz.context.pc;
   var fnSym :DebugSymbol|undefined= findFnDbgSym(thiz.context.pc)
   thiz.fnEnterLog=new FnLog(tmPntVal,++gLogId,Process.id,curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
-  console.log(`${LogLinePrefix}${thiz.fnEnterLog.toJson()}`)
+  send(`${LogLinePrefix}${thiz.fnEnterLog.toJson()}`)
 
 }
 
@@ -188,11 +188,11 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
   const tmPnt:TmPntVal=nextTmPnt(Process.id,curThreadId)
   var fnAdr=thiz.context.pc;
   if(!adrEq(fnAdr,thiz.fnEnterLog.fnAdr)){
-    console.log(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】`)
+    send(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】`)
   }
   const fnEnterLog:FnLog=thiz.fnEnterLog;
   const fnLeaveLog:FnLog=new FnLog(tmPnt,++gLogId,Process.id,curThreadId, Direct.LeaveFn, fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);
-  console.log(`${LogLinePrefix}${fnLeaveLog.toJson()}`)
+  send(`${LogLinePrefix}${fnLeaveLog.toJson()}`)
 }
 
 /**
@@ -244,7 +244,7 @@ function _main_(){
       continue;
     }
     // const fnSym=DebugSymbol.fromAddress(fnAdr);
-    console.log(`##${nowTxt()};Interceptor.attach fnAdr=${fnAdr};  进度【${k}~${fnAdrCnt} 】`)
+    send(`##${nowTxt()};Interceptor.attach fnAdr=${fnAdr};  进度【${k}~${fnAdrCnt} 】`)
 
 
     Interceptor.attach(fnAdr,{
