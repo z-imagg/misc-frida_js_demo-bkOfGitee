@@ -4,6 +4,10 @@
 #app_elf_path__args=/fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
 #app_elf_path__args="/fridaAnlzAp/cgsecurity--testdisk/src/testdisk /fridaAnlzAp/cgsecurity--testdisk/hd.img"
 
+#去此脚本所在目录
+f=$(readlink -f ${BASH_SOURCE[0]})  ; d=$(dirname $f)
+cd $d
+
 #临时关闭Linux的ASLR(地址空间随机化) ， 否则 x.so 中的函数地址 每次都不同， 
 #  参考  https://blog.csdn.net/counsellor/article/details/81543197
 echo 0 | sudo tee   /proc/sys/kernel/randomize_va_space
