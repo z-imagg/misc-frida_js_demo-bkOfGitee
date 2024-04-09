@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-[[ "X${app_elf_path__args}" == "X" ]] && { echo "usage:app_elf_path=/.../app.elf me.sh " && exit 1 ;} 
-#app_elf_path__args=/fridaAnlzAp/torch-cpp/v1.0.0/simple_nn.elf
-#app_elf_path__args="/fridaAnlzAp/cgsecurity--testdisk/src/testdisk /fridaAnlzAp/cgsecurity--testdisk/hd.img"
-
 #去此脚本所在目录
 f=$(readlink -f ${BASH_SOURCE[0]})  ; d=$(dirname $f)
 cd $d
@@ -42,9 +38,9 @@ _LogFP_Mix="${FridaOut}-Mix-${now}.log"
 _LogFP_PrefPure="${FridaOut}-PrefixPure-${now}.log"
 _LogFP_Pure="${FridaOut}-Pure-${now}.log"
 # 运行frida , 产生日志文件 ， 并 记录日志文件的数字签名
-#  注意　 app_elf_path__args 　比如为 "aaa.elf arg1 arg2" frida不允许其中的参数以中划线开头　否则会被当成是frida的参数, 
+#  注意　   　目标应用和其参数　比如为 "aaa.elf arg1 arg2" frida不允许其中的参数以中划线开头　否则会被当成是frida的参数, 
 #     即 frida只允许应用携带非中划线参数
-frida  --load ./InterceptFnSym.js    --output $_LogFP_Mix    --file $app_elf_path__args 
+frida  --load ./InterceptFnSym.js    --output $_LogFP_Mix    --file /fridaAnlzAp/cgsecurity--testdisk/src/testdisk /fridaAnlzAp/cgsecurity--testdisk/hd.img
 md5sum $_LogFP_Mix > $_LogFP_Mix.md5sum.txt
 # 日志后处理
 #   提取出带前缀的纯净日志， 并 记录日志文件的数字签名
