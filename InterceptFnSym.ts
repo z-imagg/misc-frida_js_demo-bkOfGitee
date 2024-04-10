@@ -132,6 +132,7 @@ class FnLog {
   fnCallId:number;
   //函数符号
   fnSym:DebugSymbol|undefined;
+  modueBase:NativePointer|null;
   constructor (tmPntVal:TmPntVal, logId:number,processId:number,curThreadId:ThreadId, direct:Direct, fnAdr:NativePointer, fnCallId: number,fnSym:DebugSymbol|undefined) {
     this.tmPnt=tmPntVal
     this.logId = logId
@@ -141,6 +142,15 @@ class FnLog {
     this.fnAdr = fnAdr;
     this.fnCallId = fnCallId;
     this.fnSym = fnSym;
+    //获取模块基地址
+    if ( (fnSym!=undefined && fnSym!=null ) 
+    && ( fnSym.moduleName!=undefined && fnSym.moduleName!=null ) 
+  ){
+      const md:Module=Process.getModuleByName(fnSym.moduleName)
+      this.modueBase=md.base;
+    }else{
+      this.modueBase=null;
+    }
   }
 
   toJson(){

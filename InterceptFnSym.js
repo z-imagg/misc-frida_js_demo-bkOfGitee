@@ -94,6 +94,15 @@ class FnLog {
         this.fnAdr = fnAdr;
         this.fnCallId = fnCallId;
         this.fnSym = fnSym;
+        //获取模块基地址
+        if ((fnSym != undefined && fnSym != null)
+            && (fnSym.moduleName != undefined && fnSym.moduleName != null)) {
+            const md = Process.getModuleByName(fnSym.moduleName);
+            this.modueBase = md.base;
+        }
+        else {
+            this.modueBase = null;
+        }
     }
     toJson() {
         return JSON.stringify(this);
