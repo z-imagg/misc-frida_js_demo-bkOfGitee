@@ -4,6 +4,9 @@
 f=$(readlink -f ${BASH_SOURCE[0]})  ; d=$(dirname $f)
 cd $d
 
+#重新编译 ts 为 js 
+bash -x /fridaAnlzAp/frida_js/rebuild_ts.sh
+
 #临时关闭Linux的ASLR(地址空间随机化) ， 否则 x.so 中的函数地址 每次都不同， 
 #  参考  https://blog.csdn.net/counsellor/article/details/81543197
 echo 0 | sudo tee   /proc/sys/kernel/randomize_va_space
@@ -26,10 +29,6 @@ pip install -r requirements.txt
 
 #删除旧日志
 rm -frv *.log
-
-npx frida-compile  InterceptFnSym.ts --no-source-maps --output InterceptFnSym.js  && \
-#删除frida-compile生成的 js文件开头 乱七八糟的 几行
-sed -i '1,/frida-trace初始化js/d' InterceptFnSym.js && \
 
 #运行frida
 now="$(date +%s)"
