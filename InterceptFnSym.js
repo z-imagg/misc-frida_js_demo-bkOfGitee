@@ -174,6 +174,10 @@ function focus_fnAdr(fnAdr) {
     if (moduleName == null) {
         throw new Error(`【断言失败】moduleName为null`);
     }
+    if (moduleName == "testdisk" && fnSym.name == "main") {
+        send(`获取到main函数,fnSym=${fnSym}`);
+        return true;
+    }
     //  拦截 __call_tls_dtors 可合并被__call_tls_dtors调用而导致的 若干孤立群
     if (moduleName == "libc.so.6" && fnSym.name == "__call_tls_dtors") {
         return true;
