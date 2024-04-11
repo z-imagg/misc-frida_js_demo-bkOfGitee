@@ -289,13 +289,21 @@ function focus_fnAdr(fnAdr:NativePointer){
   if(moduleName==null){
     throw new Error(`【断言失败】moduleName为null`)
   }
-  if(moduleName=="qphotorec" && fnSym.name=="main"){
-    console.log(`获取到main函数,fnSym=${fnSym}`)
-    return true;
-  }
 
-  // 被frida拦截的qphotorec进程 在 onEnter到 函数名 _GLOBAL__sub_I_rcc_qphotorec_locale.cpp 、 地址 0x555555569280 后 立即退出， 因此 不拦截 该函数
-  if(moduleName=="qphotorec" && fnSym.name=="_GLOBAL__sub_I_rcc_qphotorec_locale.cpp"){
+  // 被frida拦截的qphotorec进程 在 onEnter到 以下函数 后 立即退出， 因此 不拦截 此些函数
+  if(moduleName=="qphotorec" && 
+  (
+    fnSym.name == "main"
+    || fnSym.name == "_GLOBAL__sub_I_rcc_qphotorec_locale.cpp"
+    || fnSym.name == "_Z31qInitResources_qphotorec_localev"
+    || fnSym.name == "_GLOBAL__sub_I_rcc_qphotorec.cpp"
+    || fnSym.name == "_Z24qInitResources_qphotorecv"
+    || fnSym.name == "frame_dummy"
+    || fnSym.name == "register_tm_clones"
+    || fnSym.name == "_init"
+    || fnSym.name == "_start"
+  )
+  ){
     return false;
   }
 
