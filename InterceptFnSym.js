@@ -150,7 +150,7 @@ function OnFnLeaveBusz(thiz, retval) {
     send(`${LogLinePrefix}${fnLeaveLog.toJson()}`);
 }
 /**
-ldd /fridaAnlzAp/cgsecurity--testdisk/src/testdisk
+ldd /fridaAnlzAp/cgsecurity--testdisk/src/qphotorec
     linux-vdso.so.1 (0x00007ffff7fc1000)
     libncursesw.so.6 => /lib/x86_64-linux-gnu/libncursesw.so.6 (0x00007ffff7f00000)
     libtinfo.so.6 => /lib/x86_64-linux-gnu/libtinfo.so.6 (0x00007ffff7ece000)
@@ -158,7 +158,7 @@ ldd /fridaAnlzAp/cgsecurity--testdisk/src/testdisk
     /lib64/ld-linux-x86-64.so.2 (0x00007ffff7fc3000)
 */
 const modules_include = [
-    "testdisk",
+    "qphotorec",
 ];
 const modules_exclude = [
     // "libstdc++.so.6.0.30", //?如果libstdc++的代码 穿插在业务代码中， 若忽略之 则调用链条断裂
@@ -174,7 +174,7 @@ function focus_fnAdr(fnAdr) {
     if (moduleName == null) {
         throw new Error(`【断言失败】moduleName为null`);
     }
-    if (moduleName == "testdisk" && fnSym.name == "main") {
+    if (moduleName == "qphotorec" && fnSym.name == "main") {
         send(`获取到main函数,fnSym=${fnSym}`);
         return true;
     }
