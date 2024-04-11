@@ -294,9 +294,9 @@ function focus_fnAdr(fnAdr:NativePointer){
     return true;
   }
 
-  //  拦截 __call_tls_dtors 可合并被__call_tls_dtors调用而导致的 若干孤立群
-  if(moduleName=="libc.so.6" && fnSym.name=="__call_tls_dtors"){
-    return true;
+  // 被frida拦截的qphotorec进程 在 onEnter到 函数名 _GLOBAL__sub_I_rcc_qphotorec_locale.cpp 、 地址 0x555555569280 后 立即退出， 因此 不拦截 该函数
+  if(moduleName=="qphotorec" && fnSym.name=="_GLOBAL__sub_I_rcc_qphotorec_locale.cpp"){
+    return false;
   }
 
   if(modules_include.includes(moduleName)){
