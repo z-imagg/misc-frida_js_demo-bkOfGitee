@@ -46,7 +46,7 @@ function findFnDbgSym(fnAdr) {
     const fnAdrHex = adrToHex(fnAdr);
     let fnSym = gFnSymTab.get(fnAdrHex);
     if (fnSym != null && fnSym != undefined) { // !isNil(fnSym)
-        // send(`##从缓存获得调试信息，${fnAdr}`);
+        // console.log(`##从缓存获得调试信息，${fnAdr}`);
         return fnSym;
     }
     //函数地址k的详情
@@ -54,7 +54,7 @@ function findFnDbgSym(fnAdr) {
     // const modNm:string|null=fnSym.moduleName;
     // const fileNm:string|null=fnSym.fileName;
     //打印函数地址k
-    send(`##只有首次查调试信息文件，${JSON.stringify(fnSym)}`);
+    console.log(`##只有首次查调试信息文件，${JSON.stringify(fnSym)}`);
     //该函数地址插入表格: 建立 函数地址 到 函数调试符号详情 的 表格
     gFnSymTab.set(fnAdrHex, fnSym);
     return fnSym;
@@ -68,12 +68,12 @@ function nextTmPnt(processId, thrdId) {
     const absThrdId = toAbsThrdId(processId, thrdId);
     let tmPnt = gTmPntTb.get(absThrdId);
     if (tmPnt) { // !isNil(tmPnt)
-        // send(`##从缓存获得时刻tmPnt，　${absThrdId}:${JSON.stringify(tmPnt)}`);
+        // console.log(`##从缓存获得时刻tmPnt，　${absThrdId}:${JSON.stringify(tmPnt)}`);
         return tmPnt.nextVal();
     }
     tmPnt = TimePoint.initTmPntVal(processId, thrdId);
     gTmPntTb.set(absThrdId, tmPnt);
-    send(`##只有首次新建对象tmPnt，${JSON.stringify(tmPnt)}`);
+    console.log(`##只有首次新建对象tmPnt，${JSON.stringify(tmPnt)}`);
     return tmPnt.nextVal();
 }
 //方向枚举: 函数进入 或 函数离开
@@ -134,7 +134,7 @@ function OnFnEnterBusz(thiz, args) {
     var fnAdr = thiz.context.pc;
     var fnSym = findFnDbgSym(thiz.context.pc);
     thiz.fnEnterLog = new FnLog(tmPntVal, ++gLogId, Process.id, curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
-    send(`${LogLinePrefix}${thiz.fnEnterLog.toJson()}`);
+    console.log(`${LogLinePrefix}${thiz.fnEnterLog.toJson()}`);
 }
 /**  OnLeave ，函数离开
  */
@@ -143,19 +143,48 @@ function OnFnLeaveBusz(thiz, retval) {
     const tmPnt = nextTmPnt(Process.id, curThreadId);
     var fnAdr = thiz.context.pc;
     if (!adrEq(fnAdr, thiz.fnEnterLog.fnAdr)) {
-        send(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】`);
+        console.log(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】`);
     }
     const fnEnterLog = thiz.fnEnterLog;
     const fnLeaveLog = new FnLog(tmPnt, ++gLogId, Process.id, curThreadId, Direct.LeaveFn, fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);
-    send(`${LogLinePrefix}${fnLeaveLog.toJson()}`);
+    console.log(`${LogLinePrefix}${fnLeaveLog.toJson()}`);
 }
 /**
 ldd /fridaAnlzAp/cgsecurity--testdisk/src/qphotorec
-    linux-vdso.so.1 (0x00007ffff7fc1000)
-    libncursesw.so.6 => /lib/x86_64-linux-gnu/libncursesw.so.6 (0x00007ffff7f00000)
-    libtinfo.so.6 => /lib/x86_64-linux-gnu/libtinfo.so.6 (0x00007ffff7ece000)
-    libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007ffff7c00000)
-    /lib64/ld-linux-x86-64.so.2 (0x00007ffff7fc3000)
+    linux-vdso.so.1 (0x00007ffde1da5000)
+    libQt5Gui.so.5 => /lib/x86_64-linux-gnu/libQt5Gui.so.5 (0x0000793ef4200000)
+    libQt5Core.so.5 => /lib/x86_64-linux-gnu/libQt5Core.so.5 (0x0000793ef3c00000)
+    libQt5Widgets.so.5 => /lib/x86_64-linux-gnu/libQt5Widgets.so.5 (0x0000793ef3400000)
+    libstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x0000793ef3000000)
+    libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x0000793ef49e3000)
+    libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x0000793ef2c00000)
+    libGL.so.1 => /lib/x86_64-linux-gnu/libGL.so.1 (0x0000793ef495a000)
+    libpng16.so.16 => /lib/x86_64-linux-gnu/libpng16.so.16 (0x0000793ef491f000)
+    libz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x0000793ef4903000)
+    libharfbuzz.so.0 => /lib/x86_64-linux-gnu/libharfbuzz.so.0 (0x0000793ef3b31000)
+    libmd4c.so.0 => /lib/x86_64-linux-gnu/libmd4c.so.0 (0x0000793ef48f1000)
+    libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x0000793ef3319000)
+    libdouble-conversion.so.3 => /lib/x86_64-linux-gnu/libdouble-conversion.so.3 (0x0000793ef41eb000)
+    libicui18n.so.70 => /lib/x86_64-linux-gnu/libicui18n.so.70 (0x0000793ef2800000)
+    libicuuc.so.70 => /lib/x86_64-linux-gnu/libicuuc.so.70 (0x0000793ef2605000)
+    libpcre2-16.so.0 => /lib/x86_64-linux-gnu/libpcre2-16.so.0 (0x0000793ef4161000)
+    libzstd.so.1 => /lib/x86_64-linux-gnu/libzstd.so.1 (0x0000793ef324a000)
+    libglib-2.0.so.0 => /lib/x86_64-linux-gnu/libglib-2.0.so.0 (0x0000793ef2ec6000)
+    /lib64/ld-linux-x86-64.so.2 (0x0000793ef4ade000)
+    libGLdispatch.so.0 => /lib/x86_64-linux-gnu/libGLdispatch.so.0 (0x0000793ef2b48000)
+    libGLX.so.0 => /lib/x86_64-linux-gnu/libGLX.so.0 (0x0000793ef3afd000)
+    libfreetype.so.6 => /lib/x86_64-linux-gnu/libfreetype.so.6 (0x0000793ef253d000)
+    libgraphite2.so.3 => /lib/x86_64-linux-gnu/libgraphite2.so.3 (0x0000793ef3ad6000)
+    libicudata.so.70 => /lib/x86_64-linux-gnu/libicudata.so.70 (0x0000793ef0800000)
+    libpcre.so.3 => /lib/x86_64-linux-gnu/libpcre.so.3 (0x0000793ef2e50000)
+    libX11.so.6 => /lib/x86_64-linux-gnu/libX11.so.6 (0x0000793ef06c0000)
+    libbrotlidec.so.1 => /lib/x86_64-linux-gnu/libbrotlidec.so.1 (0x0000793ef3ac8000)
+    libxcb.so.1 => /lib/x86_64-linux-gnu/libxcb.so.1 (0x0000793ef2513000)
+    libbrotlicommon.so.1 => /lib/x86_64-linux-gnu/libbrotlicommon.so.1 (0x0000793ef2e2d000)
+    libXau.so.6 => /lib/x86_64-linux-gnu/libXau.so.6 (0x0000793ef48e3000)
+    libXdmcp.so.6 => /lib/x86_64-linux-gnu/libXdmcp.so.6 (0x0000793ef3242000)
+    libbsd.so.0 => /lib/x86_64-linux-gnu/libbsd.so.0 (0x0000793ef2b30000)
+    libmd.so.0 => /lib/x86_64-linux-gnu/libmd.so.0 (0x0000793ef3235000)
 */
 const modules_include = [
     "qphotorec",
@@ -204,7 +233,7 @@ function focus_fnAdr(fnAdr) {
         throw new Error(`【断言失败】moduleName为null`);
     }
     if (moduleName == "qphotorec" && fnSym.name == "main") {
-        send(`获取到main函数,fnSym=${fnSym}`);
+        console.log(`获取到main函数,fnSym=${fnSym}`);
         return true;
     }
     //  拦截 __call_tls_dtors 可合并被__call_tls_dtors调用而导致的 若干孤立群
@@ -227,7 +256,7 @@ function _main_() {
             continue;
         }
         // const fnSym=DebugSymbol.fromAddress(fnAdr);
-        send(`##${nowTxt()};Interceptor.attach fnAdr=${fnAdr};  进度【${k}~${fnAdrCnt} 】`);
+        console.log(`##${nowTxt()};Interceptor.attach fnAdr=${fnAdr};  进度【${k}~${fnAdrCnt} 】`);
         Interceptor.attach(fnAdr, {
             onEnter: function (args) {
                 OnFnEnterBusz(this, args);
