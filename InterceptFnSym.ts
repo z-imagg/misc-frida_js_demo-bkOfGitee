@@ -300,6 +300,14 @@ function focus_fnAdr(fnAdr:NativePointer){
   ){
     return false;
   }
+  // 疑似在file_check_cmp死循环，因此 不拦截
+  if(moduleName=="qphotorec" && 
+  (
+    fnSym.name == "file_check_cmp"
+  )
+  ){
+    return false;
+  }
 
   if(modules_include.includes(moduleName)){
     return true;
