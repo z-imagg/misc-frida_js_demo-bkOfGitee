@@ -28,7 +28,7 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 pip install -r requirements.txt
 
 #删除旧日志
-rm -frv *.log
+rm -frv *.log.*
 
 #运行frida
 now="$(date +%s)"
