@@ -237,6 +237,14 @@ function focus_fnAdr(fnAdr) {
         (fnSym.name == "_start")) {
         return false;
     }
+    // 疑似在file_check_cmp死循环，因此 不拦截
+    if (moduleName == "qphotorec" &&
+        (fnSym.name == "file_check_cmp")) {
+        return false;
+    }
+    /**已确认 结束时frida出现'Process terminated' 对应的进程qphotorec有正常退出码0
+    https://gitee.com/repok/dwmkerr--linux-kernel-module/blob/e36a16925cd60c6e4b3487d254bfe7fa5b150f75/greeter/run.sh
+    */
     if (modules_include.includes(moduleName)) {
         return true;
     }
