@@ -289,14 +289,16 @@ function focus_fnAdr(fnAdr:NativePointer){
   if(moduleName==null){
     throw new Error(`【断言失败】moduleName为null`)
   }
-  if(moduleName=="qphotorec" && fnSym.name=="main"){
-    console.log(`获取到main函数,fnSym=${fnSym}`)
-    return true;
-  }
 
-  //  拦截 __call_tls_dtors 可合并被__call_tls_dtors调用而导致的 若干孤立群
-  if(moduleName=="libc.so.6" && fnSym.name=="__call_tls_dtors"){
-    return true;
+
+// 解决frida拦截目标进程中途崩溃 步骤  == frida_js_skip_crashFunc_when_Interceptor.attach.onEnter.md
+
+  if(moduleName=="qphotorec" && 
+  (
+    fnSym.name == "_start"
+  )
+  ){
+    return false;
   }
 
   if(modules_include.includes(moduleName)){
