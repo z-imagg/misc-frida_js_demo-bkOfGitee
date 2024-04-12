@@ -234,15 +234,10 @@ function focus_fnAdr(fnAdr) {
     }
     // 被frida拦截的qphotorec进程 在 onEnter到 以下函数 后 立即退出， 因此 不拦截 此些函数
     if (moduleName == "qphotorec" &&
-        (fnSym.name == "main"
-            || fnSym.name == "_GLOBAL__sub_I_rcc_qphotorec_locale.cpp"
-            || fnSym.name == "_Z31qInitResources_qphotorec_localev"
-            || fnSym.name == "_GLOBAL__sub_I_rcc_qphotorec.cpp"
-            || fnSym.name == "_Z24qInitResources_qphotorecv"
-            || fnSym.name == "frame_dummy"
-            || fnSym.name == "register_tm_clones"
-            || fnSym.name == "_init"
-            || fnSym.name == "_start")) {
+        (
+        // fnSym.name == "_init"
+        // || 
+        fnSym.name == "_start")) {
         return false;
     }
     if (modules_include.includes(moduleName)) {
