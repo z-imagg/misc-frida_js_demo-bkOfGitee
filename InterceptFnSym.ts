@@ -290,7 +290,11 @@ function focus_fnAdr(fnAdr:NativePointer){
     throw new Error(`【断言失败】moduleName为null`)
   }
 
-  // 被frida拦截的qphotorec进程 在 onEnter到 以下函数 后 立即退出， 因此 不拦截 此些函数
+  // 跳过 导致 目标进程中途崩溃的函数们
+  // 被frida拦截的qphotorec进程 在 onEnter到 以下函数 后 立即退出， 因此 不拦截 此些函数。
+  //  frida 对 应用 Interceptor.attach 导致 应用进程 中途 退出 的 解决办法 是 跳过 退出时最后打印的函数 ，重复此步骤，常能解决
+  //    但真正的根源可能是位于 上层 某个 调用了  退出时最后打印的函数 的 函数，因此 在 跳过了 一些 退出时最后打印的函数 们 后， 不再 中途崩溃 后，  
+  //        应该尝试 再 逐步 去掉 这些跳过函数 们 中的一些， 若 去掉后 不会崩溃， 则重复此步骤， 直至留下 真导致中途崩溃的函数们
   if(moduleName=="qphotorec" && 
   (
     fnSym.name == "_start"
