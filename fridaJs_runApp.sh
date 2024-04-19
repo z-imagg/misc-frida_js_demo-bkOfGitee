@@ -46,7 +46,9 @@ IFS=' ' read -ra mainArgLs <<< "$mainArgTxt"
 appFile="${mainArgLs[0]}"
 # appFile=='/app/qemu/build-v8.2.2/qemu-system-x86_64'
 
-sed -i "s/const mnArgTxt:string='';/const mnArgTxt:string='${mainArgTxt}';/g" ./InterceptFnSym.js
+#将输入的参数列表 塞入InterceptFnSym.js中
+python3 <(curl http://giteaz:3000/bal/bash-simplify/raw/tag/tag/release/ReplaceStrInFile.py)  ./InterceptFnSym.js "const mnArgTxt = ''"  """const mnArgTxt = '${mainArgTxt}'"""
+
 sudo env "PATH=$PATH" frida  --load ./InterceptFnSym.js    --output $_LogFP_Mix    --file $appFile
 md5sum $_LogFP_Mix > $_LogFP_Mix.md5sum.txt
 # 日志后处理
