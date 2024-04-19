@@ -1,5 +1,12 @@
 // ［术语］　
 // ［简写］ AbsThrdId==AbsoluteThreadId==绝对线程id==进程id_线程id , gTmPntTb == globalTimePointTable == 全局时刻表格
+function baseNameOfFilePath(filePath) {
+    // const filePath = '/app/qemu/build-v8.2.2/qemu-system-x86_64';
+    const parts = filePath.split('/');
+    const baseName = parts[parts.length - 1];
+    // console.log(baseName); 
+    return baseName;
+}
 function nowTxt() {
     const now = new Date();
     //时区没生效，暂时忽略
@@ -150,81 +157,44 @@ function OnFnLeaveBusz(thiz, retval) {
     console.log(`${LogLinePrefix}${fnLeaveLog.toJson()}`);
 }
 /**
-ldd /fridaAnlzAp/cgsecurity--testdisk/src/qphotorec
-    linux-vdso.so.1 (0x00007ffde1da5000)
-    libQt5Gui.so.5 => /lib/x86_64-linux-gnu/libQt5Gui.so.5 (0x0000793ef4200000)
-    libQt5Core.so.5 => /lib/x86_64-linux-gnu/libQt5Core.so.5 (0x0000793ef3c00000)
-    libQt5Widgets.so.5 => /lib/x86_64-linux-gnu/libQt5Widgets.so.5 (0x0000793ef3400000)
-    libstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x0000793ef3000000)
-    libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x0000793ef49e3000)
-    libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x0000793ef2c00000)
-    libGL.so.1 => /lib/x86_64-linux-gnu/libGL.so.1 (0x0000793ef495a000)
-    libpng16.so.16 => /lib/x86_64-linux-gnu/libpng16.so.16 (0x0000793ef491f000)
-    libz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x0000793ef4903000)
-    libharfbuzz.so.0 => /lib/x86_64-linux-gnu/libharfbuzz.so.0 (0x0000793ef3b31000)
-    libmd4c.so.0 => /lib/x86_64-linux-gnu/libmd4c.so.0 (0x0000793ef48f1000)
-    libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x0000793ef3319000)
-    libdouble-conversion.so.3 => /lib/x86_64-linux-gnu/libdouble-conversion.so.3 (0x0000793ef41eb000)
-    libicui18n.so.70 => /lib/x86_64-linux-gnu/libicui18n.so.70 (0x0000793ef2800000)
-    libicuuc.so.70 => /lib/x86_64-linux-gnu/libicuuc.so.70 (0x0000793ef2605000)
-    libpcre2-16.so.0 => /lib/x86_64-linux-gnu/libpcre2-16.so.0 (0x0000793ef4161000)
-    libzstd.so.1 => /lib/x86_64-linux-gnu/libzstd.so.1 (0x0000793ef324a000)
-    libglib-2.0.so.0 => /lib/x86_64-linux-gnu/libglib-2.0.so.0 (0x0000793ef2ec6000)
-    /lib64/ld-linux-x86-64.so.2 (0x0000793ef4ade000)
-    libGLdispatch.so.0 => /lib/x86_64-linux-gnu/libGLdispatch.so.0 (0x0000793ef2b48000)
-    libGLX.so.0 => /lib/x86_64-linux-gnu/libGLX.so.0 (0x0000793ef3afd000)
-    libfreetype.so.6 => /lib/x86_64-linux-gnu/libfreetype.so.6 (0x0000793ef253d000)
-    libgraphite2.so.3 => /lib/x86_64-linux-gnu/libgraphite2.so.3 (0x0000793ef3ad6000)
-    libicudata.so.70 => /lib/x86_64-linux-gnu/libicudata.so.70 (0x0000793ef0800000)
-    libpcre.so.3 => /lib/x86_64-linux-gnu/libpcre.so.3 (0x0000793ef2e50000)
-    libX11.so.6 => /lib/x86_64-linux-gnu/libX11.so.6 (0x0000793ef06c0000)
-    libbrotlidec.so.1 => /lib/x86_64-linux-gnu/libbrotlidec.so.1 (0x0000793ef3ac8000)
-    libxcb.so.1 => /lib/x86_64-linux-gnu/libxcb.so.1 (0x0000793ef2513000)
-    libbrotlicommon.so.1 => /lib/x86_64-linux-gnu/libbrotlicommon.so.1 (0x0000793ef2e2d000)
-    libXau.so.6 => /lib/x86_64-linux-gnu/libXau.so.6 (0x0000793ef48e3000)
-    libXdmcp.so.6 => /lib/x86_64-linux-gnu/libXdmcp.so.6 (0x0000793ef3242000)
-    libbsd.so.0 => /lib/x86_64-linux-gnu/libbsd.so.0 (0x0000793ef2b30000)
-    libmd.so.0 => /lib/x86_64-linux-gnu/libmd.so.0 (0x0000793ef3235000)
+ldd /app/qemu/build-v8.2.2/qemu-system-x86_64
+        linux-vdso.so.1 (0x00007ffff7fc1000)
+        libpixman-1.so.0 => /lib/x86_64-linux-gnu/libpixman-1.so.0 (0x00007ffff67a2000)
+        libz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x00007ffff6786000)
+        libgio-2.0.so.0 => /lib/x86_64-linux-gnu/libgio-2.0.so.0 (0x00007ffff65ad000)
+        libgobject-2.0.so.0 => /lib/x86_64-linux-gnu/libgobject-2.0.so.0 (0x00007ffff654d000)
+        libglib-2.0.so.0 => /lib/x86_64-linux-gnu/libglib-2.0.so.0 (0x00007ffff6413000)
+        libgmodule-2.0.so.0 => /lib/x86_64-linux-gnu/libgmodule-2.0.so.0 (0x00007ffff640a000)
+        libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007ffff6323000)
+        libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007ffff60fa000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007ffff7fc3000)
+        libmount.so.1 => /lib/x86_64-linux-gnu/libmount.so.1 (0x00007ffff60b6000)
+        libselinux.so.1 => /lib/x86_64-linux-gnu/libselinux.so.1 (0x00007ffff608a000)
+        libffi.so.8 => /lib/x86_64-linux-gnu/libffi.so.8 (0x00007ffff607d000)
+        libpcre.so.3 => /lib/x86_64-linux-gnu/libpcre.so.3 (0x00007ffff6005000)
+        libblkid.so.1 => /lib/x86_64-linux-gnu/libblkid.so.1 (0x00007ffff5fce000)
+        libpcre2-8.so.0 => /lib/x86_64-linux-gnu/libpcre2-8.so.0 (0x00007ffff5f37000)
 */
 const modules_include = [
-    "qphotorec",
+    g_appName,
 ];
 const modules_exclude = [
     // "libstdc++.so.6.0.30", //?如果libstdc++的代码 穿插在业务代码中， 若忽略之 则调用链条断裂
     "linux-vdso.so.1",
-    "libQt5Gui.so.5",
-    "libQt5Core.so.5",
-    "libQt5Widgets.so.5",
-    "libstdc++.so.6",
-    "libgcc_s.so.1",
-    "libc.so.6",
-    "libGL.so.1",
-    "libpng16.so.16",
+    "libpixman-1.so.0",
     "libz.so.1",
-    "libharfbuzz.so.0",
-    "libmd4c.so.0",
-    "libm.so.6",
-    "libdouble-conversion.so.3",
-    "libicui18n.so.70",
-    "libicuuc.so.70",
-    "libpcre2-16.so.0",
-    "libzstd.so.1",
+    "libgobject-2.0.so.0",
     "libglib-2.0.so.0",
+    "libgmodule-2.0.so.0",
+    "libm.so.6",
+    "libc.so.6",
     "ld-linux-x86-64.so.2",
-    "libGLdispatch.so.0",
-    "libGLX.so.0",
-    "libfreetype.so.6",
-    "libgraphite2.so.3",
-    "libicudata.so.70",
+    "libmount.so.1",
+    "libselinux.so.1",
+    "libffi.so.8",
     "libpcre.so.3",
-    "libX11.so.6",
-    "libbrotlidec.so.1",
-    "libxcb.so.1",
-    "libbrotlicommon.so.1",
-    "libXau.so.6",
-    "libXdmcp.so.6",
-    "libbsd.so.0",
-    "libmd.so.0"
+    "libblkid.so.1",
+    "libpcre2-8.so.0",
 ];
 function focus_fnAdr(fnAdr) {
     const fnSym = DebugSymbol.fromAddress(fnAdr);
@@ -233,12 +203,12 @@ function focus_fnAdr(fnAdr) {
         throw new Error(`【断言失败】moduleName为null`);
     }
     // 解决frida拦截目标进程中途崩溃 步骤  == frida_js_skip_crashFunc_when_Interceptor.attach.onEnter.md
-    if (moduleName == "qphotorec" &&
+    if (moduleName == g_appName &&
         (fnSym.name == "_start")) {
         return false;
     }
     // 疑似在file_check_cmp死循环，因此 不拦截
-    if (moduleName == "qphotorec" &&
+    if (moduleName == g_appName &&
         (fnSym.name == "file_check_cmp")) {
         return false;
     }
@@ -299,7 +269,7 @@ function mainFunc_addArgTxt(mnArgTxt) {
     Interceptor.attach(mnFnPtr, {
         onEnter: function (args) {
             // main(int argc, char** argv): args[0] == int argc, args[1] == wchar *argv[]
-            const mnArgMemLs = mnArgStrLs.map(mnArgStr => Memory.allocAnsiString(mnArgStr));
+            const mnArgMemLs = mnArgStrLs.map(mnArgStr => Memory.allocUtf8String(mnArgStr));
             const mnArgVect = Memory.alloc(mnArgMemLs.length * Process.pointerSize);
             //参数列表作为this的字段，防止被垃圾回收
             this.mnArgVect = mnArgVect;
@@ -326,6 +296,10 @@ frida 运行报超时错误 "Failed to load script: the connection is closed" �
 setTimeout(function () {
     //'/app/qemu/build-v8.2.2/qemu-system-x86_64 -nographic  -append "console=ttyS0"  -kernel  /bal/linux-stable/arch/x86/boot/bzImage -initrd /bal/bldLinux4RunOnBochs/initramfs-busybox-i686.cpio.tar.gz'
     const mnArgTxt = '';
+    //应用程序全路径
+    g_appFullPath = mnArgTxt.split(' ')[0];
+    //应用程序名字
+    g_appName = baseNameOfFilePath(g_appFullPath);
     //业务代码
     mainFunc_addArgTxt(mnArgTxt);
     _main_();
