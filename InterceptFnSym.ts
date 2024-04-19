@@ -267,21 +267,6 @@ function focus_fnAdr(fnAdr:NativePointer){
 
 // 解决frida拦截目标进程中途崩溃 步骤  == frida_js_skip_crashFunc_when_Interceptor.attach.onEnter.md
 
-  if(moduleName==g_appName && 
-  (
-    fnSym.name == "_start"
-  )
-  ){
-    return false;
-  }
-  // 疑似在file_check_cmp死循环，因此 不拦截
-  if(moduleName==g_appName && 
-  (
-    fnSym.name == "file_check_cmp"
-  )
-  ){
-    return false;
-  }
 
 /**已确认 结束时frida出现'Process terminated' 对应的进程qphotorec有正常退出码0
 https://gitee.com/repok/dwmkerr--linux-kernel-module/blob/e36a16925cd60c6e4b3487d254bfe7fa5b150f75/greeter/run.sh

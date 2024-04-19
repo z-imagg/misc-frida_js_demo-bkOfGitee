@@ -205,15 +205,6 @@ function focus_fnAdr(fnAdr) {
         throw new Error(`【断言失败】moduleName为null`);
     }
     // 解决frida拦截目标进程中途崩溃 步骤  == frida_js_skip_crashFunc_when_Interceptor.attach.onEnter.md
-    if (moduleName == g_appName &&
-        (fnSym.name == "_start")) {
-        return false;
-    }
-    // 疑似在file_check_cmp死循环，因此 不拦截
-    if (moduleName == g_appName &&
-        (fnSym.name == "file_check_cmp")) {
-        return false;
-    }
     /**已确认 结束时frida出现'Process terminated' 对应的进程qphotorec有正常退出码0
     https://gitee.com/repok/dwmkerr--linux-kernel-module/blob/e36a16925cd60c6e4b3487d254bfe7fa5b150f75/greeter/run.sh
     */
@@ -257,19 +248,20 @@ function _main_() {
  */
 function mainFunc_addArgTxt(mnArgTxt) {
     if (mnArgTxt.length == 0) {
-        console.log("main参数为空");
+        console.log("##main参数为空");
         return;
     }
     const mnFnPtr = DebugSymbol.fromName("main").address;
     if (mnFnPtr == null || mnFnPtr == undefined) {
-        console.log("无main函数,无法通过拦截main函数来添加参数,可能不是类c编译器产生的应用");
+        console.log("##无main函数,无法通过拦截main函数来添加参数,可能不是类c编译器产生的应用");
         return;
     }
-    console.log(`收到main函数参数mnArgTxt=${mnArgTxt}`);
+    console.log(`##收到main函数参数mnArgTxt=${mnArgTxt}`);
     const mnArgStrLs_raw = mnArgTxt.split(" ");
     const mnArgStrLs = mnArgStrLs_raw.filter(elm => elm != "");
     Interceptor.attach(mnFnPtr, {
         onEnter: function (args) {
+            console.log(`##进入main函数`);
             // main(int argc, char** argv): args[0] == int argc, args[1] == wchar *argv[]
             const mnArgMemLs = mnArgStrLs.map(mnArgStr => Memory.allocUtf8String(mnArgStr));
             const mnArgVect = Memory.alloc(mnArgMemLs.length * Process.pointerSize);
