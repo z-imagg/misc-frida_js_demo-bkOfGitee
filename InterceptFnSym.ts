@@ -351,13 +351,24 @@ function _main_(){
  * 
  * 添加参数 /app/qemu/build-v8.2.2/qemu-system-x86_64 -nographic  -append "console=ttyS0"  -kernel  /bal/linux-stable/arch/x86/boot/bzImage -initrd /bal/bldLinux4RunOnBochs/initramfs-busybox-i686.cpio.tar.gz 
  * 参考 :  https://stackoverflow.com/questions/72871352/frida-spawn-a-windows-linux-process-with-command-line-arguments/72880066#72880066
+ * 
+ readelf --symbols /app/qemu/build/qemu-system-x86_64 | egrep "main$"
+ 37431: 00000000003153f0    23 FUNC    GLOBAL DEFAULT   16 main
+
+ 这种就是有main函数的
+
  */
 function mainFunc_addArgTxt(mnArgTxt:string){
+  if (mnArgTxt.length==0){
+    console.log("main参数为空")
+    return;
+  }
   const mnFnPtr:NativePointer = DebugSymbol.fromName("main").address;
   if (mnFnPtr==null || mnFnPtr==undefined){
     console.log("无main函数,无法通过拦截main函数来添加参数,可能不是类c编译器产生的应用")
     return;
   }
+  console.log(`收到main函数参数mnArgTxt=${mnArgTxt}`)
   const mnArgStrLs_raw:string[]=mnArgTxt.split(" ")
   const mnArgStrLs:string[]=mnArgStrLs_raw.filter(elm=>elm!="")
   Interceptor.attach(mnFnPtr, {
@@ -386,7 +397,6 @@ function mainFunc_addArgTxt(mnArgTxt:string){
 }
 
 
-
 /**
 frida 运行报超时错误 "Failed to load script: timeout was reached" 解决
 frida 运行报超时错误 "Failed to load script: the connection is closed" 解决
@@ -397,8 +407,10 @@ frida 运行报超时错误 "Failed to load script: the connection is closed" �
  */
 // frida  https://github.com/frida/frida/issues/113#issuecomment-187134331
 setTimeout(function () {
+  //'/app/qemu/build-v8.2.2/qemu-system-x86_64 -nographic  -append "console=ttyS0"  -kernel  /bal/linux-stable/arch/x86/boot/bzImage -initrd /bal/bldLinux4RunOnBochs/initramfs-busybox-i686.cpio.tar.gz'
+const mnArgTxt:string='';
   //业务代码
-  mainFunc_addArgTxt('/app/qemu/build-v8.2.2/qemu-system-x86_64 -nographic  -append "console=ttyS0"  -kernel  /bal/linux-stable/arch/x86/boot/bzImage -initrd /bal/bldLinux4RunOnBochs/initramfs-busybox-i686.cpio.tar.gz')
+  mainFunc_addArgTxt(mnArgTxt)
   _main_()
 
 }, 0);
