@@ -39,9 +39,15 @@ _LogFP_Pure="${FridaOut}-Pure-${now}.log"
 # 运行frida , 产生日志文件 ， 并 记录日志文件的数字签名
 #  注意　   　目标应用和其参数　比如为 "aaa.elf arg1 arg2" frida不允许其中的参数以中划线开头　否则会被当成是frida的参数, 
 #     即 frida只允许应用携带非中划线参数
-read -p "输入目标应用main函数参数:" mnArgTxt
-sed -i "s/const mnArgTxt:string='';/const mnArgTxt:string='${mnArgTxt}';/g" ./InterceptFnSym.js
-sudo env "PATH=$PATH" frida  --load ./InterceptFnSym.js    --output $_LogFP_Mix    --file /fridaAnlzAp/cgsecurity--testdisk/src/qphotorec
+read -p "输入目标应用main函数参数:" mainArgTxt
+# mainArgTxt=='/app/qemu/build-v8.2.2/qemu-system-x86_64 -nographic  -append "console=ttyS0"  -kernel  /bal/linux-stable/arch/x86/boot/bzImage -initrd /bal/bldLinux4RunOnBochs/initramfs-busybox-i686.cpio.tar.gz'
+# 从参数列表中获取应用程序命令全路径
+IFS=' ' read -ra mainArgLs <<< "$mainArgTxt"
+appFile="${mainArgLs[0]}"
+# appFile=='/app/qemu/build-v8.2.2/qemu-system-x86_64'
+
+sed -i "s/const mnArgTxt:string='';/const mnArgTxt:string='${mainArgTxt}';/g" ./InterceptFnSym.js
+sudo env "PATH=$PATH" frida  --load ./InterceptFnSym.js    --output $_LogFP_Mix    --file $appFile
 md5sum $_LogFP_Mix > $_LogFP_Mix.md5sum.txt
 # 日志后处理
 #   提取出带前缀的纯净日志， 并 记录日志文件的数字签名
