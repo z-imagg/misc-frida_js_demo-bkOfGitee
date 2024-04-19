@@ -7,6 +7,8 @@
 f=$(readlink -f ${BASH_SOURCE[0]})  ; d=$(dirname $f)
 cd $d
 
+#安装依赖
+npm install
 
 npx frida-compile  InterceptFnSym.ts --no-source-maps --output InterceptFnSym.js  && \
 #删除frida-compile生成的 js文件开头 乱七八糟的 几行
