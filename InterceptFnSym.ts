@@ -347,6 +347,48 @@ function _main_(){
 
 }
 
+/** firda拦截应用的main函数并添加参数，注意只有类c编译器产生的应用才有main函数
+ * 
+ * 添加参数 /app/qemu/build-v8.2.2/qemu-system-x86_64 -nographic  -append "console=ttyS0"  -kernel  /bal/linux-stable/arch/x86/boot/bzImage -initrd /bal/bldLinux4RunOnBochs/initramfs-busybox-i686.cpio.tar.gz 
+ * 参考 :  https://stackoverflow.com/questions/72871352/frida-spawn-a-windows-linux-process-with-command-line-arguments/72880066#72880066
+ */
+function mainFuncAddArgs_qemu(){
+  let mainPointer = DebugSymbol.fromName("main").address;
+  Interceptor.attach(mainPointer, {
+      onEnter:function  (this: InvocationContext, args: InvocationArguments) {
+        // main(int argc, char** argv): args[0] == int argc, args[1] == wchar *argv[]
+          const main_arg_ls:NativePointer[]=[
+            Memory.allocAnsiString("/app/qemu/build-v8.2.2/qemu-system-x86_64")
+            ,Memory.allocAnsiString("-nographic")
+            ,Memory.allocAnsiString("-append")
+            ,Memory.allocAnsiString('"console=ttyS0"')
+            ,Memory.allocAnsiString("-kernel")
+            ,Memory.allocAnsiString("/bal/linux-stable/arch/x86/boot/bzImage")
+            ,Memory.allocAnsiString("-initrd")
+            ,Memory.allocAnsiString("/bal/bldLinux4RunOnBochs/initramfs-busybox-i686.cpio.tar.gz")
+          ]
+          const main_argv:NativePointer = Memory.alloc(main_arg_ls.length * Process.pointerSize)
+          //参数列表作为this的字段，防止被垃圾回收
+          this.main_argv=main_argv;
+
+          for (let [k,argK] of  main_arg_ls.entries()){
+            //每个参数都作为this的字段，防止被垃圾回收
+            this[`main_arg_${k}`]=argK
+
+            main_argv.add(k*Process.pointerSize).writePointer(argK);
+          }
+
+  
+          
+          // 覆盖 main(int argc, char** argv) 中的argc 、 argv
+          args[0] = ptr(main_arg_ls.length);
+          args[1] = main_argv;
+          
+      }
+  });
+}
+
+
 
 /**
 frida 运行报超时错误 "Failed to load script: timeout was reached" 解决
