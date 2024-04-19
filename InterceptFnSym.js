@@ -272,6 +272,37 @@ function _main_() {
         });
     }
 }
+/** firda拦截应用的main函数并添加参数，注意只有类c编译器产生的应用才有main函数
+ *
+ * 添加参数 /app/qemu/build-v8.2.2/qemu-system-x86_64 -nographic  -append "console=ttyS0"  -kernel  /bal/linux-stable/arch/x86/boot/bzImage -initrd /bal/bldLinux4RunOnBochs/initramfs-busybox-i686.cpio.tar.gz
+ * 参考 :  https://stackoverflow.com/questions/72871352/frida-spawn-a-windows-linux-process-with-command-line-arguments/72880066#72880066
+ */
+function mainFunc_addArgTxt(mnArgTxt) {
+    const mnFnPtr = DebugSymbol.fromName("main").address;
+    if (mnFnPtr == null || mnFnPtr == undefined) {
+        console.log("无main函数,无法通过拦截main函数来添加参数,可能不是类c编译器产生的应用");
+        return;
+    }
+    const mnArgStrLs_raw = mnArgTxt.split(" ");
+    const mnArgStrLs = mnArgStrLs_raw.filter(elm => elm != "");
+    Interceptor.attach(mnFnPtr, {
+        onEnter: function (args) {
+            // main(int argc, char** argv): args[0] == int argc, args[1] == wchar *argv[]
+            const mnArgMemLs = mnArgStrLs.map(mnArgStr => Memory.allocAnsiString(mnArgStr));
+            const mnArgVect = Memory.alloc(mnArgMemLs.length * Process.pointerSize);
+            //参数列表作为this的字段，防止被垃圾回收
+            this.mnArgVect = mnArgVect;
+            for (let [k, argK] of mnArgMemLs.entries()) {
+                //每个参数都作为this的字段，防止被垃圾回收
+                this[`mnArgMem${k}`] = argK;
+                mnArgVect.add(k * Process.pointerSize).writePointer(argK);
+            }
+            // 覆盖 main(int argc, char** argv) 中的argc 、 argv
+            args[0] = ptr(mnArgMemLs.length);
+            args[1] = mnArgVect;
+        }
+    });
+}
 /**
 frida 运行报超时错误 "Failed to load script: timeout was reached" 解决
 frida 运行报超时错误 "Failed to load script: the connection is closed" 解决
@@ -283,5 +314,6 @@ frida 运行报超时错误 "Failed to load script: the connection is closed" �
 // frida  https://github.com/frida/frida/issues/113#issuecomment-187134331
 setTimeout(function () {
     //业务代码
+    mainFunc_addArgTxt('/app/qemu/build-v8.2.2/qemu-system-x86_64 -nographic  -append "console=ttyS0"  -kernel  /bal/linux-stable/arch/x86/boot/bzImage -initrd /bal/bldLinux4RunOnBochs/initramfs-busybox-i686.cpio.tar.gz');
     _main_();
 }, 0);
