@@ -178,17 +178,19 @@ ldd /app/qemu/build-v8.2.2/qemu-system-x86_64
 const modules_include = [
     g_appName,
 ];
+// "libstdc++.so.6.0.30", //?如果libstdc++的代码 穿插在业务代码中， 若忽略之 则调用链条断裂
+// ldd /app/qemu/build-v8.2.2/qemu-system-x86_64 | awk '{print " \""$1"\","}'
 const modules_exclude = [
-    // "libstdc++.so.6.0.30", //?如果libstdc++的代码 穿插在业务代码中， 若忽略之 则调用链条断裂
     "linux-vdso.so.1",
     "libpixman-1.so.0",
     "libz.so.1",
+    "libgio-2.0.so.0",
     "libgobject-2.0.so.0",
     "libglib-2.0.so.0",
     "libgmodule-2.0.so.0",
     "libm.so.6",
     "libc.so.6",
-    "ld-linux-x86-64.so.2",
+    "/lib64/ld-linux-x86-64.so.2",
     "libmount.so.1",
     "libselinux.so.1",
     "libffi.so.8",
@@ -284,6 +286,8 @@ function mainFunc_addArgTxt(mnArgTxt) {
         }
     });
 }
+g_appFullPath = '/app/qemu/build-v8.2.2/qemu-system-x86_64';
+g_appName = baseNameOfFilePath(g_appFullPath);
 /**
 frida 运行报超时错误 "Failed to load script: timeout was reached" 解决
 frida 运行报超时错误 "Failed to load script: the connection is closed" 解决
@@ -294,12 +298,7 @@ frida 运行报超时错误 "Failed to load script: the connection is closed" �
  */
 // frida  https://github.com/frida/frida/issues/113#issuecomment-187134331
 setTimeout(function () {
-    //'/app/qemu/build-v8.2.2/qemu-system-x86_64 -nographic  -append "console=ttyS0"  -kernel  /bal/linux-stable/arch/x86/boot/bzImage -initrd /bal/bldLinux4RunOnBochs/initramfs-busybox-i686.cpio.tar.gz'
-    const mnArgTxt = '';
-    //应用程序全路径
-    g_appFullPath = mnArgTxt.split(' ')[0];
-    //应用程序名字
-    g_appName = baseNameOfFilePath(g_appFullPath);
+    const mnArgTxt = '/app/qemu/build-v8.2.2/qemu-system-x86_64 -nographic  -append "console=ttyS0"  -kernel  /bal/linux-stable/arch/x86/boot/bzImage -initrd /bal/bldLinux4RunOnBochs/initramfs-busybox-i686.cpio.tar.gz';
     //业务代码
     mainFunc_addArgTxt(mnArgTxt);
     _main_();
