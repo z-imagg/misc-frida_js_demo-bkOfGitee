@@ -334,19 +334,20 @@ function _main_(){
  */
 function mainFunc_addArgTxt(mnArgTxt:string){
   if (mnArgTxt.length==0){
-    console.log("main参数为空")
+    console.log("##main参数为空")
     return;
   }
   const mnFnPtr:NativePointer = DebugSymbol.fromName("main").address;
   if (mnFnPtr==null || mnFnPtr==undefined){
-    console.log("无main函数,无法通过拦截main函数来添加参数,可能不是类c编译器产生的应用")
+    console.log("##无main函数,无法通过拦截main函数来添加参数,可能不是类c编译器产生的应用")
     return;
   }
-  console.log(`收到main函数参数mnArgTxt=${mnArgTxt}`)
+  console.log(`##收到main函数参数mnArgTxt=${mnArgTxt}`)
   const mnArgStrLs_raw:string[]=mnArgTxt.split(" ")
   const mnArgStrLs:string[]=mnArgStrLs_raw.filter(elm=>elm!="")
   Interceptor.attach(mnFnPtr, {
       onEnter:function  (this: InvocationContext, args: InvocationArguments) {
+        console.log(`##进入main函数`)
         // main(int argc, char** argv): args[0] == int argc, args[1] == wchar *argv[]
         const mnArgMemLs:NativePointer[]=mnArgStrLs.map(mnArgStr=>Memory.allocUtf8String(mnArgStr))
         const mnArgVect:NativePointer = Memory.alloc(mnArgMemLs.length * Process.pointerSize)
