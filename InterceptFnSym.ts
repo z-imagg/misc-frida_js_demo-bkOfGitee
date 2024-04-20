@@ -227,12 +227,15 @@ function focus_fnAdr(fnAdr:NativePointer){
 // 日志量高达3千万行。 疑似特别长的有 pit_irq_timer 、 generate_memory_topology ， 尝试跳过
 
 // 暂时只跟踪 tcg_gen_code 、 tb_gen_code 、 gen_intermediate_code
+// 暂时只跟踪 cpu_exec
+// 暂时只跟踪 cpu_loop_exec_tb
   if(moduleName==g_appName   ){
     return     (
       // fnSym.name == "tcg_gen_code" ||
       // fnSym.name == "tb_gen_code" ||
-      fnSym.name == "cpu_exec"
       // fnSym.name == "gen_intermediate_code"
+      // fnSym.name == "cpu_exec"
+      fnSym.name == "cpu_loop_exec_tb"
     );
   }
 
