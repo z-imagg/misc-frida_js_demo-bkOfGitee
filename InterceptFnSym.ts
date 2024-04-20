@@ -225,13 +225,15 @@ function focus_fnAdr(fnAdr:NativePointer){
 // 解决frida拦截目标进程中途崩溃 步骤  == frida_js_skip_crashFunc_when_Interceptor.attach.onEnter.md 
 
 // 日志量高达3千万行。 疑似特别长的有 pit_irq_timer 、 generate_memory_topology ， 尝试跳过
-  if(moduleName==g_appName && 
-  (
-    fnSym.name == "pit_irq_timer" ||
-    fnSym.name == "generate_memory_topology"
-  )
-  ){
-    return false;
+
+// 暂时只跟踪 tcg_gen_code 、 tb_gen_code 、 gen_intermediate_code
+  if(moduleName==g_appName   ){
+    return     (
+      fnSym.name == "tcg_gen_code" ||
+      fnSym.name == "tb_gen_code" ||
+      // fnSym.name == "cpu_exec" ||
+      fnSym.name == "gen_intermediate_code"
+    );
   }
 
 /**已确认 结束时frida出现'Process terminated' 对应的进程qphotorec有正常退出码0
