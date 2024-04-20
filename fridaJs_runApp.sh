@@ -33,13 +33,15 @@ rm -frv *.log *.log.*
 #运行frida
 now="$(date +%s)"
 FridaOut="frida-out"
+_LogFp_App="appOut-${now}.log"
 _LogFP_Mix="${FridaOut}-Mix-${now}.log"
 _LogFP_PrefPure="${FridaOut}-PrefixPure-${now}.log"
 _LogFP_Pure="${FridaOut}-Pure-${now}.log"
 # 运行frida , 产生日志文件 ， 并 记录日志文件的数字签名
 #  注意　   　目标应用和其参数　比如为 "aaa.elf arg1 arg2" frida不允许其中的参数以中划线开头　否则会被当成是frida的参数, 
 #     即 frida只允许应用携带非中划线参数
-sudo env "PATH=$PATH" frida  --load ./InterceptFnSym.js    --output $_LogFP_Mix    --file /app/qemu/build-v8.2.2/qemu-system-x86_64
+#   为获取应用自身输出: 先后台延迟tailf 再前台启动frida进程
+( ( sleep 2 ; echo begin_tail ; ( tail -f  $_LogFp_App & ) ; ( tail -f $_LogFP_Mix & ) ;  ) & )   && ( sudo env "PATH=$PATH" frida  --load ./InterceptFnSym.js    --output $_LogFP_Mix    --file /app/qemu/build-v8.2.2/qemu-system-x86_64 > $_LogFp_App )  
 md5sum $_LogFP_Mix > $_LogFP_Mix.md5sum.txt
 # 日志后处理
 #   提取出带前缀的纯净日志， 并 记录日志文件的数字签名
