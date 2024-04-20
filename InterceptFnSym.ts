@@ -258,7 +258,9 @@ function _main_(){
       continue;
     }
     // const fnSym=DebugSymbol.fromAddress(fnAdr);
-    console.log(`##${nowTxt()};Interceptor.attach fnAdr=${fnAdr};  进度【${k}~${fnAdrCnt} 】`)
+    //进度百分数
+    const progress_percent:string=(100*k/fnAdrCnt).toFixed(2);
+    console.log(`##${nowTxt()};Interceptor.attach fnAdr=${fnAdr};  进度【${progress_percent}%,${k}~${fnAdrCnt} 】`)
 
 
     Interceptor.attach(fnAdr,{
