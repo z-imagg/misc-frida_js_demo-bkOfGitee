@@ -229,10 +229,10 @@ function focus_fnAdr(fnAdr:NativePointer){
 // 暂时只跟踪 tcg_gen_code 、 tb_gen_code 、 gen_intermediate_code
   if(moduleName==g_appName   ){
     return     (
-      fnSym.name == "tcg_gen_code" ||
-      fnSym.name == "tb_gen_code" ||
-      // fnSym.name == "cpu_exec" ||
-      fnSym.name == "gen_intermediate_code"
+      // fnSym.name == "tcg_gen_code" ||
+      // fnSym.name == "tb_gen_code" ||
+      fnSym.name == "cpu_exec"
+      // fnSym.name == "gen_intermediate_code"
     );
   }
 

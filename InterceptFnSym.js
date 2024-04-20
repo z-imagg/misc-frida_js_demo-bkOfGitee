@@ -166,10 +166,12 @@ function focus_fnAdr(fnAdr) {
     // 日志量高达3千万行。 疑似特别长的有 pit_irq_timer 、 generate_memory_topology ， 尝试跳过
     // 暂时只跟踪 tcg_gen_code 、 tb_gen_code 、 gen_intermediate_code
     if (moduleName == g_appName) {
-        return (fnSym.name == "tcg_gen_code" ||
-            fnSym.name == "tb_gen_code" ||
-            // fnSym.name == "cpu_exec" ||
-            fnSym.name == "gen_intermediate_code");
+        return (
+        // fnSym.name == "tcg_gen_code" ||
+        // fnSym.name == "tb_gen_code" ||
+        fnSym.name == "cpu_exec"
+        // fnSym.name == "gen_intermediate_code"
+        );
     }
     /**已确认 结束时frida出现'Process terminated' 对应的进程qphotorec有正常退出码0
     https://gitee.com/repok/dwmkerr--linux-kernel-module/blob/e36a16925cd60c6e4b3487d254bfe7fa5b150f75/greeter/run.sh
