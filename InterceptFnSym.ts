@@ -139,10 +139,12 @@ class FnLog {
   fnAdr:NativePointer;
   //针对此次函数调用的唯一编号
   fnCallId:number;
+  //函数参数列表
+  fnArgLs:string[]|undefined;
   //函数符号
   fnSym:DebugSymbol|undefined;
   modueBase:NativePointer|null;
-  constructor (tmPntVal:TmPntVal, logId:number,processId:number,curThreadId:ThreadId, direct:Direct, fnAdr:NativePointer, fnCallId: number,fnSym:DebugSymbol|undefined) {
+  constructor (tmPntVal:TmPntVal, logId:number,processId:number,curThreadId:ThreadId, direct:Direct, fnAdr:NativePointer, fnCallId: number,fnArgLs:string[]|undefined,fnSym:DebugSymbol|undefined) {
     this.tmPnt=tmPntVal
     this.logId = logId
     this.processId=processId
@@ -150,6 +152,7 @@ class FnLog {
     this.direct = direct;
     this.fnAdr = fnAdr;
     this.fnCallId = fnCallId;
+    this.fnArgLs=fnArgLs;
     this.fnSym = fnSym;
     //获取模块基地址
     if ( (fnSym!=undefined && fnSym!=null ) 
@@ -195,7 +198,12 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
   const tmPntVal:TmPntVal=nextTmPnt(Process.id,curThreadId)
   var fnAdr=thiz.context.pc;
   var fnSym :DebugSymbol|undefined= findFnDbgSym(thiz.context.pc)
-  thiz.fnEnterLog=new FnLog(tmPntVal,++gLogId,Process.id,curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
+  var fnArgLs:string[]|undefined = undefined;
+  if (fnSym.name=="__app_func_call__"){//  https://gitee.com/imagg/qemu--qemu/commit/9d2a4d441d249010897063b42ffb16f6ef5aae0f
+    fnArgLs = [`${args[0].toString(16)}__${args[0].toInt32()}`]
+  }
+
+  thiz.fnEnterLog=new FnLog(tmPntVal,++gLogId,Process.id,curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnArgLs,fnSym);
   console.log(`${LogLinePrefix}${thiz.fnEnterLog.toJson()}`)
 
 }
@@ -210,7 +218,7 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
     console.log(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】`)
   }
   const fnEnterLog:FnLog=thiz.fnEnterLog;
-  const fnLeaveLog:FnLog=new FnLog(tmPnt,++gLogId,Process.id,curThreadId, Direct.LeaveFn, fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);
+  const fnLeaveLog:FnLog=new FnLog(tmPnt,++gLogId,Process.id,curThreadId, Direct.LeaveFn, fnAdr, fnEnterLog.fnCallId, undefined, fnEnterLog.fnSym);
   console.log(`${LogLinePrefix}${fnLeaveLog.toJson()}`)
 }
 
@@ -229,13 +237,15 @@ function focus_fnAdr(fnAdr:NativePointer){
 // 暂时只跟踪 tcg_gen_code 、 tb_gen_code 、 gen_intermediate_code
 // 暂时只跟踪 cpu_exec
 // 暂时只跟踪 cpu_loop_exec_tb
+// 暂时只跟踪 __app_func_call__  ， frida 监控 qemu内 目标应用linux4内核中的 函数调用
   if(moduleName==g_appName   ){
     return     (
       // fnSym.name == "tcg_gen_code" ||
       // fnSym.name == "tb_gen_code" ||
       // fnSym.name == "gen_intermediate_code"
       // fnSym.name == "cpu_exec"
-      fnSym.name == "cpu_loop_exec_tb"
+      // fnSym.name == "cpu_loop_exec_tb"
+      fnSym.name == "__app_func_call__"
     );
   }
 
