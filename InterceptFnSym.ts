@@ -199,8 +199,12 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
   var fnAdr=thiz.context.pc;
   var fnSym :DebugSymbol|undefined= findFnDbgSym(thiz.context.pc)
   var fnArgLs:string[]|undefined = undefined;
-  if (fnSym.name=="_wrap_ffi_call_"){//  https://gitee.com/imagg/qemu--qemu/commit/9d2a4d441d249010897063b42ffb16f6ef5aae0f
-    fnArgLs = [`${args[1].toString(16)}__${args[1].toInt32()}`]
+  // 
+  /**qemu源码   https://gitee.com/imagg/qemu--qemu/commit/9d2a4d441d249010897063b42ffb16f6ef5aae0f
+   static void _wrap_ffi_call_(ffi_cif *cif, void (*fn)(void), void *rvalue, void **avalue)
+   */
+  if (fnSym.name=="_wrap_ffi_call_"){
+    fnArgLs = [args[1].toString(16), `${args[1].toInt32()}`]
   }
 
   thiz.fnEnterLog=new FnLog(tmPntVal,++gLogId,Process.id,curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnArgLs,fnSym);
