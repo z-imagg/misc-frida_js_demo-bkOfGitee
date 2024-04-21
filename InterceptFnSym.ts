@@ -242,7 +242,10 @@ function focus_fnAdr(fnAdr:NativePointer){
 // 暂时只跟踪 cpu_exec
 // 暂时只跟踪 cpu_loop_exec_tb
 // 暂时只跟踪 __app_func_call__  ， frida 监控 qemu内 目标应用linux4内核中的 函数调用
-  if(moduleName==g_appName   ){
+  // if(moduleName==g_appName   ){
+    if (fnSym.name == "_wrap_ffi_call_") {
+      console.log(`##获得符号:${JSON.stringify(fnSym)}`);
+    }
     return     (
       // fnSym.name == "tcg_gen_code" ||
       // fnSym.name == "tb_gen_code" ||
@@ -251,18 +254,18 @@ function focus_fnAdr(fnAdr:NativePointer){
       // fnSym.name == "cpu_loop_exec_tb"
       fnSym.name == "_wrap_ffi_call_" // ffi_status ffi_call(ffi_cif *cif, void (*fn)(void), void *rvalue, void **avalue);
     );
-  }
+  // }
 
 /**已确认 结束时frida出现'Process terminated' 对应的进程qphotorec有正常退出码0
 https://gitee.com/repok/dwmkerr--linux-kernel-module/blob/e36a16925cd60c6e4b3487d254bfe7fa5b150f75/greeter/run.sh
 */
 
-  if(modules_include.includes(moduleName)){
-    return true;
-  }
-  if(modules_exclude.includes(moduleName)){
-    return false;
-  }
+  // if(modules_include.includes(moduleName)){
+  //   return true;
+  // }
+  // if(modules_exclude.includes(moduleName)){
+  //   return false;
+  // }
 }
 
 function _main_(){
