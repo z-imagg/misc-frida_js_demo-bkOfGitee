@@ -199,8 +199,8 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
   var fnAdr=thiz.context.pc;
   var fnSym :DebugSymbol|undefined= findFnDbgSym(thiz.context.pc)
   var fnArgLs:string[]|undefined = undefined;
-  if (fnSym.name=="__app_func_call__"){//  https://gitee.com/imagg/qemu--qemu/commit/9d2a4d441d249010897063b42ffb16f6ef5aae0f
-    fnArgLs = [`${args[0].toString(16)}__${args[0].toInt32()}`]
+  if (fnSym.name=="_wrap_ffi_call_"){//  https://gitee.com/imagg/qemu--qemu/commit/9d2a4d441d249010897063b42ffb16f6ef5aae0f
+    fnArgLs = [`${args[1].toString(16)}__${args[1].toInt32()}`]
   }
 
   thiz.fnEnterLog=new FnLog(tmPntVal,++gLogId,Process.id,curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnArgLs,fnSym);
@@ -245,7 +245,7 @@ function focus_fnAdr(fnAdr:NativePointer){
       // fnSym.name == "gen_intermediate_code"
       // fnSym.name == "cpu_exec"
       // fnSym.name == "cpu_loop_exec_tb"
-      fnSym.name == "__app_func_call__"
+      fnSym.name == "_wrap_ffi_call_" // ffi_status ffi_call(ffi_cif *cif, void (*fn)(void), void *rvalue, void **avalue);
     );
   }
 

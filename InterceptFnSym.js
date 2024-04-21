@@ -142,8 +142,8 @@ function OnFnEnterBusz(thiz, args) {
     var fnAdr = thiz.context.pc;
     var fnSym = findFnDbgSym(thiz.context.pc);
     var fnArgLs = undefined;
-    if (fnSym.name == "__app_func_call__") { //  https://gitee.com/imagg/qemu--qemu/commit/9d2a4d441d249010897063b42ffb16f6ef5aae0f
-        fnArgLs = [`${args[0].toString(16)}__${args[0].toInt32()}`];
+    if (fnSym.name == "_wrap_ffi_call_") { //  https://gitee.com/imagg/qemu--qemu/commit/9d2a4d441d249010897063b42ffb16f6ef5aae0f
+        fnArgLs = [`${args[1].toString(16)}__${args[1].toInt32()}`];
     }
     thiz.fnEnterLog = new FnLog(tmPntVal, ++gLogId, Process.id, curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnArgLs, fnSym);
     console.log(`${LogLinePrefix}${thiz.fnEnterLog.toJson()}`);
@@ -180,7 +180,8 @@ function focus_fnAdr(fnAdr) {
         // fnSym.name == "gen_intermediate_code"
         // fnSym.name == "cpu_exec"
         // fnSym.name == "cpu_loop_exec_tb"
-        fnSym.name == "__app_func_call__");
+        fnSym.name == "_wrap_ffi_call_" // ffi_status ffi_call(ffi_cif *cif, void (*fn)(void), void *rvalue, void **avalue);
+        );
     }
     /**已确认 结束时frida出现'Process terminated' 对应的进程qphotorec有正常退出码0
     https://gitee.com/repok/dwmkerr--linux-kernel-module/blob/e36a16925cd60c6e4b3487d254bfe7fa5b150f75/greeter/run.sh
