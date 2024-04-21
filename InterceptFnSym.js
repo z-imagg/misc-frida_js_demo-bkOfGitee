@@ -147,7 +147,8 @@ function OnFnEnterBusz(thiz, args) {
      static void _wrap_ffi_call_(ffi_cif *cif, void (*fn)(void), void *rvalue, void **avalue)
      */
     if (fnSym.name == "_wrap_ffi_call_") {
-        fnArgLs = [args[1].toString(16), `${args[1].toInt32()}`];
+        // 已确认 args[1].toInt32()的16进制形式 == args[1].toString(16)
+        fnArgLs = [args[1].toString(16)];
     }
     thiz.fnEnterLog = new FnLog(tmPntVal, ++gLogId, Process.id, curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnArgLs, fnSym);
     console.log(`${LogLinePrefix}${thiz.fnEnterLog.toJson()}`);
@@ -162,7 +163,7 @@ function OnFnLeaveBusz(thiz, retval) {
         console.log(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】`);
     }
     const fnEnterLog = thiz.fnEnterLog;
-    const fnLeaveLog = new FnLog(tmPnt, ++gLogId, Process.id, curThreadId, Direct.LeaveFn, fnAdr, fnEnterLog.fnCallId, undefined, fnEnterLog.fnSym);
+    const fnLeaveLog = new FnLog(tmPnt, ++gLogId, Process.id, curThreadId, Direct.LeaveFn, fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnArgLs, fnEnterLog.fnSym);
     console.log(`${LogLinePrefix}${fnLeaveLog.toJson()}`);
 }
 function focus_fnAdr(fnAdr) {
