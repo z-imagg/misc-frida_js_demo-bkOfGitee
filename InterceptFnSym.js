@@ -1,5 +1,12 @@
 // ［术语］　
 // ［简写］ AbsThrdId==AbsoluteThreadId==绝对线程id==进程id_线程id , gTmPntTb == globalTimePointTable == 全局时刻表格
+function baseNameOfFilePath(filePath) {
+    // const filePath = '/app/qemu/build-v8.2.2/qemu-system-x86_64';
+    const parts = filePath.split('/');
+    const baseName = parts[parts.length - 1];
+    // console.log(baseName); 
+    return baseName;
+}
 function nowTxt() {
     const now = new Date();
     //时区没生效，暂时忽略
@@ -85,7 +92,7 @@ var Direct;
     Direct[Direct["LeaveFn"] = 2] = "LeaveFn";
 })(Direct || (Direct = {}));
 class FnLog {
-    constructor(tmPntVal, logId, processId, curThreadId, direct, fnAdr, fnCallId, fnSym) {
+    constructor(tmPntVal, logId, processId, curThreadId, direct, fnAdr, fnCallId, fnArgLs, fnSym) {
         this.tmPnt = tmPntVal;
         this.logId = logId;
         this.processId = processId;
@@ -93,6 +100,7 @@ class FnLog {
         this.direct = direct;
         this.fnAdr = fnAdr;
         this.fnCallId = fnCallId;
+        this.fnArgLs = fnArgLs;
         this.fnSym = fnSym;
         //获取模块基地址
         if ((fnSym != undefined && fnSym != null)
@@ -133,7 +141,16 @@ function OnFnEnterBusz(thiz, args) {
     const tmPntVal = nextTmPnt(Process.id, curThreadId);
     var fnAdr = thiz.context.pc;
     var fnSym = findFnDbgSym(thiz.context.pc);
-    thiz.fnEnterLog = new FnLog(tmPntVal, ++gLogId, Process.id, curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
+    var fnArgLs = undefined;
+    // 
+    /**qemu源码   https://gitee.com/imagg/qemu--qemu/commit/9d2a4d441d249010897063b42ffb16f6ef5aae0f
+     static void _wrap_ffi_call_(ffi_cif *cif, void (*fn)(void), void *rvalue, void **avalue)
+     */
+    if (fnSym.name == "_wrap_ffi_call_") {
+        // 已确认 args[1].toInt32()的16进制形式 == args[1].toString(16)
+        fnArgLs = [args[1].toString(16)];
+    }
+    thiz.fnEnterLog = new FnLog(tmPntVal, ++gLogId, Process.id, curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnArgLs, fnSym);
     console.log(`${LogLinePrefix}${thiz.fnEnterLog.toJson()}`);
 }
 /**  OnLeave ，函数离开
@@ -146,111 +163,43 @@ function OnFnLeaveBusz(thiz, retval) {
         console.log(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】`);
     }
     const fnEnterLog = thiz.fnEnterLog;
-    const fnLeaveLog = new FnLog(tmPnt, ++gLogId, Process.id, curThreadId, Direct.LeaveFn, fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);
+    const fnLeaveLog = new FnLog(tmPnt, ++gLogId, Process.id, curThreadId, Direct.LeaveFn, fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnArgLs, fnEnterLog.fnSym);
     console.log(`${LogLinePrefix}${fnLeaveLog.toJson()}`);
 }
-/**
-ldd /fridaAnlzAp/cgsecurity--testdisk/src/qphotorec
-    linux-vdso.so.1 (0x00007ffde1da5000)
-    libQt5Gui.so.5 => /lib/x86_64-linux-gnu/libQt5Gui.so.5 (0x0000793ef4200000)
-    libQt5Core.so.5 => /lib/x86_64-linux-gnu/libQt5Core.so.5 (0x0000793ef3c00000)
-    libQt5Widgets.so.5 => /lib/x86_64-linux-gnu/libQt5Widgets.so.5 (0x0000793ef3400000)
-    libstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x0000793ef3000000)
-    libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x0000793ef49e3000)
-    libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x0000793ef2c00000)
-    libGL.so.1 => /lib/x86_64-linux-gnu/libGL.so.1 (0x0000793ef495a000)
-    libpng16.so.16 => /lib/x86_64-linux-gnu/libpng16.so.16 (0x0000793ef491f000)
-    libz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x0000793ef4903000)
-    libharfbuzz.so.0 => /lib/x86_64-linux-gnu/libharfbuzz.so.0 (0x0000793ef3b31000)
-    libmd4c.so.0 => /lib/x86_64-linux-gnu/libmd4c.so.0 (0x0000793ef48f1000)
-    libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x0000793ef3319000)
-    libdouble-conversion.so.3 => /lib/x86_64-linux-gnu/libdouble-conversion.so.3 (0x0000793ef41eb000)
-    libicui18n.so.70 => /lib/x86_64-linux-gnu/libicui18n.so.70 (0x0000793ef2800000)
-    libicuuc.so.70 => /lib/x86_64-linux-gnu/libicuuc.so.70 (0x0000793ef2605000)
-    libpcre2-16.so.0 => /lib/x86_64-linux-gnu/libpcre2-16.so.0 (0x0000793ef4161000)
-    libzstd.so.1 => /lib/x86_64-linux-gnu/libzstd.so.1 (0x0000793ef324a000)
-    libglib-2.0.so.0 => /lib/x86_64-linux-gnu/libglib-2.0.so.0 (0x0000793ef2ec6000)
-    /lib64/ld-linux-x86-64.so.2 (0x0000793ef4ade000)
-    libGLdispatch.so.0 => /lib/x86_64-linux-gnu/libGLdispatch.so.0 (0x0000793ef2b48000)
-    libGLX.so.0 => /lib/x86_64-linux-gnu/libGLX.so.0 (0x0000793ef3afd000)
-    libfreetype.so.6 => /lib/x86_64-linux-gnu/libfreetype.so.6 (0x0000793ef253d000)
-    libgraphite2.so.3 => /lib/x86_64-linux-gnu/libgraphite2.so.3 (0x0000793ef3ad6000)
-    libicudata.so.70 => /lib/x86_64-linux-gnu/libicudata.so.70 (0x0000793ef0800000)
-    libpcre.so.3 => /lib/x86_64-linux-gnu/libpcre.so.3 (0x0000793ef2e50000)
-    libX11.so.6 => /lib/x86_64-linux-gnu/libX11.so.6 (0x0000793ef06c0000)
-    libbrotlidec.so.1 => /lib/x86_64-linux-gnu/libbrotlidec.so.1 (0x0000793ef3ac8000)
-    libxcb.so.1 => /lib/x86_64-linux-gnu/libxcb.so.1 (0x0000793ef2513000)
-    libbrotlicommon.so.1 => /lib/x86_64-linux-gnu/libbrotlicommon.so.1 (0x0000793ef2e2d000)
-    libXau.so.6 => /lib/x86_64-linux-gnu/libXau.so.6 (0x0000793ef48e3000)
-    libXdmcp.so.6 => /lib/x86_64-linux-gnu/libXdmcp.so.6 (0x0000793ef3242000)
-    libbsd.so.0 => /lib/x86_64-linux-gnu/libbsd.so.0 (0x0000793ef2b30000)
-    libmd.so.0 => /lib/x86_64-linux-gnu/libmd.so.0 (0x0000793ef3235000)
-*/
-const modules_include = [
-    "qphotorec",
-];
-const modules_exclude = [
-    // "libstdc++.so.6.0.30", //?如果libstdc++的代码 穿插在业务代码中， 若忽略之 则调用链条断裂
-    "linux-vdso.so.1",
-    "libQt5Gui.so.5",
-    "libQt5Core.so.5",
-    "libQt5Widgets.so.5",
-    "libstdc++.so.6",
-    "libgcc_s.so.1",
-    "libc.so.6",
-    "libGL.so.1",
-    "libpng16.so.16",
-    "libz.so.1",
-    "libharfbuzz.so.0",
-    "libmd4c.so.0",
-    "libm.so.6",
-    "libdouble-conversion.so.3",
-    "libicui18n.so.70",
-    "libicuuc.so.70",
-    "libpcre2-16.so.0",
-    "libzstd.so.1",
-    "libglib-2.0.so.0",
-    "ld-linux-x86-64.so.2",
-    "libGLdispatch.so.0",
-    "libGLX.so.0",
-    "libfreetype.so.6",
-    "libgraphite2.so.3",
-    "libicudata.so.70",
-    "libpcre.so.3",
-    "libX11.so.6",
-    "libbrotlidec.so.1",
-    "libxcb.so.1",
-    "libbrotlicommon.so.1",
-    "libXau.so.6",
-    "libXdmcp.so.6",
-    "libbsd.so.0",
-    "libmd.so.0"
-];
 function focus_fnAdr(fnAdr) {
     const fnSym = DebugSymbol.fromAddress(fnAdr);
     const moduleName = fnSym.moduleName;
     if (moduleName == null) {
         throw new Error(`【断言失败】moduleName为null`);
     }
-    // 解决frida拦截目标进程中途崩溃 步骤  == frida_js_skip_crashFunc_when_Interceptor.attach.onEnter.md
-    if (moduleName == "qphotorec" &&
-        (fnSym.name == "_start")) {
-        return false;
+    // 解决frida拦截目标进程中途崩溃 步骤  == frida_js_skip_crashFunc_when_Interceptor.attach.onEnter.md 
+    // 日志量高达3千万行。 疑似特别长的有 pit_irq_timer 、 generate_memory_topology ， 尝试跳过
+    // 暂时只跟踪 tcg_gen_code 、 tb_gen_code 、 gen_intermediate_code
+    // 暂时只跟踪 cpu_exec
+    // 暂时只跟踪 cpu_loop_exec_tb
+    // 暂时只跟踪 __app_func_call__  ， frida 监控 qemu内 目标应用linux4内核中的 函数调用
+    // if(moduleName==g_appName   ){
+    if (fnSym.name == "_wrap_ffi_call_") {
+        console.log(`##获得符号:${JSON.stringify(fnSym)}`);
     }
-    // 疑似在file_check_cmp死循环，因此 不拦截
-    if (moduleName == "qphotorec" &&
-        (fnSym.name == "file_check_cmp")) {
-        return false;
-    }
+    return (
+    // fnSym.name == "tcg_gen_code" ||
+    // fnSym.name == "tb_gen_code" ||
+    // fnSym.name == "gen_intermediate_code"
+    // fnSym.name == "cpu_exec"
+    // fnSym.name == "cpu_loop_exec_tb"
+    fnSym.name == "_wrap_ffi_call_" // ffi_status ffi_call(ffi_cif *cif, void (*fn)(void), void *rvalue, void **avalue);
+    );
+    // }
     /**已确认 结束时frida出现'Process terminated' 对应的进程qphotorec有正常退出码0
     https://gitee.com/repok/dwmkerr--linux-kernel-module/blob/e36a16925cd60c6e4b3487d254bfe7fa5b150f75/greeter/run.sh
     */
-    if (modules_include.includes(moduleName)) {
-        return true;
-    }
-    if (modules_exclude.includes(moduleName)) {
-        return false;
-    }
+    // if(modules_include.includes(moduleName)){
+    //   return true;
+    // }
+    // if(modules_exclude.includes(moduleName)){
+    //   return false;
+    // }
 }
 function _main_() {
     const fnAdrLs = DebugSymbol.findFunctionsMatching("*");
@@ -261,7 +210,9 @@ function _main_() {
             continue;
         }
         // const fnSym=DebugSymbol.fromAddress(fnAdr);
-        console.log(`##${nowTxt()};Interceptor.attach fnAdr=${fnAdr};  进度【${k}~${fnAdrCnt} 】`);
+        //进度百分数
+        const progress_percent = (100 * k / fnAdrCnt).toFixed(2);
+        console.log(`##${nowTxt()};Interceptor.attach fnAdr=${fnAdr};  进度【${progress_percent}%,${k}~${fnAdrCnt} 】`);
         Interceptor.attach(fnAdr, {
             onEnter: function (args) {
                 OnFnEnterBusz(this, args);
@@ -272,6 +223,95 @@ function _main_() {
         });
     }
 }
+/** firda拦截应用的main函数并添加参数，注意只有类c编译器产生的应用才有main函数
+ *
+ * 添加参数 /app/qemu/build-v8.2.2/qemu-system-x86_64 -nographic  -append "console=ttyS0"  -kernel  /bal/linux-stable/arch/x86/boot/bzImage -initrd /bal/bldLinux4RunOnBochs/initramfs-busybox-i686.cpio.tar.gz
+ * 参考 :  https://stackoverflow.com/questions/72871352/frida-spawn-a-windows-linux-process-with-command-line-arguments/72880066#72880066
+ *
+ readelf --symbols /app/qemu/build/qemu-system-x86_64 | egrep "main$"
+ 37431: 00000000003153f0    23 FUNC    GLOBAL DEFAULT   16 main
+
+ 这种就是有main函数的
+
+ */
+function mainFunc_addArgTxt(mnArgTxt) {
+    if (mnArgTxt.length == 0) {
+        console.log("##main参数为空");
+        return;
+    }
+    const mnFnPtr = DebugSymbol.fromName("main").address;
+    if (mnFnPtr == null || mnFnPtr == undefined) {
+        console.log("##无main函数,无法通过拦截main函数来添加参数,可能不是类c编译器产生的应用");
+        return;
+    }
+    console.log(`##收到main函数参数mnArgTxt=${mnArgTxt}`);
+    const mnArgStrLs_raw = mnArgTxt.split(" ");
+    const mnArgStrLs = mnArgStrLs_raw.filter(elm => elm != "");
+    Interceptor.attach(mnFnPtr, {
+        onEnter: function (args) {
+            console.log(`##进入main函数`);
+            // main(int argc, char** argv): args[0] == int argc, args[1] == wchar *argv[]
+            const mnArgMemLs = mnArgStrLs.map(mnArgStr => Memory.allocUtf8String(mnArgStr));
+            const mnArgVect = Memory.alloc(mnArgMemLs.length * Process.pointerSize);
+            //参数列表作为this的字段，防止被垃圾回收
+            this.mnArgVect = mnArgVect;
+            for (let [k, argK] of mnArgMemLs.entries()) {
+                //每个参数都作为this的字段，防止被垃圾回收
+                this[`mnArgMem${k}`] = argK;
+                mnArgVect.add(k * Process.pointerSize).writePointer(argK);
+            }
+            // 覆盖 main(int argc, char** argv) 中的argc 、 argv
+            args[0] = ptr(mnArgMemLs.length);
+            args[1] = mnArgVect;
+        }
+    });
+}
+//应用程序全路径
+const g_appFullPath = '/app/qemu/build-v8.2.2/qemu-system-x86_64';
+//应用程序名字
+const g_appName = baseNameOfFilePath(g_appFullPath);
+/**
+ldd /app/qemu/build-v8.2.2/qemu-system-x86_64
+        linux-vdso.so.1 (0x00007ffff7fc1000)
+        libpixman-1.so.0 => /lib/x86_64-linux-gnu/libpixman-1.so.0 (0x00007ffff67a2000)
+        libz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x00007ffff6786000)
+        libgio-2.0.so.0 => /lib/x86_64-linux-gnu/libgio-2.0.so.0 (0x00007ffff65ad000)
+        libgobject-2.0.so.0 => /lib/x86_64-linux-gnu/libgobject-2.0.so.0 (0x00007ffff654d000)
+        libglib-2.0.so.0 => /lib/x86_64-linux-gnu/libglib-2.0.so.0 (0x00007ffff6413000)
+        libgmodule-2.0.so.0 => /lib/x86_64-linux-gnu/libgmodule-2.0.so.0 (0x00007ffff640a000)
+        libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007ffff6323000)
+        libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007ffff60fa000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007ffff7fc3000)
+        libmount.so.1 => /lib/x86_64-linux-gnu/libmount.so.1 (0x00007ffff60b6000)
+        libselinux.so.1 => /lib/x86_64-linux-gnu/libselinux.so.1 (0x00007ffff608a000)
+        libffi.so.8 => /lib/x86_64-linux-gnu/libffi.so.8 (0x00007ffff607d000)
+        libpcre.so.3 => /lib/x86_64-linux-gnu/libpcre.so.3 (0x00007ffff6005000)
+        libblkid.so.1 => /lib/x86_64-linux-gnu/libblkid.so.1 (0x00007ffff5fce000)
+        libpcre2-8.so.0 => /lib/x86_64-linux-gnu/libpcre2-8.so.0 (0x00007ffff5f37000)
+*/
+const modules_include = [
+    g_appName,
+];
+// "libstdc++.so.6.0.30", //?如果libstdc++的代码 穿插在业务代码中， 若忽略之 则调用链条断裂
+// ldd /app/qemu/build-v8.2.2/qemu-system-x86_64 | awk '{print " \""$1"\","}'
+const modules_exclude = [
+    "linux-vdso.so.1",
+    "libpixman-1.so.0",
+    "libz.so.1",
+    "libgio-2.0.so.0",
+    "libgobject-2.0.so.0",
+    "libglib-2.0.so.0",
+    "libgmodule-2.0.so.0",
+    "libm.so.6",
+    "libc.so.6",
+    "/lib64/ld-linux-x86-64.so.2",
+    "libmount.so.1",
+    "libselinux.so.1",
+    "libffi.so.8",
+    "libpcre.so.3",
+    "libblkid.so.1",
+    "libpcre2-8.so.0",
+];
 /**
 frida 运行报超时错误 "Failed to load script: timeout was reached" 解决
 frida 运行报超时错误 "Failed to load script: the connection is closed" 解决
@@ -282,6 +322,8 @@ frida 运行报超时错误 "Failed to load script: the connection is closed" �
  */
 // frida  https://github.com/frida/frida/issues/113#issuecomment-187134331
 setTimeout(function () {
+    const mnArgTxt = '/app/qemu/build-v8.2.2/qemu-system-x86_64 -nographic  -append "console=ttyS0"  -kernel  /bal/linux-stable/arch/x86/boot/bzImage -initrd /bal/bldLinux4RunOnBochs/initramfs-busybox-i686.cpio.tar.gz';
     //业务代码
+    mainFunc_addArgTxt(mnArgTxt);
     _main_();
 }, 0);
