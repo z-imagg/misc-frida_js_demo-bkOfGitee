@@ -92,7 +92,7 @@ var Direct;
     Direct[Direct["LeaveFn"] = 2] = "LeaveFn";
 })(Direct || (Direct = {}));
 class FnLog {
-    constructor(tmPntVal, logId, processId, curThreadId, direct, fnAdr, fnCallId, fnArgLs, fnSym) {
+    constructor(tmPntVal, logId, processId, curThreadId, direct, fnAdr, fnCallId, fnSym) {
         this.tmPnt = tmPntVal;
         this.logId = logId;
         this.processId = processId;
@@ -100,7 +100,6 @@ class FnLog {
         this.direct = direct;
         this.fnAdr = fnAdr;
         this.fnCallId = fnCallId;
-        this.fnArgLs = fnArgLs;
         this.fnSym = fnSym;
         //获取模块基地址
         if ((fnSym != undefined && fnSym != null)
@@ -141,16 +140,7 @@ function OnFnEnterBusz(thiz, args) {
     const tmPntVal = nextTmPnt(Process.id, curThreadId);
     var fnAdr = thiz.context.pc;
     var fnSym = findFnDbgSym(thiz.context.pc);
-    var fnArgLs = undefined;
-    // 
-    /**qemu源码   https://gitee.com/imagg/qemu--qemu/commit/9d2a4d441d249010897063b42ffb16f6ef5aae0f
-     static void _wrap_ffi_call_(ffi_cif *cif, void (*fn)(void), void *rvalue, void **avalue)
-     */
-    if (fnSym.name == "_wrap_ffi_call_") {
-        // 已确认 args[1].toInt32()的16进制形式 == args[1].toString(16)
-        fnArgLs = [args[1].toString(16)];
-    }
-    thiz.fnEnterLog = new FnLog(tmPntVal, ++gLogId, Process.id, curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnArgLs, fnSym);
+    thiz.fnEnterLog = new FnLog(tmPntVal, ++gLogId, Process.id, curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
     console.log(`${LogLinePrefix}${thiz.fnEnterLog.toJson()}`);
 }
 /**  OnLeave ，函数离开
@@ -163,7 +153,7 @@ function OnFnLeaveBusz(thiz, retval) {
         console.log(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】`);
     }
     const fnEnterLog = thiz.fnEnterLog;
-    const fnLeaveLog = new FnLog(tmPnt, ++gLogId, Process.id, curThreadId, Direct.LeaveFn, fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnArgLs, fnEnterLog.fnSym);
+    const fnLeaveLog = new FnLog(tmPnt, ++gLogId, Process.id, curThreadId, Direct.LeaveFn, fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);
     console.log(`${LogLinePrefix}${fnLeaveLog.toJson()}`);
 }
 function focus_fnAdr(fnAdr) {
@@ -174,32 +164,32 @@ function focus_fnAdr(fnAdr) {
     }
     // 解决frida拦截目标进程中途崩溃 步骤  == frida_js_skip_crashFunc_when_Interceptor.attach.onEnter.md 
     // 日志量高达3千万行。 疑似特别长的有 pit_irq_timer 、 generate_memory_topology ， 尝试跳过
-    // 暂时只跟踪 tcg_gen_code 、 tb_gen_code 、 gen_intermediate_code
-    // 暂时只跟踪 cpu_exec
-    // 暂时只跟踪 cpu_loop_exec_tb
-    // 暂时只跟踪 __app_func_call__  ， frida 监控 qemu内 目标应用linux4内核中的 函数调用
-    // if(moduleName==g_appName   ){
-    if (fnSym.name == "_wrap_ffi_call_") {
-        console.log(`##获得符号:${JSON.stringify(fnSym)}`);
+    if (moduleName == g_appName) {
+        return !(
+        //跳过:
+        fnSym.name == "pit_irq_timer" ||
+            fnSym.name == "generate_memory_topology" ||
+            fnSym.name == "ffi_call") && (
+        //关注:
+        fnSym.name == "_start");
     }
-    return (
-    // fnSym.name == "tcg_gen_code" ||
-    // fnSym.name == "tb_gen_code" ||
-    // fnSym.name == "gen_intermediate_code"
-    // fnSym.name == "cpu_exec"
-    // fnSym.name == "cpu_loop_exec_tb"
-    fnSym.name == "_wrap_ffi_call_" // ffi_status ffi_call(ffi_cif *cif, void (*fn)(void), void *rvalue, void **avalue);
-    );
-    // }
+    if (moduleName == "libffi.so.8") {
+        return !(
+        //跳过:
+        fnSym.name == "ffi_call");
+    }
     /**已确认 结束时frida出现'Process terminated' 对应的进程qphotorec有正常退出码0
     https://gitee.com/repok/dwmkerr--linux-kernel-module/blob/e36a16925cd60c6e4b3487d254bfe7fa5b150f75/greeter/run.sh
     */
-    // if(modules_include.includes(moduleName)){
-    //   return true;
-    // }
-    // if(modules_exclude.includes(moduleName)){
-    //   return false;
-    // }
+    //除上述特定关注外:
+    //关注包含模块的所有函数
+    if (modules_include.includes(moduleName)) {
+        return true;
+    }
+    //忽略排除模块的所有函数
+    if (modules_exclude.includes(moduleName)) {
+        return false;
+    }
 }
 function _main_() {
     const fnAdrLs = DebugSymbol.findFunctionsMatching("*");
@@ -289,11 +279,13 @@ ldd /app/qemu/build-v8.2.2/qemu-system-x86_64
         libblkid.so.1 => /lib/x86_64-linux-gnu/libblkid.so.1 (0x00007ffff5fce000)
         libpcre2-8.so.0 => /lib/x86_64-linux-gnu/libpcre2-8.so.0 (0x00007ffff5f37000)
 */
+//关注模块
 const modules_include = [
     g_appName,
 ];
 // "libstdc++.so.6.0.30", //?如果libstdc++的代码 穿插在业务代码中， 若忽略之 则调用链条断裂
 // ldd /app/qemu/build-v8.2.2/qemu-system-x86_64 | awk '{print " \""$1"\","}'
+//排除模块
 const modules_exclude = [
     "linux-vdso.so.1",
     "libpixman-1.so.0",
@@ -322,7 +314,9 @@ frida 运行报超时错误 "Failed to load script: the connection is closed" �
  */
 // frida  https://github.com/frida/frida/issues/113#issuecomment-187134331
 setTimeout(function () {
-    const mnArgTxt = '/app/qemu/build-v8.2.2/qemu-system-x86_64 -nographic  -append "console=ttyS0"  -kernel  /bal/linux-stable/arch/x86/boot/bzImage -initrd /bal/bldLinux4RunOnBochs/initramfs-busybox-i686.cpio.tar.gz';
+    //qemu启动启用了PVH的（linux原始内核）vmlinux, 参考:  http://giteaz:3000/frida_analyze_app_src/app_env/src/tag/tag_release__qemu_v8.2.2_build/busz/02_qemu_boot_vmlinux.sh
+    const mnArgTxt = '/app/qemu/build-v8.2.2/qemu-system-x86_64 -nographic  -append "console=ttyS0"  -kernel  /app/linux/vmlinux -initrd /app/linux/initRamFsHome/initramfs-busybox-i686.cpio.tar.gz';
+    // -d exec -D qemu.log  
     //业务代码
     mainFunc_addArgTxt(mnArgTxt);
     _main_();
