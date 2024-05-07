@@ -170,7 +170,9 @@ function focus_fnAdr(fnAdr) {
         //跳过:
         fnSym.name == "pit_irq_timer" ||
             fnSym.name == "generate_memory_topology" ||
-            fnSym.name == "ffi_call") {
+            fnSym.name == "ffi_call" ||
+            fnSym.name == "symcmp64" || //大量此函数调用（人工观看运行appOut-*.log）
+            false) {
             return false;
         }
     }
