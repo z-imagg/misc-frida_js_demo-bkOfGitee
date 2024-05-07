@@ -226,34 +226,39 @@ function focus_fnAdr(fnAdr:NativePointer){
 
 // 日志量高达3千万行。 疑似特别长的有 pit_irq_timer 、 generate_memory_topology ， 尝试跳过
 
-// 暂时只跟踪 tcg_gen_code 、 tb_gen_code 、 gen_intermediate_code
-// 暂时只跟踪 cpu_exec
-// 暂时只跟踪 cpu_loop_exec_tb
-// 暂时只跟踪 __app_func_call__  ， frida 监控 qemu内 目标应用linux4内核中的 函数调用
-  // if(moduleName==g_appName   ){
-    if (fnSym.name == "_wrap_ffi_call_") {
-      console.log(`##获得符号:${JSON.stringify(fnSym)}`);
-    }
-    return     (
-      // fnSym.name == "tcg_gen_code" ||
-      // fnSym.name == "tb_gen_code" ||
-      // fnSym.name == "gen_intermediate_code"
-      // fnSym.name == "cpu_exec"
-      // fnSym.name == "cpu_loop_exec_tb"
-      fnSym.name == "_wrap_ffi_call_" // ffi_status ffi_call(ffi_cif *cif, void (*fn)(void), void *rvalue, void **avalue);
+  if(moduleName==g_appName   ){
+    return     !(
+      //跳过:
+      fnSym.name == "pit_irq_timer" ||
+      fnSym.name == "generate_memory_topology"||
+      fnSym.name == "ffi_call"
+    ) && (
+      //关注:
+      fnSym.name == "_start"
+    )
+    ;
+  }
+
+  if(moduleName=="libffi.so.8"){
+    return !(
+      //跳过:
+      fnSym.name == "ffi_call"
     );
-  // }
+  }
 
 /**已确认 结束时frida出现'Process terminated' 对应的进程qphotorec有正常退出码0
 https://gitee.com/repok/dwmkerr--linux-kernel-module/blob/e36a16925cd60c6e4b3487d254bfe7fa5b150f75/greeter/run.sh
 */
-
-  // if(modules_include.includes(moduleName)){
-  //   return true;
-  // }
-  // if(modules_exclude.includes(moduleName)){
-  //   return false;
-  // }
+  //除上述特定关注外:
+  
+  //关注包含模块的所有函数
+  if(modules_include.includes(moduleName)){
+    return true;
+  }
+  //忽略排除模块的所有函数
+  if(modules_exclude.includes(moduleName)){
+    return false;
+  }
 }
 
 function _main_(){
@@ -360,11 +365,13 @@ ldd /app/qemu/build-v8.2.2/qemu-system-x86_64
         libpcre2-8.so.0 => /lib/x86_64-linux-gnu/libpcre2-8.so.0 (0x00007ffff5f37000)
 */
 
+//关注模块
 const modules_include=[
   g_appName,
 ];
 // "libstdc++.so.6.0.30", //?如果libstdc++的代码 穿插在业务代码中， 若忽略之 则调用链条断裂
 // ldd /app/qemu/build-v8.2.2/qemu-system-x86_64 | awk '{print " \""$1"\","}'
+//排除模块
 const modules_exclude:string[]=[
  "linux-vdso.so.1",
  "libpixman-1.so.0",
@@ -378,7 +385,7 @@ const modules_exclude:string[]=[
  "/lib64/ld-linux-x86-64.so.2",
  "libmount.so.1",
  "libselinux.so.1",
- "libffi.so.8",
+ "libffi.so.8",//被qemu大量调用的ffi_call在此模块libffi.so中
  "libpcre.so.3",
  "libblkid.so.1",
  "libpcre2-8.so.0",
