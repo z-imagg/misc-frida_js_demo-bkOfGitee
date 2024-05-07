@@ -227,23 +227,25 @@ function focus_fnAdr(fnAdr:NativePointer){
 // 日志量高达3千万行。 疑似特别长的有 pit_irq_timer 、 generate_memory_topology ， 尝试跳过
 
   if(moduleName==g_appName   ){
-    return     !(
+    // 'if ... return' 只关注给定条件, 不需要 全局条件 'return ...'   
+    if  (
       //跳过:
       fnSym.name == "pit_irq_timer" ||
       fnSym.name == "generate_memory_topology"||
       fnSym.name == "ffi_call"
-    ) && (
-      //关注:
-      fnSym.name == "_start"
-    )
-    ;
+    )  {
+      return false;
+    }
   }
 
   if(moduleName=="libffi.so.8"){
-    return !(
+    // 'if ... return' 只关注给定条件, 不需要 全局条件 'return ...'   
+    if (
       //跳过:
       fnSym.name == "ffi_call"
-    );
+    ){
+      return false;
+    }
   }
 
 /**已确认 结束时frida出现'Process terminated' 对应的进程qphotorec有正常退出码0
@@ -253,10 +255,12 @@ https://gitee.com/repok/dwmkerr--linux-kernel-module/blob/e36a16925cd60c6e4b3487
   
   //关注包含模块的所有函数
   if(modules_include.includes(moduleName)){
+    //  全局条件 'return ...'   , 不需要 'if ... return' 只关注给定条件
     return true;
   }
   //忽略排除模块的所有函数
   if(modules_exclude.includes(moduleName)){
+    //  全局条件 'return ...'   , 不需要 'if ... return' 只关注给定条件
     return false;
   }
 }

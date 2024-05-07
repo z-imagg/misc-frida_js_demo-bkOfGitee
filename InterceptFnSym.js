@@ -165,18 +165,22 @@ function focus_fnAdr(fnAdr) {
     // 解决frida拦截目标进程中途崩溃 步骤  == frida_js_skip_crashFunc_when_Interceptor.attach.onEnter.md 
     // 日志量高达3千万行。 疑似特别长的有 pit_irq_timer 、 generate_memory_topology ， 尝试跳过
     if (moduleName == g_appName) {
-        return !(
+        // 'if ... return' 只关注给定条件, 不需要 全局条件 'return ...'   
+        if (
         //跳过:
         fnSym.name == "pit_irq_timer" ||
             fnSym.name == "generate_memory_topology" ||
-            fnSym.name == "ffi_call") && (
-        //关注:
-        fnSym.name == "_start");
+            fnSym.name == "ffi_call") {
+            return false;
+        }
     }
     if (moduleName == "libffi.so.8") {
-        return !(
+        // 'if ... return' 只关注给定条件, 不需要 全局条件 'return ...'   
+        if (
         //跳过:
-        fnSym.name == "ffi_call");
+        fnSym.name == "ffi_call") {
+            return false;
+        }
     }
     /**已确认 结束时frida出现'Process terminated' 对应的进程qphotorec有正常退出码0
     https://gitee.com/repok/dwmkerr--linux-kernel-module/blob/e36a16925cd60c6e4b3487d254bfe7fa5b150f75/greeter/run.sh
@@ -184,10 +188,12 @@ function focus_fnAdr(fnAdr) {
     //除上述特定关注外:
     //关注包含模块的所有函数
     if (modules_include.includes(moduleName)) {
+        //  全局条件 'return ...'   , 不需要 'if ... return' 只关注给定条件
         return true;
     }
     //忽略排除模块的所有函数
     if (modules_exclude.includes(moduleName)) {
+        //  全局条件 'return ...'   , 不需要 'if ... return' 只关注给定条件
         return false;
     }
 }
