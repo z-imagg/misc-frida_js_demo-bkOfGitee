@@ -221,6 +221,11 @@ function focus_fnAdr(fnAdr:NativePointer){
     throw new Error(`【断言失败】moduleName为null`)
   }
 
+  //不关注名为空的函数
+  if (fnSym.name==null || fnSym.name==undefined){
+    console.log(`##不关注名为空的函数.fnAdr=[${fnAdr}]`)
+    return false;
+  }
 
 // 解决frida拦截目标进程中途崩溃 步骤  == frida_js_skip_crashFunc_when_Interceptor.attach.onEnter.md 
 
