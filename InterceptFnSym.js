@@ -149,11 +149,11 @@ function OnFnLeaveBusz(thiz, retval) {
     const curThreadId = Process.getCurrentThreadId();
     const tmPnt = nextTmPnt(Process.id, curThreadId);
     var fnAdr = thiz.context.pc;
-    if (!adrEq(fnAdr, thiz.fnEnterLog.fnAdr)) {
-        console.log(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】`);
-    }
     const fnEnterLog = thiz.fnEnterLog;
     const fnLeaveLog = new FnLog(tmPnt, ++gLogId, Process.id, curThreadId, Direct.LeaveFn, fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);
+    if (!adrEq(fnAdr, thiz.fnEnterLog.fnAdr)) {
+        console.log(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】, thiz.fnEnterLog=【${thiz.fnEnterLog.toJson()}】,fnLeaveLog=【${fnLeaveLog.toJson()}】`);
+    }
     console.log(`${LogLinePrefix}${fnLeaveLog.toJson()}`);
 }
 function focus_fnAdr(fnAdr) {

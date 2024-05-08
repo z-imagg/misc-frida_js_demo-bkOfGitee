@@ -206,11 +206,11 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
   const curThreadId:ThreadId=Process.getCurrentThreadId()
   const tmPnt:TmPntVal=nextTmPnt(Process.id,curThreadId)
   var fnAdr=thiz.context.pc;
-  if(!adrEq(fnAdr,thiz.fnEnterLog.fnAdr)){
-    console.log(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】`)
-  }
   const fnEnterLog:FnLog=thiz.fnEnterLog;
   const fnLeaveLog:FnLog=new FnLog(tmPnt,++gLogId,Process.id,curThreadId, Direct.LeaveFn, fnAdr, fnEnterLog.fnCallId, fnEnterLog.fnSym);
+  if(!adrEq(fnAdr,thiz.fnEnterLog.fnAdr)){
+    console.log(`##断言失败，onEnter、onLeave的函数地址居然不同？ 立即退出进程，排查问题. OnLeave.fnAdr=【${fnAdr}】, thiz.fnEnterLog.fnAdr=【${thiz.fnEnterLog.fnAdr}】, thiz.fnEnterLog=【${thiz.fnEnterLog.toJson()}】,fnLeaveLog=【${fnLeaveLog.toJson()}】`)
+  }
   console.log(`${LogLinePrefix}${fnLeaveLog.toJson()}`)
 }
 
