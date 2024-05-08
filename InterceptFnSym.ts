@@ -254,7 +254,15 @@ function focus_fnAdr(fnAdr:NativePointer){
       "pit_get_next_transition_time",
       "hpet_handle_legacy_irq",
       "pit_get_out",
-      "pit_irq_timer_update.part.0"].includes(fnSym.name) || 
+      "pit_irq_timer_update.part.0",
+
+      "victim_tlb_hit",
+      "mmu_lookup",		
+      "mmu_lookup1",	
+      "helper_stb_mmu",
+      "helper_ldub_mmu",
+      
+    ].includes(fnSym.name) || 
       false
     )  {
       return false;
