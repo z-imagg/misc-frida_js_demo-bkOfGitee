@@ -238,7 +238,23 @@ function focus_fnAdr(fnAdr:NativePointer){
       fnSym.name == "pit_irq_timer" ||
       fnSym.name == "generate_memory_topology"||
       fnSym.name == "ffi_call" ||
-      fnSym.name == "symcmp64" || //大量此函数调用（人工观看运行appOut-*.log）
+      //analyze_by_graph 打印大于1万次调用的函数们（方便返工修改frida_js以跳过大量调用函数）
+      ["symcmp64",
+      "pic_get_irq",
+      "pic_update_irq",
+      "pic_stat_update_irq",
+      "pic_set_irq",
+      "apic_accept_pic_intr",
+      "pic_irq_request",
+      "gsi_handler",
+      "ioapic_set_irq",
+      "icount_notify_exit",
+      "ioapic_stat_update_irq",
+      "qemu_timer_notify_cb",
+      "pit_get_next_transition_time",
+      "hpet_handle_legacy_irq",
+      "pit_get_out",
+      "pit_irq_timer_update.part.0"].includes(fnSym.name) || 
       false
     )  {
       return false;
