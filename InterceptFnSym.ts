@@ -1,7 +1,16 @@
 ////frida-trace初始化js
 
-// ［术语］　
+// ［术语］　gTmPntTb==gTmPnt_Table==gTmPnt表格==tmPnt计数器集合
 // ［简写］ AbsThrdId==AbsoluteThreadId==绝对线程id==进程id_线程id , gTmPntTb == globalTimePointTable == 全局时刻表格
+//  [备注] 
+//       frida_js 的  fnCallId计数器为gFnCallId   ， fnCallId进程内唯一, 具体如下
+//           1. 在 单应用进程 内 fnCallId唯一且递增  
+//           2. 当 单应用进程 内 各线程 分配到的fnCallId 放到一起 是 从1到N的连续自然数 
+//           3. 当 单应用进程 内 的某个线程 分配到的fnCallId 一般是 断裂的、非连续、但递增的自然数
+//       frida_js 的  tmPnt计数器为gTmPntTb   ， tmPnt线程内唯一, 具体如下
+//           1. 在 单应用进程 内 的线程k 其tmPnt计数器 为 gTmPntTb[k]
+//           2. 在 单应用进程 内 的某个线程 内 tmPnt 唯一且递增
+//           3. 在 单应用进程 内 ，线程1的 tmPnt 为 从1到N的连续自然数  ，线程2的 tmPnt 也为 从1到N的连续自然数 ，但是这两不同线程的 tmPnt 不表达任何关系
 
 function baseNameOfFilePath(filePath:string):string{
   // const filePath = '/app/qemu/build-v8.2.2/qemu-system-x86_64';
