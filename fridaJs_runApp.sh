@@ -36,16 +36,18 @@ $bash_en_dbg && set -x #如果启用了调试模式, 则打开调试模式
 pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 pip install -r requirements.txt
 
-#删除旧日志
-rm -frv *.log *.log.*
-
 #运行frida
 now="$(date +%s)"
-FridaOut="frida-out"
+#  'appName--' 是analyze_by_graph/config.py获取应用名称的依据, 不要乱动 
+FridaOut="/gain/frida-out/appName--qemu-system-x86_64--v8.2.2" && mkdir -p ${FridaOut}
 _LogFp_App="appOut-${now}.log"
-_LogFP_Mix="${FridaOut}-Mix-${now}.log"
-_LogFP_PrefPure="${FridaOut}-PrefixPure-${now}.log"
-_LogFP_Pure="${FridaOut}-Pure-${now}.log"
+_LogFP_Mix="${FridaOut}/Mix-${now}.log"
+_LogFP_PrefPure="${FridaOut}/PrefixPure-${now}.log"
+_LogFP_Pure="${FridaOut}/Pure-${now}.log"
+#  目前日志文件软链接
+_LogFP_PureNow_link="/gain/frida-out/PureNow.log"
+#删除旧日志
+# rm -fv $_LogFp_App  $_LogFP_Mix $_LogFP_PrefPure $_LogFP_Pure
 # 运行frida , 产生日志文件 ， 并 记录日志文件的数字签名
 #  注意　   　目标应用和其参数　比如为 "aaa.elf arg1 arg2" frida不允许其中的参数以中划线开头　否则会被当成是frida的参数, 
 #     即 frida只允许应用携带非中划线参数
@@ -58,6 +60,8 @@ grep __@__@   $_LogFP_Mix >  $_LogFP_PrefPure
 md5sum $_LogFP_PrefPure > $_LogFP_PrefPure.md5sum.txt
 #   去掉前缀成为纯净日志， 并 记录日志文件的数字签名
 sed 's/^__@__@//' $_LogFP_PrefPure > $_LogFP_Pure
+#重新创建目前日志文件软链接"/gain/frida-out/PureNow.log"
+unlink $_LogFP_PureNow_link ; ln -s $_LogFP_Pure $_LogFP_PureNow_link
 md5sum $_LogFP_Pure > $_LogFP_Pure.md5sum.txt
 
 #最终产物日志文件名举例： frida-out-Pure-1712031317.log  
