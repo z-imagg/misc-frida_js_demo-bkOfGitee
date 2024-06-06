@@ -66,14 +66,6 @@ class TimePoint {
     return JSON.stringify(this)  
   }
 }
-// class GlobalVar{
-//   //clang-var运行时基础 中函数 TL_TmPnt__update(tmPntVal)
-//   gNativeFn__clgVarRt__TL_TmPnt__update:NativeFunction<void,[number]>
-//   constructor (gNativeFn__clgVarRt__TL_TmPnt__update:NativeFunction<void,[number]>) {
-//     this.gNativeFn__clgVarRt__TL_TmPnt__update = gNativeFn__clgVarRt__TL_TmPnt__update
-//   }
-// }
-// let gVar:GlobalVar;
 let gNativeFn__clgVarRt__TL_TmPnt__update:NativeFunction<void,[number]>  |null;
 // let gNativeFn__clgVarRt__TL_TmPnt__update:NativeFunction<'void',['int']>  ;
 //函数符号表格 全局变量
@@ -217,7 +209,8 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
   thiz.fnEnterLog=new FnLog(tmPntVal,++gLogId,Process.id,curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
   console.log(`${LogLinePrefix}${thiz.fnEnterLog.toJson()}`)
   //调用 clang-var运行时基础 中函数 TL_TmPnt__update(tmPntVal)
-  if(gNativeFn__clgVarRt__TL_TmPnt__update!=null){
+  if(gNativeFn__clgVarRt__TL_TmPnt__update){
+    //call(返回值,参数们) 无返回值，传递null
     gNativeFn__clgVarRt__TL_TmPnt__update.call(null,tmPntVal);
   }
 
