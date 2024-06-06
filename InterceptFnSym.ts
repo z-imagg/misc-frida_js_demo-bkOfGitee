@@ -244,10 +244,23 @@ function focus_fnAdr(fnAdr:NativePointer){
     // 'if ... return' 只关注给定条件, 不需要 全局条件 'return ...'   
     if  (
       //跳过:
+      [
+//跳过clang-var的c运行时 runtime_c__vars_fn
+      "_init_varLs_inFn__RtC00", "createVar__RtC00", "destroyVarLs_inFn__RtC00",
+//跳过clang-var的c++运行时 runtime_cpp__vars_fn
+      // "_init_varLs_inFn__RtCxx", "createVar__RtCxx", "destroyVarLs_inFn__RtCxx", 
+      //执行命令  objdump --syms  /server_root/fridaAnlzAp/clang-var/build/runtime_cpp__vars_fn/libclangPlgVar_runtime_cxx.a
+      //发现 这些原始c++函数名 对应的abi函数名如下
+      "_Z23_init_varLs_inFn__RtCxxNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES4_ii", "_Z16createVar__RtCxxP11__VarDeclLsNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEi", "_Z24destroyVarLs_inFn__RtCxxP11__VarDeclLs",
+//跳过clang-var的运行时基础 runtime_c__TmPnt_ThreadLocal
+      "TL_TmPnt__update", "TL_TmPnt__get", "TL_TmPnt__printPtr",
+    ].includes(fnSym.name) || 
+//跳过qemu的巨量调用函数们:
+//  frida_js运行qemu, ..., 直到 analyze_by_graph,  analyze_by_graph能提供调用次数
       fnSym.name == "pit_irq_timer" ||
       fnSym.name == "generate_memory_topology"||
       fnSym.name == "ffi_call" ||
-      //analyze_by_graph 打印大于1万次调用的函数们（方便返工修改frida_js以跳过大量调用函数）
+//analyze_by_graph 打印大于1万次调用的函数们（方便返工修改frida_js以跳过大量调用函数）
       ["symcmp64",
       "pic_get_irq",
       "pic_update_irq",
