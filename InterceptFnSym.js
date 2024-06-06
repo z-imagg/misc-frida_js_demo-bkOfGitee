@@ -1,5 +1,14 @@
-// ［术语］　
+// ［术语］　gTmPntTb==gTmPnt_Table==gTmPnt表格==tmPnt计数器集合
 // ［简写］ AbsThrdId==AbsoluteThreadId==绝对线程id==进程id_线程id , gTmPntTb == globalTimePointTable == 全局时刻表格
+//  [备注] 
+//       frida_js 的  fnCallId计数器为gFnCallId   ， fnCallId进程内唯一, 具体如下
+//           1. 在 单应用进程 内 fnCallId唯一且递增  
+//           2. 当 单应用进程 内 各线程 分配到的fnCallId 放到一起 是 从1到N的连续自然数 
+//           3. 当 单应用进程 内 的某个线程 分配到的fnCallId 一般是 断裂的、非连续、但递增的自然数
+//       frida_js 的  tmPnt计数器为gTmPntTb   ， tmPnt线程内唯一, 具体如下
+//           1. 在 单应用进程 内 的线程k 其tmPnt计数器 为 gTmPntTb[k]
+//           2. 在 单应用进程 内 的某个线程 内 tmPnt 唯一且递增
+//           3. 在 单应用进程 内 ，线程1的 tmPnt 为 从1到N的连续自然数  ，线程2的 tmPnt 也为 从1到N的连续自然数 ，但是这两不同线程的 tmPnt 不表达任何关系
 function baseNameOfFilePath(filePath) {
     // const filePath = '/app/qemu/build-v8.2.2/qemu-system-x86_64';
     const parts = filePath.split('/');
@@ -38,6 +47,8 @@ class TimePoint {
         return JSON.stringify(this);
     }
 }
+let gNativeFn__clgVarRt__TL_TmPnt__update;
+// let gNativeFn__clgVarRt__TL_TmPnt__update:NativeFunction<'void',['int']>  ;
 //函数符号表格 全局变量
 const gFnSymTab = new Map();
 //函数调用id
@@ -142,6 +153,11 @@ function OnFnEnterBusz(thiz, args) {
     var fnSym = findFnDbgSym(thiz.context.pc);
     thiz.fnEnterLog = new FnLog(tmPntVal, ++gLogId, Process.id, curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
     console.log(`${LogLinePrefix}${thiz.fnEnterLog.toJson()}`);
+    //调用 clang-var运行时基础 中函数 TL_TmPnt__update(tmPntVal)
+    if (gNativeFn__clgVarRt__TL_TmPnt__update) {
+        //call(返回值,参数们) 无返回值，传递null
+        gNativeFn__clgVarRt__TL_TmPnt__update.call(null, tmPntVal);
+    }
 }
 /**  OnLeave ，函数离开
  */
@@ -173,7 +189,20 @@ function focus_fnAdr(fnAdr) {
         // 'if ... return' 只关注给定条件, 不需要 全局条件 'return ...'   
         if (
         //跳过:
-        fnSym.name == "pit_irq_timer" ||
+        [
+            //跳过clang-var的c运行时 runtime_c__vars_fn
+            "_init_varLs_inFn__RtC00", "createVar__RtC00", "destroyVarLs_inFn__RtC00",
+            //跳过clang-var的c++运行时 runtime_cpp__vars_fn
+            // "_init_varLs_inFn__RtCxx", "createVar__RtCxx", "destroyVarLs_inFn__RtCxx", 
+            //执行命令  objdump --syms  /server_root/fridaAnlzAp/clang-var/build/runtime_cpp__vars_fn/libclangPlgVar_runtime_cxx.a
+            //发现 这些原始c++函数名 对应的abi函数名如下
+            "_Z23_init_varLs_inFn__RtCxxNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES4_ii", "_Z16createVar__RtCxxP11__VarDeclLsNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEi", "_Z24destroyVarLs_inFn__RtCxxP11__VarDeclLs",
+            //跳过clang-var的运行时基础 runtime_c__TmPnt_ThreadLocal
+            "TL_TmPnt__update", "TL_TmPnt__get", "TL_TmPnt__printPtr",
+        ].includes(fnSym.name) ||
+            //跳过qemu的巨量调用函数们:
+            //  frida_js运行qemu, ..., 直到 analyze_by_graph,  analyze_by_graph能提供调用次数
+            fnSym.name == "pit_irq_timer" ||
             fnSym.name == "generate_memory_topology" ||
             fnSym.name == "ffi_call" ||
             //analyze_by_graph 打印大于1万次调用的函数们（方便返工修改frida_js以跳过大量调用函数）
@@ -226,7 +255,17 @@ function focus_fnAdr(fnAdr) {
         return false;
     }
 }
+/** 获取 clang-var运行时基础 中函数 TL_TmPnt__update(tmPntVal)
+ /fridaAnlzAp/clang-var/runtime_c__TmPnt_ThreadLocal/include/rntm_c__TmPnt_ThrLcl.h
+ void TL_TmPnt__update(int _TmPnt_new);
+ */
+function get_gNativeFn__clgVarRt__TL_TmPnt__update() {
+    const fnAdr__clgVarRt__TL_TmPnt__update = DebugSymbol.fromName("TL_TmPnt__update").address;
+    return new NativeFunction(fnAdr__clgVarRt__TL_TmPnt__update, 'void', ['int']);
+}
 function _main_() {
+    //获取 clang-var运行时基础 中函数 TL_TmPnt__update(tmPntVal)
+    gNativeFn__clgVarRt__TL_TmPnt__update = get_gNativeFn__clgVarRt__TL_TmPnt__update();
     const fnAdrLs = DebugSymbol.findFunctionsMatching("*");
     const fnAdrCnt = fnAdrLs.length;
     for (let [k, fnAdr] of fnAdrLs.entries()) {
