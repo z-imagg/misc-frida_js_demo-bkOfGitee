@@ -66,6 +66,8 @@ class TimePoint {
     return JSON.stringify(this)  
   }
 }
+//clang-var运行时基础 中函数 TL_TmPnt__update(tmPntVal)
+let gNativeFn__clgVarRt__TL_TmPnt__update:NativeFunction  =NULL;
 //函数符号表格 全局变量
 const gFnSymTab:Map<FnAdrHex,DebugSymbol> = new Map();
 //函数调用id
@@ -206,6 +208,10 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
   var fnSym :DebugSymbol|undefined= findFnDbgSym(thiz.context.pc)
   thiz.fnEnterLog=new FnLog(tmPntVal,++gLogId,Process.id,curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
   console.log(`${LogLinePrefix}${thiz.fnEnterLog.toJson()}`)
+  //调用 clang-var运行时基础 中函数 TL_TmPnt__update(tmPntVal)
+  if(!gNativeFn__clgVarRt__TL_TmPnt__update){
+    gNativeFn__clgVarRt__TL_TmPnt__update(tmPntVal);
+  }
 
 }
 
@@ -318,7 +324,18 @@ https://gitee.com/repok/dwmkerr--linux-kernel-module/blob/e36a16925cd60c6e4b3487
   }
 }
 
+/** 获取 clang-var运行时基础 中函数 TL_TmPnt__update(tmPntVal)
+ /fridaAnlzAp/clang-var/runtime_c__TmPnt_ThreadLocal/include/rntm_c__TmPnt_ThrLcl.h
+ void TL_TmPnt__update(int _TmPnt_new);
+ */
+function get_gNativeFn__clgVarRt__TL_TmPnt__update(){
+  const fnAdr__clgVarRt__TL_TmPnt__update:NativePointer = DebugSymbol.fromName("TL_TmPnt__update").address;
+  return  new NativeFunction(fnAdr__clgVarRt__TL_TmPnt__update, 'void',['int']);
+}
 function _main_(){
+  //获取 clang-var运行时基础 中函数 TL_TmPnt__update(tmPntVal)
+  gNativeFn__clgVarRt__TL_TmPnt__update=get_gNativeFn__clgVarRt__TL_TmPnt__update();
+
   const fnAdrLs:NativePointer[]=DebugSymbol.findFunctionsMatching("*");
   const fnAdrCnt=fnAdrLs.length
   for (let [k,fnAdr] of  fnAdrLs.entries()){
