@@ -47,7 +47,7 @@ class TimePoint {
         return JSON.stringify(this);
     }
 }
-let gNativeFn__clgVarRt__TL_TmPnt__update;
+let gNativeFn__clgVarRt__TL_TmPnt__update; // ThreadId == number , TmPntVal == number 
 // let gNativeFn__clgVarRt__TL_TmPnt__update:NativeFunction<'void',['int']>  ;
 //函数符号表格 全局变量
 const gFnSymTab = new Map();
@@ -165,7 +165,7 @@ function OnFnEnterBusz(thiz, args) {
     //调用 clang-var运行时基础 中函数 TL_TmPnt__update(tmPntVal)
     if (gNativeFn__clgVarRt__TL_TmPnt__update) {
         //call(返回值,参数们) 无返回值，传递null
-        gNativeFn__clgVarRt__TL_TmPnt__update.call(null, tmPntVal);
+        gNativeFn__clgVarRt__TL_TmPnt__update.call(null, curThreadId, tmPntVal);
     }
 }
 /**  OnLeave ，函数离开
@@ -270,7 +270,7 @@ function focus_fnAdr(fnAdr) {
  */
 function get_gNativeFn__clgVarRt__TL_TmPnt__update() {
     const fnAdr__clgVarRt__TL_TmPnt__update = DebugSymbol.fromName("TL_TmPnt__update").address;
-    return new NativeFunction(fnAdr__clgVarRt__TL_TmPnt__update, 'void', ['int']);
+    return new NativeFunction(fnAdr__clgVarRt__TL_TmPnt__update, 'void', ['int', 'int']);
 }
 function _main_() {
     //获取 clang-var运行时基础 中函数 TL_TmPnt__update(tmPntVal)

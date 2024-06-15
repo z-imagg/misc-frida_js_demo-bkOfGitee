@@ -66,7 +66,8 @@ class TimePoint {
     return JSON.stringify(this)  
   }
 }
-let gNativeFn__clgVarRt__TL_TmPnt__update:NativeFunction<void,[number]>  |null;
+
+let gNativeFn__clgVarRt__TL_TmPnt__update:NativeFunction<void,[ThreadId,TmPntVal]>  |null;  // ThreadId == number , TmPntVal == number 
 // let gNativeFn__clgVarRt__TL_TmPnt__update:NativeFunction<'void',['int']>  ;
 //函数符号表格 全局变量
 const gFnSymTab:Map<FnAdrHex,DebugSymbol> = new Map();
@@ -222,7 +223,7 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
   //调用 clang-var运行时基础 中函数 TL_TmPnt__update(tmPntVal)
   if(gNativeFn__clgVarRt__TL_TmPnt__update){
     //call(返回值,参数们) 无返回值，传递null
-    gNativeFn__clgVarRt__TL_TmPnt__update.call(null,tmPntVal);
+    gNativeFn__clgVarRt__TL_TmPnt__update.call(null,curThreadId,tmPntVal);
   }
 
 }
@@ -342,7 +343,7 @@ https://gitee.com/repok/dwmkerr--linux-kernel-module/blob/e36a16925cd60c6e4b3487
  */
 function get_gNativeFn__clgVarRt__TL_TmPnt__update(){
   const fnAdr__clgVarRt__TL_TmPnt__update:NativePointer = DebugSymbol.fromName("TL_TmPnt__update").address;
-  return  new NativeFunction(fnAdr__clgVarRt__TL_TmPnt__update, 'void',['int']);
+  return  new NativeFunction(fnAdr__clgVarRt__TL_TmPnt__update, 'void',['int','int']);
 }
 function _main_(){
   //获取 clang-var运行时基础 中函数 TL_TmPnt__update(tmPntVal)
