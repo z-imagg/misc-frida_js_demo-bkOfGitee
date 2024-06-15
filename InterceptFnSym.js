@@ -153,6 +153,15 @@ function OnFnEnterBusz(thiz, args) {
     var fnSym = findFnDbgSym(thiz.context.pc);
     thiz.fnEnterLog = new FnLog(tmPntVal, ++gLogId, Process.id, curThreadId, Direct.EnterFn, fnAdr, ++gFnCallId, fnSym);
     console.log(`${LogLinePrefix}${thiz.fnEnterLog.toJson()}`);
+    /** 用frida调用函数 TL_TmPnt__update 用以表达 此线程的此次函数调用的 _vdLs 和 时刻点 tmPntVal 一 一 对 应
+  
+    该函数签名:
+    /fridaAnlzAp/clang-var/runtime_c__TmPnt_ThreadLocal/include/rntm_c__TmPnt_ThrLcl.h
+    void TL_TmPnt__update(int _TmPnt_new);
+  
+    调用该函数 的 伪代码：
+    TL_TmPnt__update(tmPntVal)
+    */
     //调用 clang-var运行时基础 中函数 TL_TmPnt__update(tmPntVal)
     if (gNativeFn__clgVarRt__TL_TmPnt__update) {
         //call(返回值,参数们) 无返回值，传递null
