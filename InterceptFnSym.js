@@ -90,7 +90,7 @@ function OnFnLeaveBusz(thiz, retval) {
     //调用本地函数 func03_retVoid_outArgPtrStructUser
     if (nativeFn__func03_retVoid_outArgPtrStructUser.toInt32() != NULL.toInt32()) {
         const outArg_ptrStructUsr = Memory.alloc(C_Lang__sizeof_structTUser);
-        nativeFn__func03_retVoid_outArgPtrStructUser(4, M_ascii, outArg_ptrStructUsr);
+        nativeFn__func03_retVoid_outArgPtrStructUser.call(null, 4, M_ascii, outArg_ptrStructUsr);
         const ptr_filed_userId = outArg_ptrStructUsr.add(0);
         const ptr_filed_salary = ptr_filed_userId.add(C_Lang__sizeof_short);
         const ptr_filed_sum = ptr_filed_salary.add(C_Lang__sizeof_float);
