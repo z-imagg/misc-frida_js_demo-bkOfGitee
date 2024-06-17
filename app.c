@@ -127,14 +127,14 @@ sizeof(struct T_User)=8
     }
 
 
-    // char CharBuffer[512];
-    // int func04_ret_code=func04_retVoid_outArgCharBuffer(4.0, 17, CharBuffer);
-    // printf("func04_ret_code=%d,",func04_ret_code);
-    // if(func04_ret_code==_OK){
-    //     printf("CharBuffer=[%s]\n",CharBuffer);
-    // }
-    // //func04_ret_code=0,CharBuffer=[name:Zhangsan,id:920,pi:3.141593;zzzzzzzzzzzzz,hex:63,job_cnt:5,msg:hello_world,]
-    // // 结果正确
+    char CharBuffer[_Buffer_Limit];
+    int func04_ret_code=func04_retVoid_outArgCharBuffer(4.0, 17, CharBuffer);
+    printf("[app.c] func04_ret_code=%d,",func04_ret_code);
+    if(func04_ret_code==_OK){
+        printf("CharBuffer=[%s]\n",CharBuffer);
+    }
+    //[app.c] func04_ret_code=0,CharBuffer=[name:Zhangsan,id:920,pi:3.141593;zzzzzzzzzzzzz,hex:63,job_cnt:5,msg:hello_world,]
+    // 结果正确
     
     return 0;
 }
