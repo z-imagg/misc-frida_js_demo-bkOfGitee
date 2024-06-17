@@ -122,11 +122,17 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
   if(nativeFn__func03_retVoid_outArgPtrStructUser.toInt32()!=NULL.toInt32()){
     const outArg_ptrStructUsr:NativePointer=Memory.alloc(C_Lang__sizeof_structTUser);
     nativeFn__func03_retVoid_outArgPtrStructUser.call(null,4,M_ascii,outArg_ptrStructUsr) ;
+    //结构体的第1个字段 'short userId' 指针
     const ptr_filed_userId:NativePointer=outArg_ptrStructUsr.add(0);
+    //结构体的第2个字段 'float salary' 指针
     const ptr_filed_salary:NativePointer=ptr_filed_userId.add(C_Lang__sizeof_short);
+    //结构体的第3个字段 'int sum' 指针
     const ptr_filed_sum:NativePointer=ptr_filed_salary.add(C_Lang__sizeof_float);
+    //结构体的第1个字段   userId
     const userId:number = ptr_filed_userId.readShort();
+    //结构体的第2个字段   salary 
     const salary:number = ptr_filed_salary.readFloat();
+    //结构体的第3个字段   sum 
     const sum:number = ptr_filed_sum.readInt();
     console.log(`[outArg_ptrStructUsr],{userId=${userId},salary=${salary}, sum=${sum} }`)
     // {userId=204,salary=3000.10009765625, sum=-123 }, 结果正确
