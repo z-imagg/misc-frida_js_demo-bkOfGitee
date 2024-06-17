@@ -21,7 +21,10 @@ function focus_fnAdr(fnAdr:NativePointer){
   //若为主模块
   if(moduleName==g_appName   ){
     //跳过:
-    if  ([ "func02_skip", "_init", "_start", "register_tm_clones", "frame_dummy", "__do_global_dtors_aux", "deregister_tm_clones", "_fini"  ].includes(fnSym.name)   )  {
+    if  ([ "func02_skip", "_init", "_start", "register_tm_clones", "frame_dummy", "__do_global_dtors_aux", "deregister_tm_clones", "_fini" ,
+  // frida脚本中不跟踪被调用函数 func04_retVoid_outArgCharBuffer
+    "func04_retVoid_outArgCharBuffer" 
+  ].includes(fnSym.name)   )  {
       return false;
     }
     //关注:
@@ -128,6 +131,13 @@ let nativeFn__func01_return_int:FnType_func01  |null;
 let nativeFn__func03_retVoid_outArgPtrStructUser:NativeFunction<void,[number,number,NativePointer]> ;  
 
 const M_ascii:number='M'.charCodeAt(0);
+
+//frida中表达 函数 func04_retVoid_outArgCharBuffer 的签名
+// int func04_retVoid_outArgCharBuffer(double _doubleNum, long _longInt, char* outArg_CharBuffer)
+//持有本地函数
+let nativeFn__func04_retVoid_outArgCharBuffer:NativeFunction<number,[number,number,NativePointer]> ;  
+
+
 /**  OnLeave ，函数离开
  */
 function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
@@ -156,6 +166,28 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
     // {userId=204,salary=3000.10009765625, sum=-123 }, 结果正确
   } 
 
+
+  const _Concat_Limit:number =50
+  const _Concat_CntTop:number =4
+  const _Buffer_Limit:number=  _Concat_CntTop * _Concat_Limit
+  const _OK = 0
+  //调用本地函数 func04_retVoid_outArgCharBuffer
+  if(nativeFn__func04_retVoid_outArgCharBuffer.toInt32()!=NULL.toInt32()){
+    const outArg_CharBuffer:NativePointer=Memory.alloc(_Buffer_Limit);
+    // const ptr__func04_ret_code:NativePointer=Memory.alloc(4);
+    // console.log(`outArg_CharBuffer=${outArg_CharBuffer},ptr__func04_ret_code=${ptr__func04_ret_code}`)
+    //指针参数outArg_CharBuffer携带返回字符串
+    //     int func04_ret_code=func04_retVoid_outArgCharBuffer(4.0, 17, CharBuffer);
+    const func04_ret_code:number=nativeFn__func04_retVoid_outArgCharBuffer(4.0,17,outArg_CharBuffer) ;
+    // const func04_ret_code:number=ptr__func04_ret_code.readInt();
+    if(func04_ret_code==_OK){
+      const ret_str:string|null=outArg_CharBuffer.readCString()
+      console.log(`[frida] outArg_CharBuffer=[${ret_str}]`)
+      // [frida] outArg_CharBuffer=[name:Zhangsan,id:920,pi:3.141593;zzzzzzzzzzzzz,hex:63,job_cnt:5,msg:hello_world,]
+      //  结果正确
+    }
+  } 
+
 }
 
 function _main_(){
@@ -174,6 +206,12 @@ https://github.com/frida/frida/issues/1099
 
   */
   console.log(`##nativeFn__func03_retVoid_outArgPtrStructUser=${nativeFn__func03_retVoid_outArgPtrStructUser}`)
+
+  //获取 本地函数 func04_retVoid_outArgCharBuffer
+  const func04_retVoid_outArgCharBuffer:NativePointer = DebugSymbol.fromName("func04_retVoid_outArgCharBuffer").address;
+  // int func04_retVoid_outArgCharBuffer(double _doubleNum, long _longInt, char* outArg_CharBuffer)
+  nativeFn__func04_retVoid_outArgCharBuffer=  new NativeFunction(func04_retVoid_outArgCharBuffer, 'int',['double','long','pointer']);
+
 
   const fnAdrLs:NativePointer[]=DebugSymbol.findFunctionsMatching("*");
   console.log(`fnAdrLs.length=${fnAdrLs.length}`)
