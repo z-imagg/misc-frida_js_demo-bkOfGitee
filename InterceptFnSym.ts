@@ -94,6 +94,7 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
 function _main_(){
   //获取 clang-var运行时基础 中函数 TL_TmPnt__update(tmPntVal)
   nativeFn__func01_return_int=get_NativeFn__func01_return_int();
+  console.log(`##func01_return_int=${nativeFn__func01_return_int}`)
 
   const fnAdrLs:NativePointer[]=DebugSymbol.findFunctionsMatching("*");
   const fnAdrCnt=fnAdrLs.length
@@ -117,44 +118,6 @@ function _main_(){
 
 }
 
-function mainFunc_addArgTxt(mnArgTxt:string){
-  if (mnArgTxt.length==0){
-    console.log("##main参数为空")
-    return;
-  }
-  const func01_return_int:NativePointer = DebugSymbol.fromName("func01_return_int").address;
-  if (func01_return_int==null || func01_return_int==undefined){
-    console.log("##无main函数,无法通过拦截main函数来添加参数,可能不是类c编译器产生的应用")
-    return;
-  }
-  console.log(`##func01_return_int=${func01_return_int}`)
-  const mnArgStrLs_raw:string[]=mnArgTxt.split(" ")
-  const mnArgStrLs:string[]=mnArgStrLs_raw.filter(elm=>elm!="")
-  Interceptor.attach(func01_return_int, {
-      onEnter:function  (this: InvocationContext, args: InvocationArguments) {
-        console.log(`##进入main函数`)
-        // main(int argc, char** argv): args[0] == int argc, args[1] == wchar *argv[]
-        const mnArgMemLs:NativePointer[]=mnArgStrLs.map(mnArgStr=>Memory.allocUtf8String(mnArgStr))
-        const mnArgVect:NativePointer = Memory.alloc(mnArgMemLs.length * Process.pointerSize)
-        //参数列表作为this的字段，防止被垃圾回收
-        this.mnArgVect=mnArgVect;
-
-          for (let [k,argK] of  mnArgMemLs.entries()){
-            //每个参数都作为this的字段，防止被垃圾回收
-            this[`mnArgMem${k}`]=argK
-
-            mnArgVect.add(k*Process.pointerSize).writePointer(argK);
-          }
-
-  
-          
-          // 覆盖 main(int argc, char** argv) 中的argc 、 argv
-          args[0] = ptr(mnArgMemLs.length);
-          args[1] = mnArgVect;
-          
-      }
-  });
-}
 
 
 
@@ -172,7 +135,6 @@ setTimeout(function () {
   const mnArgTxt:string='/app/qemu/build-v8.2.2/qemu-system-x86_64 -nographic  -append "console=ttyS0"  -kernel  /app/linux/vmlinux -initrd /app/linux/initRamFsHome/initramfs-busybox-i686.cpio.tar.gz';
   // -d exec -D qemu.log  
   //业务代码
-  mainFunc_addArgTxt(mnArgTxt)
   _main_()
 
 }, 0);
