@@ -45,6 +45,25 @@ void func03_retVoid_outArgPtrStructUser(int _userId, char sex, struct T_User* ou
 #define _Err__k_outOf_Limit 3
 #define _Err__buffer_outOf_Limit 4
 #define _OK 0
+#define _Concat_single_ \
+    k++; \
+    printf("k=%d,concat_ret_n=%d; concatBuf=[%s]\n",k,concat_ret_n,concatBuf); \
+    if(concat_ret_n>_Concat_Limit){ \
+        return _Err__concat_outOf_Limit; \
+    } \
+    if(k>=_Concat_CntTop){ \
+        return _Err__k_outOf_Limit; \
+    } \
+    buffer_begin_k=outArg_CharBuffer+longConcat_ret_n; \
+    longLen_k=k*_Concat_Limit; \
+    longConcat_ret_n=snprintf(buffer_begin_k,longLen_k,"%s%s",buffer_begin_k, concatBuf); \
+    if(longConcat_ret_n>longLen_k){ \
+        return _Err__buffer_outOf_Limit; \
+    } \
+    printf("k=%d,longConcat_ret_n=%d; outArg_CharBuffer=[%s]\n",k,longConcat_ret_n,outArg_CharBuffer);
+    //宏_Concat_single_结束
+    
+
 int func04_retVoid_outArgCharBuffer(double _doubleNum, long _longInt, char* outArg_CharBuffer){
     if(outArg_CharBuffer==NULL){
         return _Err__CharBuffer_NULL;
@@ -64,41 +83,12 @@ int func04_retVoid_outArgCharBuffer(double _doubleNum, long _longInt, char* outA
 
     //拼接第1个字符串到缓存, 若超长则返回错误
     concat_ret_n=snprintf(concatBuf,_Concat_Limit,"name:%s,id:%d,pi:%f;","Zhangsan", 920, 3.1415926);
-    k++;
-    printf("k=%d,concat_ret_n=%d; concatBuf=[%s]\n",k,concat_ret_n,concatBuf);
-    if(concat_ret_n>_Concat_Limit){
-        return _Err__concat_outOf_Limit;
-    }
-    if(k>=_Concat_CntTop){
-        return _Err__k_outOf_Limit;
-    }
-    buffer_begin_k=outArg_CharBuffer+longConcat_ret_n;
-    longLen_k=k*_Concat_Limit;
-    longConcat_ret_n=snprintf(buffer_begin_k,longLen_k,"%s%s",buffer_begin_k, concatBuf);
-    if(longConcat_ret_n>longLen_k){
-        return _Err__buffer_outOf_Limit;
-    }
-    printf("k=%d,longConcat_ret_n=%d; outArg_CharBuffer=[%s]\n",k,longConcat_ret_n,outArg_CharBuffer);
-    
+    _Concat_single_
 
     int hex=99;
     //拼接第2个字符串到缓存, 若超长则返回错误
     concat_ret_n=snprintf(concatBuf,_Concat_Limit,"zzzzzzzzzzzzz,hex:%x,job_cnt:%d,msg:%s,", hex, 5, "hello_world");
-    k++;
-    printf("k=%d,concat_ret_n=%d; concatBuf=[%s]\n",k,concat_ret_n,concatBuf);
-    if(concat_ret_n>_Concat_Limit){
-        return _Err__concat_outOf_Limit;
-    }
-    if(k>=_Concat_CntTop){
-        return _Err__k_outOf_Limit;
-    }
-    buffer_begin_k=outArg_CharBuffer+longConcat_ret_n;
-    longLen_k=k*_Concat_Limit;
-    longConcat_ret_n=snprintf(buffer_begin_k,longLen_k,"%s%s",buffer_begin_k, concatBuf);
-    if(longConcat_ret_n>longLen_k){
-        return _Err__buffer_outOf_Limit;
-    }
-    printf("k=%d,longConcat_ret_n=%d; outArg_CharBuffer=[%s]\n",k,longConcat_ret_n,outArg_CharBuffer);
+    _Concat_single_
 
     return _OK;
 }
