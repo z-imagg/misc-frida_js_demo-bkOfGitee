@@ -12,7 +12,7 @@ cd $d
 function build_proj(){
 npx frida-compile  InterceptFnSym.ts --no-source-maps --output InterceptFnSym.js  && \
 #删除frida-compile生成的 js文件开头 乱七八糟的 几行
-sed -i '1,/frida-trace初始化js/d' InterceptFnSym.js
+sed -i '1,/fridaJs_Begin/d' InterceptFnSym.js
 }
 
 

@@ -15,3 +15,8 @@ echo "#frida --<tab><tab> 可获得补全"
 gcc -c -g1 -O0 app.c -o app.obj
 gcc app.obj -o app.elf
 ./app.elf argv1 argv2
+
+
+# 查找编译产物中的函数
+objdump --syms app.elf | grep fun
+# 0000000000001149 g     F .text  0000000000000055              func01_return_int
