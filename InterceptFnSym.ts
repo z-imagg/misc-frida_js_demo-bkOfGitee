@@ -67,12 +67,28 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
 
 }
 
-//frida中表达 函数func01_return_int 的签名
-type FnType_func01 = (a: number, b: number) => number;
-// int func01_return_int(char ch, double real_num);
+const C_Lang__sizeof_short=2; // sizeof(short)
 
+//frida中表达 函数 func01_return_int 的签名
+// int func01_return_int(char ch, double real_num);
+type FnType_func01 = (ch: number, real_num: number) => number;
 //持有本地函数
 let nativeFn__func01_return_int:FnType_func01  |null;  
+
+class T_User {
+  userId: number;
+  salary: number;
+
+  constructor(pointer: NativePointer) {
+      this.userId = pointer.readShort();
+      this.salary = pointer.add(2).readFloat();
+  }
+}
+//frida中表达 函数 func03_return_structUser 的签名
+// struct T_User func03_return_structUser(int _userId, char sex)
+type FnType_func03 = (_userId: number, sex: number) => T_User; // Uint8Array;
+//持有本地函数
+let nativeFn__func03_return_structUser:FnType_func03  |null;  
 
 /**  OnLeave ，函数离开
  */
@@ -85,11 +101,19 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
   }
   console.log(`[OnFnLeaveBusz],fnSym=[${fnSym}]`)
 
+  //调用本地函数 func01_return_int
   if(nativeFn__func01_return_int){
-    //call(返回值,参数们) 无返回值，传递null
-    // const ret_int_ptr:NativePointer=Memory.alloc(4);
     const ret_int:number=nativeFn__func01_return_int(32,-33); //结果应该是-9
     console.log(`[nativeFn__func01_return_int],ret_int=[${ret_int}]`)
+  }
+
+  //调用本地函数 func01_return_int
+  if(nativeFn__func03_return_structUser){
+    const ret_structUser:T_User=nativeFn__func03_return_structUser(4,'M'.charCodeAt(0)) ;
+    // const userId:number = ptr_ret_structUser.readShort();
+    // const salary:number = ptr_ret_structUser.add(C_Lang__sizeof_short).readFloat();
+    // console.log(`[ret_structUser],{userId=${userId},salary=${salary}}`)
+    console.log(`ret_structUser.salary=${ret_structUser.salary}`)
   }
 }
 
@@ -99,6 +123,16 @@ function _main_(){
   const func01_return_int:NativePointer = DebugSymbol.fromName("func01_return_int").address;
   nativeFn__func01_return_int=  new NativeFunction(func01_return_int, 'int',['char','double']);
   console.log(`##func01_return_int=${nativeFn__func01_return_int}`)
+
+  //获取 本地函数 func03_return_structUser
+  const func03_return_structUser:NativePointer = DebugSymbol.fromName("func03_return_structUser").address;
+  nativeFn__func03_return_structUser=  new NativeFunction(func03_return_structUser, 'T_User',['char','double']); //函数返回类型中无法表达 自定义结构体 T_User
+  /* frida网站 2019年 有人提出了改进需求 将    "C structs" 和  JavaScript objects 做对应 ，但该需求始终是Open的， 这说明frida目前无法调用 调用返回类型为 结构体的本地c函数
+  Map between "C structs" and JavaScript objects #1099  
+https://github.com/frida/frida/issues/1099
+
+  */
+  console.log(`##func03_return_structUser=${nativeFn__func03_return_structUser}`)
 
   const fnAdrLs:NativePointer[]=DebugSymbol.findFunctionsMatching("*");
   console.log(`fnAdrLs.length=${fnAdrLs.length}`)
