@@ -11,27 +11,28 @@ int func01_return_int(char ch, double real_num){
 struct T_User{
 short userId;
 float salary;
+int sum;
 };
 
-struct T_User func03_return_structUser(int _userId, char sex){
+//指针参数携带返回结构体
+void func03_retVoid_outArgPtrStructUser(int _userId, char sex, struct T_User* outArg_ptrStructUsr){
     if(_userId<30 && sex=='M'){
-        struct T_User girl;
-        girl.userId=_userId;
-        girl.salary=4000.3;
-        return girl;
+        outArg_ptrStructUsr->userId=_userId+200;
+        outArg_ptrStructUsr->salary=3000.1f;
+        outArg_ptrStructUsr->sum=-123;
+        return  ;
     }
     
     if(_userId>30 && sex=='F'){
-        struct T_User father;
-        father.userId=_userId;
-        father.salary=7000.9;
-        return father;
+        outArg_ptrStructUsr->userId=_userId+1000;
+        outArg_ptrStructUsr->salary=7000.9;
+        outArg_ptrStructUsr->sum=-654;
+        return  ;
     }
 
-    struct T_User somebody;
-    somebody.userId=0;
-    somebody.salary=-1;
-    return somebody;
+    outArg_ptrStructUsr->userId=0;
+    outArg_ptrStructUsr->salary=-1;
+    return ;
 }
 
 float func02_skip(){
