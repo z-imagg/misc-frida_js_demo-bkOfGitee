@@ -79,14 +79,15 @@ function near4times(n:number){
 }
 //}
 
+//{结构体 'struct T_User'
 const _C_Lang__sizeof_short=2; // sizeof(short)
 //short字段 需 对齐到4字节
 const C_Lang__sizeof_short=is4times(_C_Lang__sizeof_short)?_C_Lang__sizeof_short:near4times(_C_Lang__sizeof_short)
 console.log(`C_Lang__sizeof_short=${C_Lang__sizeof_short}`)
 const C_Lang__sizeof_float=4; // sizeof(float)
 const C_Lang__sizeof_int=4; // sizeof(int)
-let C_Lang__sizeof_structTUser:number=C_Lang__sizeof_short+C_Lang__sizeof_float+C_Lang__sizeof_int; // sizeof(float)
-
+let C_Lang__sizeof_structTUser:number=C_Lang__sizeof_short+C_Lang__sizeof_float+C_Lang__sizeof_int;
+//}
 
 
 //frida中表达 函数 func01_return_int 的签名
