@@ -44,16 +44,6 @@ function focus_fnAdr(fnAdr:NativePointer){
 
 }
 
-type FnType_func01 = (a: number, b: number) => number;
-
-
-// BaseNativeTypeMap
-// int func01_return_int(char ch, double real_num);
-let nativeFn__func01_return_int:FnType_func01  |null;  
-function get_NativeFn__func01_return_int(){
-  const func01_return_int:NativePointer = DebugSymbol.fromName("func01_return_int").address;
-  return  new NativeFunction(func01_return_int, 'int',['char','double']);
-}
 
 type FnAdrHex=string;
 //填充函数符号表格
@@ -75,6 +65,17 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
 
 
 
+}
+
+//frida中表达 函数func01_return_int 的签名
+type FnType_func01 = (a: number, b: number) => number;
+// int func01_return_int(char ch, double real_num);
+
+// BaseNativeTypeMap
+let nativeFn__func01_return_int:FnType_func01  |null;  
+function get_NativeFn__func01_return_int(){
+  const func01_return_int:NativePointer = DebugSymbol.fromName("func01_return_int").address;
+  return  new NativeFunction(func01_return_int, 'int',['char','double']);
 }
 
 /**  OnLeave ，函数离开

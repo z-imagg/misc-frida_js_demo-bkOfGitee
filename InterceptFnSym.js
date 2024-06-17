@@ -34,13 +34,6 @@ function focus_fnAdr(fnAdr) {
     //其他情况 跳过
     return false;
 }
-// BaseNativeTypeMap
-// int func01_return_int(char ch, double real_num);
-let nativeFn__func01_return_int;
-function get_NativeFn__func01_return_int() {
-    const func01_return_int = DebugSymbol.fromName("func01_return_int").address;
-    return new NativeFunction(func01_return_int, 'int', ['char', 'double']);
-}
 //填充函数符号表格
 function findFnDbgSym(fnAdr) {
     const fnSym = DebugSymbol.fromAddress(fnAdr);
@@ -54,6 +47,13 @@ function OnFnEnterBusz(thiz, args) {
     const fnSym = findFnDbgSym(fnAdr);
     console.log(`[OnFnEnterBusz],fnSym=[${fnSym}]`);
     thiz.fnAdr_OnFnEnterBusz = fnAdr;
+}
+// int func01_return_int(char ch, double real_num);
+// BaseNativeTypeMap
+let nativeFn__func01_return_int;
+function get_NativeFn__func01_return_int() {
+    const func01_return_int = DebugSymbol.fromName("func01_return_int").address;
+    return new NativeFunction(func01_return_int, 'int', ['char', 'double']);
 }
 /**  OnLeave ，函数离开
  */
