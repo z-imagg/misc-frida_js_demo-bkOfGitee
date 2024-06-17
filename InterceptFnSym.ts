@@ -71,12 +71,8 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
 type FnType_func01 = (a: number, b: number) => number;
 // int func01_return_int(char ch, double real_num);
 
-// BaseNativeTypeMap
+//持有本地函数
 let nativeFn__func01_return_int:FnType_func01  |null;  
-function get_NativeFn__func01_return_int(){
-  const func01_return_int:NativePointer = DebugSymbol.fromName("func01_return_int").address;
-  return  new NativeFunction(func01_return_int, 'int',['char','double']);
-}
 
 /**  OnLeave ，函数离开
  */
@@ -98,8 +94,10 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
 }
 
 function _main_(){
-  //获取 clang-var运行时基础 中函数 TL_TmPnt__update(tmPntVal)
-  nativeFn__func01_return_int=get_NativeFn__func01_return_int();
+
+  //获取本地函数func01_return_int
+  const func01_return_int:NativePointer = DebugSymbol.fromName("func01_return_int").address;
+  nativeFn__func01_return_int=  new NativeFunction(func01_return_int, 'int',['char','double']);
   console.log(`##func01_return_int=${nativeFn__func01_return_int}`)
 
   const fnAdrLs:NativePointer[]=DebugSymbol.findFunctionsMatching("*");

@@ -49,12 +49,8 @@ function OnFnEnterBusz(thiz, args) {
     thiz.fnAdr_OnFnEnterBusz = fnAdr;
 }
 // int func01_return_int(char ch, double real_num);
-// BaseNativeTypeMap
+//持有本地函数
 let nativeFn__func01_return_int;
-function get_NativeFn__func01_return_int() {
-    const func01_return_int = DebugSymbol.fromName("func01_return_int").address;
-    return new NativeFunction(func01_return_int, 'int', ['char', 'double']);
-}
 /**  OnLeave ，函数离开
  */
 function OnFnLeaveBusz(thiz, retval) {
@@ -73,8 +69,9 @@ function OnFnLeaveBusz(thiz, retval) {
     }
 }
 function _main_() {
-    //获取 clang-var运行时基础 中函数 TL_TmPnt__update(tmPntVal)
-    nativeFn__func01_return_int = get_NativeFn__func01_return_int();
+    //获取本地函数func01_return_int
+    const func01_return_int = DebugSymbol.fromName("func01_return_int").address;
+    nativeFn__func01_return_int = new NativeFunction(func01_return_int, 'int', ['char', 'double']);
     console.log(`##func01_return_int=${nativeFn__func01_return_int}`);
     const fnAdrLs = DebugSymbol.findFunctionsMatching("*");
     console.log(`fnAdrLs.length=${fnAdrLs.length}`);
