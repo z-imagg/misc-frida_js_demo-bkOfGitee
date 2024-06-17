@@ -37,7 +37,7 @@ void func03_retVoid_outArgPtrStructUser(int _userId, char sex, struct T_User* ou
 
 
 //指针参数携带返回结构体
-#define _Concat_Limit 11
+#define _Concat_Limit 33
 #define _Err__CharBuffer_NULL 1
 #define _Err__concat_outOf_Limit 2
 #define _OK 0
@@ -45,14 +45,28 @@ int func04_retVoid_outArgCharBuffer(double _doubleNum, long _longInt, char* outA
     if(outArg_CharBuffer==NULL){
         return _Err__CharBuffer_NULL;
     }
+
+    //初始化缓存为空串
+    outArg_CharBuffer[0]='\0';
+
     int concat_ret_n=0;
 
+    //拼接第1个字符串到缓存, 若超长则返回错误
     concat_ret_n=snprintf(outArg_CharBuffer,_Concat_Limit,"name:%s,id:%d,pi:%f,","Zhangsan", 920, 3.1415926);
-    printf("concat_ret_n=%d; outArg_CharBuffer=%s\n",concat_ret_n,outArg_CharBuffer);
+    printf("concat_ret_n=%d; outArg_CharBuffer=[%s]\n",concat_ret_n,outArg_CharBuffer);
     if(concat_ret_n>_Concat_Limit){
         return _Err__concat_outOf_Limit;
     }
     
+
+    int hex=99;
+    //拼接第2个字符串到缓存, 若超长则返回错误
+    concat_ret_n=snprintf(outArg_CharBuffer,_Concat_Limit,",zzzzzzzzzzzzz,hex:%x,job_cnt:%d,msg:%s,",hex, 5, "hello_world");
+    printf("concat_ret_n=%d; outArg_CharBuffer=[%s]\n",concat_ret_n,outArg_CharBuffer);
+    if(concat_ret_n>_Concat_Limit){
+        return _Err__concat_outOf_Limit;
+    }
+
     return _OK;
 }
 
@@ -91,7 +105,8 @@ sizeof(struct T_User)=8
 
 
     char CharBuffer[512];
-    func04_retVoid_outArgCharBuffer(4.0, 17, CharBuffer);
+    int func04_ret_code=func04_retVoid_outArgCharBuffer(4.0, 17, CharBuffer);
+    printf("func04_ret_code=%d\n",func04_ret_code);
     
     return 0;
 }
