@@ -36,7 +36,7 @@ void func03_retVoid_outArgPtrStructUser(int _userId, char sex, struct T_User* ou
 }
 
 
-//指针参数携带返回结构体
+//指针参数携带返回字符串
 #define _Concat_Limit 50
 #define _Concat_CntTop 4
 #define _Buffer_Limit  (_Concat_CntTop * _Concat_Limit)
@@ -129,7 +129,12 @@ sizeof(struct T_User)=8
 
     char CharBuffer[512];
     int func04_ret_code=func04_retVoid_outArgCharBuffer(4.0, 17, CharBuffer);
-    printf("func04_ret_code=%d,CharBuffer=[%s]\n",func04_ret_code,CharBuffer);
+    printf("func04_ret_code=%d,",func04_ret_code);
+    if(func04_ret_code==_OK){
+        printf("CharBuffer=[%s]\n",CharBuffer);
+    }
+    //func04_ret_code=0,CharBuffer=[name:Zhangsan,id:920,pi:3.141593;zzzzzzzzzzzzz,hex:63,job_cnt:5,msg:hello_world,]
+    // 结果正确
     
     return 0;
 }
