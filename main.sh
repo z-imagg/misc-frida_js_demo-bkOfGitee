@@ -9,8 +9,8 @@ echo 0 |sudo tee  /proc/sys/kernel/randomize_va_space
 
 ### frida命令bash补全脚本生成
 set +x ; source /app/Miniconda3-py310_22.11.1-1/bin/activate ; set -x
-pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
-pip install -r requirements.txt
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple > /dev/null
+pip install -r requirements.txt > /dev/null
 helpTxt2bashComplete.py --progFile frida
 source bash-complete--frida.sh
 echo "#frida --<tab><tab> 可获得补全"
@@ -25,6 +25,6 @@ bash ./rebuild_ts.sh
 # 查找编译产物中的函数
 objdump --syms app.elf | grep fun
 # 0000000000001149 g     F .text  0000000000000055              func01_return_int
-
+objdump --syms app.elf | grep main
 
 frida  --load ./InterceptFnSym.js    --output app.log    --file ./app.elf

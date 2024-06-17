@@ -21,8 +21,12 @@ function focus_fnAdr(fnAdr:NativePointer){
   //若为主模块
   if(moduleName==g_appName   ){
     //跳过:
-    if  ([ "func02_skip", "xxx"  ].includes(fnSym.name)   )  {
+    if  ([ "func02_skip", "_init", "_start", "register_tm_clones", "frame_dummy", "__do_global_dtors_aux", "deregister_tm_clones", "_fini"  ].includes(fnSym.name)   )  {
       return false;
+    }
+    //关注:
+    else{
+      return true;
     }
   }
 
@@ -75,9 +79,9 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
  */
 function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
   const curThreadId:ThreadId=Process.getCurrentThreadId()
-  var fnAdr=thiz.context.pc;
+  const fnAdr:NativePointer=thiz.context.pc;
   const fnSym :DebugSymbol|undefined= findFnDbgSym(fnAdr)
-  if(fnAdr!=thiz.fnAdr_OnFnEnterBusz){
+  if(fnAdr.readInt()!=thiz.fnAdr_OnFnEnterBusz.readInt()){
     console.log(`##错误，进出函数地址不同`)
   }
   console.log(`[OnFnLeaveBusz],fnSym=[${fnSym}]`)
@@ -97,6 +101,7 @@ function _main_(){
   console.log(`##func01_return_int=${nativeFn__func01_return_int}`)
 
   const fnAdrLs:NativePointer[]=DebugSymbol.findFunctionsMatching("*");
+  console.log(`fnAdrLs.length=${fnAdrLs.length}`)
   const fnAdrCnt=fnAdrLs.length
   for (let [k,fnAdr] of  fnAdrLs.entries()){
     
@@ -104,7 +109,7 @@ function _main_(){
       continue;
     }
 
-
+    console.log(`关注函数 ${fnAdr}`)
     Interceptor.attach(fnAdr,{
       onEnter:function  (this: InvocationContext, args: InvocationArguments) {
         OnFnEnterBusz(this,args)
