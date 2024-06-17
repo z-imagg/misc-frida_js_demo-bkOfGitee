@@ -35,6 +35,27 @@ void func03_retVoid_outArgPtrStructUser(int _userId, char sex, struct T_User* ou
     return ;
 }
 
+
+//指针参数携带返回结构体
+#define _Concat_Limit 11
+#define _Err__CharBuffer_NULL 1
+#define _Err__concat_outOf_Limit 2
+#define _OK 0
+int func04_retVoid_outArgCharBuffer(double _doubleNum, long _longInt, char* outArg_CharBuffer){
+    if(outArg_CharBuffer==NULL){
+        return _Err__CharBuffer_NULL;
+    }
+    int concat_ret_n=0;
+
+    concat_ret_n=snprintf(outArg_CharBuffer,_Concat_Limit,"name:%s,id:%d,pi:%f,","Zhangsan", 920, 3.1415926);
+    printf("concat_ret_n=%d; outArg_CharBuffer=%s\n",concat_ret_n,outArg_CharBuffer);
+    if(concat_ret_n>_Concat_Limit){
+        return _Err__concat_outOf_Limit;
+    }
+    
+    return _OK;
+}
+
 float func02_skip(){
     printf("call func02_skip\n");
     return 4.1;
@@ -68,6 +89,9 @@ sizeof(struct T_User)=8
         }
     }
 
+
+    char CharBuffer[512];
+    func04_retVoid_outArgCharBuffer(4.0, 17, CharBuffer);
     
     return 0;
 }
