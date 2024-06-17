@@ -44,10 +44,12 @@ function focus_fnAdr(fnAdr:NativePointer){
 
 }
 
+type FnType_func01 = (a: number, b: number) => number;
+
 
 // BaseNativeTypeMap
-
-let nativeFn__func01_return_int:NativeFunction<void,[number,number]>  |null;  
+// int func01_return_int(char ch, double real_num);
+let nativeFn__func01_return_int:FnType_func01  |null;  
 function get_NativeFn__func01_return_int(){
   const func01_return_int:NativePointer = DebugSymbol.fromName("func01_return_int").address;
   return  new NativeFunction(func01_return_int, 'int',['char','double']);
@@ -88,9 +90,8 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
 
   if(nativeFn__func01_return_int){
     //call(返回值,参数们) 无返回值，传递null
-    const ret_int_ptr:NativePointer=Memory.alloc(4);
-    nativeFn__func01_return_int.call(ret_int_ptr,32,1.5);
-    const ret_int:number=ret_int_ptr.toInt32();
+    // const ret_int_ptr:NativePointer=Memory.alloc(4);
+    const ret_int:number=nativeFn__func01_return_int(32,-33); //结果应该是-9
     console.log(`[nativeFn__func01_return_int],ret_int=[${ret_int}]`)
   }
 }

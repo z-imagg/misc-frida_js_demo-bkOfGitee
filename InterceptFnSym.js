@@ -35,6 +35,7 @@ function focus_fnAdr(fnAdr) {
     return false;
 }
 // BaseNativeTypeMap
+// int func01_return_int(char ch, double real_num);
 let nativeFn__func01_return_int;
 function get_NativeFn__func01_return_int() {
     const func01_return_int = DebugSymbol.fromName("func01_return_int").address;
@@ -66,9 +67,8 @@ function OnFnLeaveBusz(thiz, retval) {
     console.log(`[OnFnLeaveBusz],fnSym=[${fnSym}]`);
     if (nativeFn__func01_return_int) {
         //call(返回值,参数们) 无返回值，传递null
-        const ret_int_ptr = Memory.alloc(4);
-        nativeFn__func01_return_int.call(ret_int_ptr, 32, 1.5);
-        const ret_int = ret_int_ptr.toInt32();
+        // const ret_int_ptr:NativePointer=Memory.alloc(4);
+        const ret_int = nativeFn__func01_return_int(32, -33); //结果应该是-9
         console.log(`[nativeFn__func01_return_int],ret_int=[${ret_int}]`);
     }
 }
