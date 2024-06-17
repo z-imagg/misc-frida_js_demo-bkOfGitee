@@ -79,14 +79,41 @@ function near4times(n:number){
 }
 //}
 
+//{结构体 'struct T_User'
 const _C_Lang__sizeof_short=2; // sizeof(short)
 //short字段 需 对齐到4字节
 const C_Lang__sizeof_short=is4times(_C_Lang__sizeof_short)?_C_Lang__sizeof_short:near4times(_C_Lang__sizeof_short)
 console.log(`C_Lang__sizeof_short=${C_Lang__sizeof_short}`)
 const C_Lang__sizeof_float=4; // sizeof(float)
 const C_Lang__sizeof_int=4; // sizeof(int)
-let C_Lang__sizeof_structTUser:number=C_Lang__sizeof_short+C_Lang__sizeof_float+C_Lang__sizeof_int; // sizeof(float)
+let C_Lang__sizeof_structTUser:number=C_Lang__sizeof_short+C_Lang__sizeof_float+C_Lang__sizeof_int;
 
+
+// ts的类Struct_TUser 表示 c结构体'struct T_User'
+class Struct_TUser {
+  userId: number;
+  salary: number;
+  sum: number;
+
+  //将c结构体'struct T_User'转为ts的类Struct_TUser
+  constructor(outArg_ptrStructUsr: NativePointer) {
+
+    //结构体的第1个字段 'short userId' 指针
+    const ptr_filed_userId:NativePointer=outArg_ptrStructUsr.add(0);
+    //结构体的第2个字段 'float salary' 指针
+    const ptr_filed_salary:NativePointer=ptr_filed_userId.add(C_Lang__sizeof_short);
+    //结构体的第3个字段 'int sum' 指针
+    const ptr_filed_sum:NativePointer=ptr_filed_salary.add(C_Lang__sizeof_float);
+    
+    //结构体的第1个字段   userId
+    this.userId = ptr_filed_userId.readShort();
+    //结构体的第2个字段   salary 
+    this.salary = ptr_filed_salary.readFloat();
+    //结构体的第3个字段   sum 
+    this.sum = ptr_filed_sum.readInt();
+  }
+}
+//}
 
 
 //frida中表达 函数 func01_return_int 的签名
@@ -121,14 +148,11 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
   //调用本地函数 func03_retVoid_outArgPtrStructUser
   if(nativeFn__func03_retVoid_outArgPtrStructUser.toInt32()!=NULL.toInt32()){
     const outArg_ptrStructUsr:NativePointer=Memory.alloc(C_Lang__sizeof_structTUser);
+    //指针参数outArg_ptrStructUsr携带返回结构体
     nativeFn__func03_retVoid_outArgPtrStructUser.call(null,4,M_ascii,outArg_ptrStructUsr) ;
-    const ptr_filed_userId:NativePointer=outArg_ptrStructUsr.add(0);
-    const ptr_filed_salary:NativePointer=ptr_filed_userId.add(C_Lang__sizeof_short);
-    const ptr_filed_sum:NativePointer=ptr_filed_salary.add(C_Lang__sizeof_float);
-    const userId:number = ptr_filed_userId.readShort();
-    const salary:number = ptr_filed_salary.readFloat();
-    const sum:number = ptr_filed_sum.readInt();
-    console.log(`[outArg_ptrStructUsr],{userId=${userId},salary=${salary}, sum=${sum} }`)
+    //将c结构体'struct T_User'转为ts的类Struct_TUser
+    const retStructTUser=new Struct_TUser(outArg_ptrStructUsr)
+    console.log(`[outArg_ptrStructUsr],{userId=${retStructTUser.userId},salary=${retStructTUser.salary}, sum=${retStructTUser.sum} }`)
     // {userId=204,salary=3000.10009765625, sum=-123 }, 结果正确
   } 
 
