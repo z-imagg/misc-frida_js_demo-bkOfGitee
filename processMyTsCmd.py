@@ -37,26 +37,39 @@ def writeTxtFile(fpath:str,txt:str)->int:
     ret:int=Path(fpath).write_text(txt)
     return ret
 
+#执行MyTsCmd
 def execMyTsCmd(myTsCmd:str)->str:
     #解析MyTsCmd为文件路径
     _tsF_to_import:str=parseMyTsCmd(myTsCmd)
     #读取该ts文件的文本内容
     tsTxt:str=readTxtFile(_tsF_to_import)
-    return tsTxt
+    title:str=f"//import from ts file {_tsF_to_import}"
+    tsTxt_2:str=f"{title}\n{tsTxt}"
+    return tsTxt_2
 
+#单行文本转换
 def lineK_transform(lineK:str):
+    #若是MyTsCmd，则执行，并返回执行结果
     if isMyTsCmd(lineK):
         tsTxt:str=execMyTsCmd(lineK)
         return tsTxt
+    #否则,保持该行不变
     else:
         return lineK
-    
+
+#处理主ts文件    
 def process(fpath_mainTs:str)->None:
+    #读取主ts文件
     mainTs_txt:str=readTxtFile(fpath_mainTs)
+    #主ts文本按行拆开
     line_ls:typing.List[str]=mainTs_txt.split("\n")
+    #转换各行
     line_ls_2:typing.List[str]=list(map(lineK_transform, line_ls))
+    #新行们粘结成大文本
     mainTs_txt_2:str="\n".join(line_ls_2)
-    writeTxtFile(fpath_mainTs,mainTs_txt_2)
+    #写入转换后ts文本
+    fpath_mainTs_new:str=f"{fpath_mainTs}.transform"
+    writeTxtFile(fpath_mainTs_new,mainTs_txt_2)
     
     pass
 
@@ -70,5 +83,4 @@ def _test__process():
     pass
 
 if __name__=="__main__":
-    # _test__execMyTsCmd()
-    _test__process()
+    process("InterceptFnSym.ts")
