@@ -2,8 +2,15 @@
 
 import typing
 MyTsCmd_Prefix:str='//MyTsCmd//'
+MyTsCmdResult_Prefix:str='//MyTsCR//'
 LF:str="\n"
 CRLF:str=f"\r{LF}"
+
+def get__MyTsCmdResult(myTsCmd:str)->str:
+    assert isMyTsCmd(myTsCmd)
+    myTsCmdResult:str=myTsCmd.replace(MyTsCmd_Prefix,MyTsCmdResult_Prefix)
+    return myTsCmdResult
+
 
 def isMyTsCmd(txt:str):
     if txt is None:
@@ -45,7 +52,7 @@ def execMyTsCmd(myTsCmd:str)->str:
     _tsF_to_import:str=parseMyTsCmd(myTsCmd)
     #读取该ts文件的文本内容
     tsTxt:str=readTxtFile(_tsF_to_import)
-    title:str=f"//import from ts file {_tsF_to_import}"
+    title:str=get__MyTsCmdResult(myTsCmd)
     tsTxt_2:str=f"{title}{LF}{tsTxt}"
     return tsTxt_2
 
