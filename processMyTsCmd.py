@@ -2,13 +2,15 @@
 
 import typing
 MyTsCmd_Prefix:str='//MyTsCmd//'
+LF:str="\n"
+CRLF:str=f"\r{LF}"
 
 def isMyTsCmd(txt:str):
     if txt is None:
         return False
-    if txt.count("\n") > 0:
+    if txt.count(LF) > 0:
         return False
-    if txt.count("\r\n") > 0:
+    if txt.count(CRLF) > 0:
         return False
     _isMyTsCmd:bool=  txt.startswith(MyTsCmd_Prefix)
     return _isMyTsCmd
@@ -44,7 +46,7 @@ def execMyTsCmd(myTsCmd:str)->str:
     #读取该ts文件的文本内容
     tsTxt:str=readTxtFile(_tsF_to_import)
     title:str=f"//import from ts file {_tsF_to_import}"
-    tsTxt_2:str=f"{title}\n{tsTxt}"
+    tsTxt_2:str=f"{title}{LF}{tsTxt}"
     return tsTxt_2
 
 #单行文本转换
@@ -62,11 +64,11 @@ def process(fpath_mainTs:str)->None:
     #读取主ts文件
     mainTs_txt:str=readTxtFile(fpath_mainTs)
     #主ts文本按行拆开
-    line_ls:typing.List[str]=mainTs_txt.split("\n")
+    line_ls:typing.List[str]=mainTs_txt.split(LF)
     #转换各行
     line_ls_2:typing.List[str]=list(map(lineK_transform, line_ls))
     #新行们粘结成大文本
-    mainTs_txt_2:str="\n".join(line_ls_2)
+    mainTs_txt_2:str=LF.join(line_ls_2)
     #写入转换后ts文本
     fpath_mainTs_new:str=f"{fpath_mainTs}.transform"
     writeTxtFile(fpath_mainTs_new,mainTs_txt_2)
