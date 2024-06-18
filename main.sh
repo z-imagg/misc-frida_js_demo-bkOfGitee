@@ -32,3 +32,4 @@ _appName=$(jq .appName config.json)
 
 # 以frida运行应用
 frida  --load ./InterceptFnSym.js        --file $_appName  ; exitCode=$? && echo "退出代码=${exitCode}"
+# 不知道为什么 frida运行应用的退出代码 exitCode 总是1
