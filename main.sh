@@ -27,4 +27,4 @@ objdump --syms app.elf | grep fun
 # 0000000000001149 g     F .text  0000000000000055              func01_return_int
 objdump --syms app.elf | grep main
 
-frida  --load ./InterceptFnSym.js    --output app.log    --file ./app.elf  ; exitCode=$? && echo "退出代码=${exitCode}"
+frida  --load ./InterceptFnSym.js        --file ./app.elf  ; exitCode=$? && echo "退出代码=${exitCode}"
