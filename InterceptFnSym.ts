@@ -171,12 +171,11 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
   //调用本地函数 func04_retVoid_outArgCharBuffer
   if(nativeFn__func04_retVoid_outArgCharBuffer.toInt32()!=NULL.toInt32()){
     const outArg_CharBuffer:NativePointer=Memory.alloc(_Buffer_Limit);
-    // const ptr__func04_ret_code:NativePointer=Memory.alloc(4);
-    // console.log(`outArg_CharBuffer=${outArg_CharBuffer},ptr__func04_ret_code=${ptr__func04_ret_code}`)
     //指针参数outArg_CharBuffer携带返回字符串
     //     int func04_ret_code=func04_retVoid_outArgCharBuffer(4.0, 17, CharBuffer);
     const func04_ret_code:number=nativeFn__func04_retVoid_outArgCharBuffer(4.0,17,outArg_CharBuffer) ;
-    // const func04_ret_code:number=ptr__func04_ret_code.readInt();
+    console.log(`func04_ret_code=${func04_ret_code}`)
+    // func04_ret_code=0
     if(func04_ret_code==_OK){
       const ret_str:string|null=outArg_CharBuffer.readCString()
       console.log(`[frida] outArg_CharBuffer=[${ret_str}]`)
