@@ -1,14 +1,61 @@
 
 
 import typing
-MyTsCmd_Prefix:str='//MyTsCmd_ImportTsF//'
+MyTsCmd_Prefix:str='//MyTsCmd//'
 MyTsCmdResult_Prefix:str='//MyTsCRst//'
 LF:str="\n"
 CRLF:str=f"\r{LF}"
 
-def get__MyTsCmdResult(MyTsCmd_ImportTsF:str)->str:
-    assert isMyTsCmd(MyTsCmd_ImportTsF)
-    myTsCmdResult:str=MyTsCmd_ImportTsF.replace(MyTsCmd_Prefix,MyTsCmdResult_Prefix)
+def _fileName(fpath:str)->str:
+    from pathlib import Path
+    fname:str=Path(fpath).name
+    return fname
+
+def _jsonLoad(configJsonF_fpath:str, name_path:str)->typing.List[str]:
+    
+    from jsonpath_ng import parse,jsonpath,Child,DatumInContext
+    configJsonTxt:str=readTxtFile(configJsonF_fpath)
+    import json
+    configJsonObj:typing.Dict[str,typing.Any]=json.loads(configJsonTxt)
+    jsonpath_expr:Child=parse(name_path)
+    dLs:typing.List[DatumInContext]=jsonpath_expr.find(configJsonObj)
+    valLs:typing.List[str]=[d.value for d in dLs]
+    return valLs
+
+def _jsonLoad0(configJsonF_fpath:str, name_path:str)->typing.List[str]:
+    valLs:typing.List[str]=_jsonLoad(configJsonF_fpath, name_path)
+    if valLs is None or valLs.__len__() == 0:
+        return None
+    assert valLs.__len__() == 1
+    val0:str=valLs[0]
+    return val0
+
+def __test_jsonLoad():
+    appPath:str=_jsonLoad0("./config.json","$.appPath")
+    appName:str=_fileName(appPath)
+    print(f"appPath={appPath},appName={appName}")
+    return appPath,appName
+
+Idx_CurLn:int=0
+Idx_NextLn:int=1
+
+def _replaceSubStrInNextLine(srcTxt:str, targetTxt:str, curNextLn:typing.Tuple[str,str]):
+    assert curNextLn is not None and curNextLn.__len__() == 2
+    curLn,nextLn=curNextLn
+    nextLn_new:str=nextLn.replace(srcTxt,targetTxt)
+    curNextLn[Idx_NextLn]=nextLn_new
+    return
+
+def _replaceCurLineByTsFileContent(tsF:str, curNextLn:typing.Tuple[str,str]):
+    assert curNextLn is not None and curNextLn.__len__() == 2
+    curLn,nextLn=curNextLn
+    tsF_txt:str=readTxtFile(tsF)
+    curNextLn[Idx_CurLn]=tsF_txt
+    return
+
+def MyTsCmdReplacePrefix(MyTsCmd:str)->str:
+    assert isMyTsCmd(MyTsCmd)
+    myTsCmdResult:str=MyTsCmd.replace(MyTsCmd_Prefix,MyTsCmdResult_Prefix)
     return myTsCmdResult
 
 
@@ -23,16 +70,19 @@ def isMyTsCmd(txt:str):
     return _isMyTsCmd
 
 #解析MyTsCmd为文件路径
-def parseMyTsCmd(MyTsCmd_ImportTsF:str)->str:
-    assert isMyTsCmd(MyTsCmd_ImportTsF)
-    py_stmt=MyTsCmd_ImportTsF.replace(MyTsCmd_Prefix,"")
-    _locals_ret={}
+def parseMyTsCmd(curNextLn)->str:
+    curLn,nextLn=curNextLn
+    assert isMyTsCmd(curLn)
+    MyTsCmd:str=curLn
+    py_stmt=MyTsCmd.replace(MyTsCmd_Prefix,"")
+    _locals_ret={"curNextLn":curNextLn}
     _globals=None
-    exec(py_stmt,_globals, _locals_ret)
-    _tsF_to_import:str=_locals_ret['_tsF_to_import']
-    print(f"_tsF_to_import={_tsF_to_import}")
-    return _tsF_to_import
-    pass
+    ret=eval(py_stmt,_globals, _locals_ret)
+    #获取返回值
+    curLn_new,nextLn_new=_locals_ret["curNextLn"]
+    curNextLn[Idx_CurLn]=curLn_new
+    curNextLn[Idx_NextLn]=nextLn_new
+    return ret
 
 #读取该ts文件的文本内容
 def readTxtFile(fpath:str)->str:
@@ -47,24 +97,27 @@ def writeTxtFile(fpath:str,txt:str)->int:
     return ret
 
 #执行MyTsCmd
-def execMyTsCmd(MyTsCmd_ImportTsF:str)->str:
+def execMyTsCmd(curNextLn)->str:
+    curLn,nextLn=curNextLn
     #解析MyTsCmd为文件路径
-    _tsF_to_import:str=parseMyTsCmd(MyTsCmd_ImportTsF)
-    #读取该ts文件的文本内容
-    tsTxt:str=readTxtFile(_tsF_to_import)
-    title:str=get__MyTsCmdResult(MyTsCmd_ImportTsF)
-    tsTxt_2:str=f"{title}{LF}{tsTxt}"
-    return tsTxt_2
+    ret:str=parseMyTsCmd(curNextLn)
+    return
 
 #单行文本转换
-def lineK_transform(lineK:str):
+def lineK_transform(line_ls_new,lineCnt,k,curNextLn:typing.Tuple[str,str]):
+    curLn,nextLn=curNextLn
     #若是MyTsCmd，则执行，并返回执行结果
-    if isMyTsCmd(lineK):
-        tsTxt:str=execMyTsCmd(lineK)
-        return tsTxt
+    if isMyTsCmd(curLn):
+        execMyTsCmd(curNextLn)
+        #获取更改后的值
+        curLn_new,nextLn_new=curNextLn
+        if k < lineCnt : line_ls_new[k] = curLn_new
+        nextLnIdex:int=k+1
+        if nextLnIdex < lineCnt : line_ls_new[nextLnIdex] = nextLn_new
+        return True
     #否则,保持该行不变
     else:
-        return lineK
+        return False
 
 #处理主ts文件    
 def process(fpath_mainTs:str)->None:
@@ -72,10 +125,14 @@ def process(fpath_mainTs:str)->None:
     mainTs_txt:str=readTxtFile(fpath_mainTs)
     #主ts文本按行拆开
     line_ls:typing.List[str]=mainTs_txt.split(LF)
+    line_ls_new:typing.List[str]=[*line_ls]
+    lineCnt:int=line_ls.__len__()
+    line_ls_next:typing.List[str]=[*(line_ls[1:]),None]
+    curNextTupleLs:typing.List[typing.Tuple[str,str]]=[ [line_ls[k],line_ls_next[k]] for k in range(lineCnt)]
     #转换各行
-    line_ls_2:typing.List[str]=list(map(lineK_transform, line_ls))
+    [lineK_transform(line_ls_new,lineCnt,k,curNextLn) for k,curNextLn in  enumerate(curNextTupleLs)]
     #新行们粘结成大文本
-    mainTs_txt_2:str=LF.join(line_ls_2)
+    mainTs_txt_2:str=LF.join(line_ls_new)
     #写入转换后ts文本
     fpath_mainTs_new:str=f"{fpath_mainTs}.generated"
     writeTxtFile(fpath_mainTs_new,mainTs_txt_2)
@@ -83,7 +140,7 @@ def process(fpath_mainTs:str)->None:
     pass
 
 def _test__execMyTsCmd():
-    execMyTsCmd('//MyTsCmd_ImportTsF//_tsF_to_import="./_focus_fnAdr.ts"')
+    execMyTsCmd('//MyTsCmd//_tsF_to_import="./_focus_fnAdr.ts"')
     pass
 
 
@@ -91,8 +148,14 @@ def _test__process():
     process("InterceptFnSym.ts")
     pass
 
-if __name__=="__main__":
+def _main():
     import sys
     assert(sys.argv.__len__()>1)
     ts_fpath:str=sys.argv[1]
     process(ts_fpath) # ts_fpath 比如 "InterceptFnSym.ts"
+
+if __name__=="__main__":
+    # _main()
+    # val=__test_jsonLoad()
+    _test__process()
+    end=True

@@ -1,8 +1,9 @@
 //MyTsBegin//
 
-const g_appName: string = "app.elf";
+//MyTsCmd//_replaceSubStrInNextLine("_appName_" ,  _fileName(_jsonLoad0("./config.json","$.appPath")) , curNextLn )
+const g_appName: string = "_appName_";
 
-//MyTsCmd_ImportTsF//_tsF_to_import="./_focus_fnAdr.ts"
+//MyTsCmd//_replaceCurLineByTsFileContent("./_focus_fnAdr.ts" , curNextLn)
 
 
 type FnAdrHex=string;
@@ -27,9 +28,9 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
 
 }
 
-//MyTsCmd_ImportTsF//_tsF_to_import="./_tool.ts"
+//MyTsCmd//_replaceCurLineByTsFileContent("./_tool.ts" , curNextLn)
 
-//MyTsCmd_ImportTsF//_tsF_to_import="./_nativeFn_func04.ts"
+//MyTsCmd//_replaceCurLineByTsFileContent("./_nativeFn_func04.ts" , curNextLn)
 
 
 //frida中表达 函数 func01_return_int 的签名
