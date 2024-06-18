@@ -1,4 +1,4 @@
-////fridaJs_Begin
+//MyTsBegin//
 
 function focus_fnAdr(fnAdr:NativePointer,appName: string): boolean{
   //取得该地址的调试信息

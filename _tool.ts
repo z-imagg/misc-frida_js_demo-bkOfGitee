@@ -1,4 +1,4 @@
-//_//fridaJs_Begin
+//MyTsBegin//
 
 
 //{4字节对齐 工具函数
