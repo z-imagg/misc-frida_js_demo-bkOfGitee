@@ -2,7 +2,7 @@
 
 const g_appName: string = "app.elf";
 
-//MyTsCmd//_tsF_to_import="./_focus_fnAdr.ts"
+//MyTsCmd_ImportTsF//_tsF_to_import="./_focus_fnAdr.ts"
 
 
 type FnAdrHex=string;
@@ -27,9 +27,9 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
 
 }
 
-//MyTsCmd//_tsF_to_import="./_tool.ts"
+//MyTsCmd_ImportTsF//_tsF_to_import="./_tool.ts"
 
-//MyTsCmd//_tsF_to_import="./_nativeFn_func04.ts"
+//MyTsCmd_ImportTsF//_tsF_to_import="./_nativeFn_func04.ts"
 
 
 //frida中表达 函数 func01_return_int 的签名

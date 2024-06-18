@@ -1,14 +1,14 @@
 
 
 import typing
-MyTsCmd_Prefix:str='//MyTsCmd//'
+MyTsCmd_Prefix:str='//MyTsCmd_ImportTsF//'
 MyTsCmdResult_Prefix:str='//MyTsCRst//'
 LF:str="\n"
 CRLF:str=f"\r{LF}"
 
-def get__MyTsCmdResult(myTsCmd:str)->str:
-    assert isMyTsCmd(myTsCmd)
-    myTsCmdResult:str=myTsCmd.replace(MyTsCmd_Prefix,MyTsCmdResult_Prefix)
+def get__MyTsCmdResult(MyTsCmd_ImportTsF:str)->str:
+    assert isMyTsCmd(MyTsCmd_ImportTsF)
+    myTsCmdResult:str=MyTsCmd_ImportTsF.replace(MyTsCmd_Prefix,MyTsCmdResult_Prefix)
     return myTsCmdResult
 
 
@@ -23,9 +23,9 @@ def isMyTsCmd(txt:str):
     return _isMyTsCmd
 
 #解析MyTsCmd为文件路径
-def parseMyTsCmd(myTsCmd:str)->str:
-    assert isMyTsCmd(myTsCmd)
-    py_stmt=myTsCmd.replace(MyTsCmd_Prefix,"")
+def parseMyTsCmd(MyTsCmd_ImportTsF:str)->str:
+    assert isMyTsCmd(MyTsCmd_ImportTsF)
+    py_stmt=MyTsCmd_ImportTsF.replace(MyTsCmd_Prefix,"")
     _locals_ret={}
     _globals=None
     exec(py_stmt,_globals, _locals_ret)
@@ -47,12 +47,12 @@ def writeTxtFile(fpath:str,txt:str)->int:
     return ret
 
 #执行MyTsCmd
-def execMyTsCmd(myTsCmd:str)->str:
+def execMyTsCmd(MyTsCmd_ImportTsF:str)->str:
     #解析MyTsCmd为文件路径
-    _tsF_to_import:str=parseMyTsCmd(myTsCmd)
+    _tsF_to_import:str=parseMyTsCmd(MyTsCmd_ImportTsF)
     #读取该ts文件的文本内容
     tsTxt:str=readTxtFile(_tsF_to_import)
-    title:str=get__MyTsCmdResult(myTsCmd)
+    title:str=get__MyTsCmdResult(MyTsCmd_ImportTsF)
     tsTxt_2:str=f"{title}{LF}{tsTxt}"
     return tsTxt_2
 
@@ -83,7 +83,7 @@ def process(fpath_mainTs:str)->None:
     pass
 
 def _test__execMyTsCmd():
-    execMyTsCmd('//MyTsCmd//_tsF_to_import="./_focus_fnAdr.ts"')
+    execMyTsCmd('//MyTsCmd_ImportTsF//_tsF_to_import="./_focus_fnAdr.ts"')
     pass
 
 
