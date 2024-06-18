@@ -2,7 +2,7 @@
 
 import typing
 MyTsCmd_Prefix:str='//MyTsCmd//'
-MyTsCmdResult_Prefix:str='//MyTsCR//'
+MyTsCmdResult_Prefix:str='//MyTsCRst//'
 LF:str="\n"
 CRLF:str=f"\r{LF}"
 
@@ -77,7 +77,7 @@ def process(fpath_mainTs:str)->None:
     #新行们粘结成大文本
     mainTs_txt_2:str=LF.join(line_ls_2)
     #写入转换后ts文本
-    fpath_mainTs_new:str=f"{fpath_mainTs}.transform"
+    fpath_mainTs_new:str=f"{fpath_mainTs}.generated"
     writeTxtFile(fpath_mainTs_new,mainTs_txt_2)
     
     pass
