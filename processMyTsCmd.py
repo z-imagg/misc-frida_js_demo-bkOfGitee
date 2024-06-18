@@ -1,8 +1,12 @@
 
 
 import typing
+#待执行指令
 MyTsCmd_Prefix:str='//MyTsCmd//'
+#执行结果展示指令.  
 MyTsCmdResult_Prefix:str='//MyTsCRst//'
+# Rst==Result
+
 LF:str="\n"
 CRLF:str=f"\r{LF}"
 
@@ -43,14 +47,20 @@ def _replaceSubStrInNextLine(srcTxt:str, targetTxt:str, curNextLn:typing.Tuple[s
     assert curNextLn is not None and curNextLn.__len__() == 2
     curLn,nextLn=curNextLn
     nextLn_new:str=nextLn.replace(srcTxt,targetTxt)
+    #下一行内容
     curNextLn[Idx_NextLn]=nextLn_new
+    #当前行换成执行结果指令
+    title:str=MyTsCmdReplacePrefix(curLn)
+    curNextLn[Idx_CurLn]=f"{title}"
     return
 
 def _replaceCurLineByTsFileContent(tsF:str, curNextLn:typing.Tuple[str,str]):
     assert curNextLn is not None and curNextLn.__len__() == 2
     curLn,nextLn=curNextLn
     tsF_txt:str=readTxtFile(tsF)
-    curNextLn[Idx_CurLn]=tsF_txt
+    title:str=MyTsCmdReplacePrefix(curLn)
+    #当前行前追前执行结果指令行
+    curNextLn[Idx_CurLn]=f"{title}{LF}{tsF_txt}"
     return
 
 def MyTsCmdReplacePrefix(MyTsCmd:str)->str:
@@ -69,8 +79,8 @@ def isMyTsCmd(txt:str):
     _isMyTsCmd:bool=  txt.startswith(MyTsCmd_Prefix)
     return _isMyTsCmd
 
-#解析MyTsCmd为文件路径
-def parseMyTsCmd(curNextLn)->str:
+#执行MyTsCmd
+def execMyTsCmd(curNextLn)->str:
     curLn,nextLn=curNextLn
     assert isMyTsCmd(curLn)
     MyTsCmd:str=curLn
@@ -96,12 +106,6 @@ def writeTxtFile(fpath:str,txt:str)->int:
     ret:int=Path(fpath).write_text(txt)
     return ret
 
-#执行MyTsCmd
-def execMyTsCmd(curNextLn)->str:
-    curLn,nextLn=curNextLn
-    #解析MyTsCmd为文件路径
-    ret:str=parseMyTsCmd(curNextLn)
-    return
 
 #单行文本转换
 def lineK_transform(line_ls_new,lineCnt,k,curNextLn:typing.Tuple[str,str]):
