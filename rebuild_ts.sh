@@ -9,9 +9,16 @@ cd /fridaAnlzAp/frida_js_demo/
 
 
 function build_proj(){
-npx frida-compile  InterceptFnSym.ts --no-source-maps --output InterceptFnSym.js  && \
+local outTsFName=InterceptFnSym.ts.generated
+local ok_outTsFName=InterceptFnSym.generated.ts
+local outJsFName=InterceptFnSym.js.generated
+
+python3 processMyTsCmd.py ./InterceptFnSym.ts
+mv $outTsFName $ok_outTsFName #改名 是因为 frida-compile 会检查文件扩展名
+npx frida-compile  $ok_outTsFName --no-source-maps --output $outJsFName  && \
 #删除frida-compile生成的 js文件开头 乱七八糟的 几行
-sed -i '1,/fridaJs_Begin/d' InterceptFnSym.js
+sed -i '1,/MyTsBegin/d' $outJsFName
+mv $ok_outTsFName $outTsFName
 }
 
 

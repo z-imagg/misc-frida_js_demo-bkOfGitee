@@ -1,5 +1,6 @@
 const g_appName = "app.elf";
-function focus_fnAdr(fnAdr) {
+//MyTsCRst//_tsF_to_import="./_focus_fnAdr.ts"
+function focus_fnAdr(fnAdr, appName) {
     //取得该地址的调试信息
     const fnSym = DebugSymbol.fromAddress(fnAdr);
     const moduleName = fnSym.moduleName;
@@ -13,7 +14,7 @@ function focus_fnAdr(fnAdr) {
         return false;
     }
     //若为主模块
-    if (moduleName == g_appName) {
+    if (moduleName == appName) {
         //跳过:
         if (["func02_skip", "_init", "_start", "register_tm_clones", "frame_dummy", "__do_global_dtors_aux", "deregister_tm_clones", "_fini",
             // frida脚本中不跟踪被调用函数 func04_retVoid_outArgCharBuffer
@@ -51,6 +52,7 @@ function OnFnEnterBusz(thiz, args) {
     console.log(`[OnFnEnterBusz],fnSym=[${fnSym}]`);
     thiz.fnAdr_OnFnEnterBusz = fnAdr;
 }
+//MyTsCRst//_tsF_to_import="./_tool.ts"
 //{4字节对齐 工具函数
 function is4times(n) {
     const is_ = Math.floor(n / 4) * 4 == n;
@@ -61,6 +63,7 @@ function near4times(n) {
     return near;
 }
 //}
+//MyTsCRst//_tsF_to_import="./_nativeFn_func04.ts"
 //{结构体 'struct T_User'
 const _C_Lang__sizeof_short = 2; // sizeof(short)
 //short字段 需 对齐到4字节
@@ -87,17 +90,17 @@ class Struct_TUser {
         this.sum = ptr_filed_sum.readInt();
     }
 }
-//持有本地函数
-let nativeFn__func01_return_int;
-//frida中表达 函数 func03_retVoid_outArgPtrStructUser 的签名
-// void func03_retVoid_outArgPtrStructUser(int _userId, char sex, struct T_User* outArg_ptrStructUsr)
-//持有本地函数
-let nativeFn__func03_retVoid_outArgPtrStructUser;
-const M_ascii = 'M'.charCodeAt(0);
+//}
 //frida中表达 函数 func04_retVoid_outArgCharBuffer 的签名
 // int func04_retVoid_outArgCharBuffer(double _doubleNum, long _longInt, char* outArg_CharBuffer)
 //持有本地函数
 let nativeFn__func04_retVoid_outArgCharBuffer;
+//获取 本地函数 func04_retVoid_outArgCharBuffer
+function get__func04_retVoid_outArgCharBuffer() {
+    const func04_retVoid_outArgCharBuffer = DebugSymbol.fromName("func04_retVoid_outArgCharBuffer").address;
+    // int func04_retVoid_outArgCharBuffer(double _doubleNum, long _longInt, char* outArg_CharBuffer)
+    nativeFn__func04_retVoid_outArgCharBuffer = new NativeFunction(func04_retVoid_outArgCharBuffer, 'int', ['double', 'long', 'pointer']);
+}
 const _Concat_Limit = 50;
 const _Concat_CntTop = 4;
 const _Buffer_Limit = _Concat_CntTop * _Concat_Limit;
@@ -105,31 +108,9 @@ const _Buffer_Limit = _Concat_CntTop * _Concat_Limit;
 const outArg_CharBuffer = Memory.alloc(_Buffer_Limit);
 const _OK = 0;
 const NULL_num = NULL.toInt32();
-/**  OnLeave ，函数离开
+/**  调用本地函数 func04 例子
  */
-function OnFnLeaveBusz(thiz, retval) {
-    const curThreadId = Process.getCurrentThreadId();
-    const fnAdr = thiz.context.pc;
-    const fnSym = findFnDbgSym(fnAdr);
-    if (fnAdr.readInt() != thiz.fnAdr_OnFnEnterBusz.readInt()) {
-        console.log(`##错误，进出函数地址不同`);
-    }
-    console.log(`[OnFnLeaveBusz],fnSym=[${fnSym}]`);
-    //调用本地函数 func01_return_int
-    if (nativeFn__func01_return_int) {
-        const ret_int = nativeFn__func01_return_int(32, -33); //结果应该是-9
-        console.log(`[nativeFn__func01_return_int],ret_int=[${ret_int}]`);
-    }
-    //调用本地函数 func03_retVoid_outArgPtrStructUser
-    if (nativeFn__func03_retVoid_outArgPtrStructUser.toInt32() != NULL_num) {
-        const outArg_ptrStructUsr = Memory.alloc(C_Lang__sizeof_structTUser);
-        //指针参数outArg_ptrStructUsr携带返回结构体
-        nativeFn__func03_retVoid_outArgPtrStructUser.call(null, 4, M_ascii, outArg_ptrStructUsr);
-        //将c结构体'struct T_User'转为ts的类Struct_TUser
-        const retStructTUser = new Struct_TUser(outArg_ptrStructUsr);
-        console.log(`[outArg_ptrStructUsr],{userId=${retStructTUser.userId},salary=${retStructTUser.salary}, sum=${retStructTUser.sum} }`);
-        // {userId=204,salary=3000.10009765625, sum=-123 }, 结果正确
-    }
+function demo_call_nativeFn_func04() {
     //调用本地函数 func04_retVoid_outArgCharBuffer
     if (nativeFn__func04_retVoid_outArgCharBuffer.toInt32() != NULL_num) {
         //指针参数outArg_CharBuffer携带返回字符串
@@ -159,6 +140,41 @@ function OnFnLeaveBusz(thiz, retval) {
             }
         }
     } //end of if
+}
+//持有本地函数
+let nativeFn__func01_return_int;
+//frida中表达 函数 func03_retVoid_outArgPtrStructUser 的签名
+// void func03_retVoid_outArgPtrStructUser(int _userId, char sex, struct T_User* outArg_ptrStructUsr)
+//持有本地函数
+let nativeFn__func03_retVoid_outArgPtrStructUser;
+const M_ascii = 'M'.charCodeAt(0);
+/**  OnLeave ，函数离开
+ */
+function OnFnLeaveBusz(thiz, retval) {
+    const curThreadId = Process.getCurrentThreadId();
+    const fnAdr = thiz.context.pc;
+    const fnSym = findFnDbgSym(fnAdr);
+    if (fnAdr.readInt() != thiz.fnAdr_OnFnEnterBusz.readInt()) {
+        console.log(`##错误，进出函数地址不同`);
+    }
+    console.log(`[OnFnLeaveBusz],fnSym=[${fnSym}]`);
+    //调用本地函数 func01_return_int
+    if (nativeFn__func01_return_int) {
+        const ret_int = nativeFn__func01_return_int(32, -33); //结果应该是-9
+        console.log(`[nativeFn__func01_return_int],ret_int=[${ret_int}]`);
+    }
+    //调用本地函数 func03_retVoid_outArgPtrStructUser
+    if (nativeFn__func03_retVoid_outArgPtrStructUser.toInt32() != NULL_num) {
+        const outArg_ptrStructUsr = Memory.alloc(C_Lang__sizeof_structTUser);
+        //指针参数outArg_ptrStructUsr携带返回结构体
+        nativeFn__func03_retVoid_outArgPtrStructUser.call(null, 4, M_ascii, outArg_ptrStructUsr);
+        //将c结构体'struct T_User'转为ts的类Struct_TUser
+        const retStructTUser = new Struct_TUser(outArg_ptrStructUsr);
+        console.log(`[outArg_ptrStructUsr],{userId=${retStructTUser.userId},salary=${retStructTUser.salary}, sum=${retStructTUser.sum} }`);
+        // {userId=204,salary=3000.10009765625, sum=-123 }, 结果正确
+    }
+    //调用本地函数 func04_retVoid_outArgCharBuffer
+    demo_call_nativeFn_func04();
 } //end of OnFnLeaveBusz
 function _main_() {
     //获取本地函数func01_return_int
@@ -175,14 +191,12 @@ function _main_() {
     */
     console.log(`##nativeFn__func03_retVoid_outArgPtrStructUser=${nativeFn__func03_retVoid_outArgPtrStructUser}`);
     //获取 本地函数 func04_retVoid_outArgCharBuffer
-    const func04_retVoid_outArgCharBuffer = DebugSymbol.fromName("func04_retVoid_outArgCharBuffer").address;
-    // int func04_retVoid_outArgCharBuffer(double _doubleNum, long _longInt, char* outArg_CharBuffer)
-    nativeFn__func04_retVoid_outArgCharBuffer = new NativeFunction(func04_retVoid_outArgCharBuffer, 'int', ['double', 'long', 'pointer']);
+    get__func04_retVoid_outArgCharBuffer();
     const fnAdrLs = DebugSymbol.findFunctionsMatching("*");
     console.log(`fnAdrLs.length=${fnAdrLs.length}`);
     const fnAdrCnt = fnAdrLs.length;
     for (let [k, fnAdr] of fnAdrLs.entries()) {
-        if (!focus_fnAdr(fnAdr)) {
+        if (!focus_fnAdr(fnAdr, g_appName)) {
             continue;
         }
         const fnSym = DebugSymbol.fromAddress(fnAdr);
