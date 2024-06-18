@@ -92,4 +92,7 @@ def _test__process():
     pass
 
 if __name__=="__main__":
-    process("InterceptFnSym.ts")
+    import sys
+    assert(sys.argv.__len__()>1)
+    ts_fpath:str=sys.argv[1]
+    process(ts_fpath) # ts_fpath 比如 "InterceptFnSym.ts"
