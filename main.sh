@@ -30,6 +30,8 @@ objdump --syms app.elf | grep main
 # 从配置文件中读取应用名
 _appName=$(jq -r .appName config.json)
 
+outJsFName=InterceptFnSym.js.generated
+
 # 以frida运行应用
-frida  --load ./InterceptFnSym.js        --file $_appName  ; exitCode=$? && echo "退出代码=${exitCode}"
+frida  --load $outJsFName        --file $_appName  ; exitCode=$? && echo "退出代码=${exitCode}"
 # 不知道为什么 frida运行应用的退出代码 exitCode 总是1
