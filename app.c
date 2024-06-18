@@ -82,7 +82,7 @@ int func04_retVoid_outArgCharBuffer(double _doubleNum, long _longInt, char* outA
     char* buffer_begin_k=NULL;
 
     //拼接第1个字符串到缓存, 若超长则返回错误
-    concat_ret_n=snprintf(concatBuf,_Concat_Limit,"name:%s,id:%d,pi:%f;","Zhangsan", 920, 3.1415926);
+    concat_ret_n=snprintf(concatBuf,_Concat_Limit,"name:%s,id:%f,pi:%d;","Zhangsan", _doubleNum, _longInt);
     _Concat_single_
 
     int hex=99;
