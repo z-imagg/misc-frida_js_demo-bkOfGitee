@@ -14,7 +14,7 @@ function focus_fnAdr(fnAdr:NativePointer,appName: string): boolean{
     console.log(`##不关注名为空的函数.fnAdr=[${fnAdr}]`)
     return false;
   }
-
+  // console.log(`@focus_fnAdr: moduleName=${moduleName}`)
   //若为主模块
   if(moduleName==appName   ){
     //跳过:

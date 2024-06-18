@@ -28,7 +28,7 @@ objdump --syms app.elf | grep fun
 objdump --syms app.elf | grep main
 
 # 从配置文件中读取应用名
-_appName=$(jq -r .appName config.json)
+_appName=$(jq -r .appPath config.json)
 
 outJsFName=InterceptFnSym.js.generated
 
