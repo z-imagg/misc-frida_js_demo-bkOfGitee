@@ -2,7 +2,7 @@
 
 const g_appName: string = "app.elf";
 
-function focus_fnAdr(fnAdr:NativePointer){
+function focus_fnAdr(fnAdr:NativePointer,appName: string){
   //取得该地址的调试信息
   const fnSym=DebugSymbol.fromAddress(fnAdr);
   const moduleName = fnSym.moduleName
@@ -19,7 +19,7 @@ function focus_fnAdr(fnAdr:NativePointer){
   }
 
   //若为主模块
-  if(moduleName==g_appName   ){
+  if(moduleName==appName   ){
     //跳过:
     if  ([ "func02_skip", "_init", "_start", "register_tm_clones", "frame_dummy", "__do_global_dtors_aux", "deregister_tm_clones", "_fini" ,
   // frida脚本中不跟踪被调用函数 func04_retVoid_outArgCharBuffer
@@ -237,7 +237,7 @@ https://github.com/frida/frida/issues/1099
   const fnAdrCnt=fnAdrLs.length
   for (let [k,fnAdr] of  fnAdrLs.entries()){
     
-    if(!focus_fnAdr(fnAdr)){
+    if(!focus_fnAdr(fnAdr,g_appName)){
       continue;
     }
 
