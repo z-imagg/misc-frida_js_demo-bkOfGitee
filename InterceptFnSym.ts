@@ -1,8 +1,10 @@
-//MyTsBegin//
+//MyTsBegin//主ts文件开始标记
 
+// 以命令MyTsCmd从配置文件config.json读取应用程序名 填充到下一行
 //MyTsCmd//_replaceSubStrInNextLine("_appName_" ,  _fileName(_jsonLoad0("./config.json","$.appPath")) , curNextLn )
 const g_appName: string = "_appName_";
 
+// 以命令MyTsCmd导入文件 _focus_fnAdr.ts
 //MyTsCmd//_replaceCurLineByTsFileContent("./_focus_fnAdr.ts" , curNextLn)
 
 
@@ -28,8 +30,10 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
 
 }
 
+// 以命令MyTsCmd导入文件 _tool.ts
 //MyTsCmd//_replaceCurLineByTsFileContent("./_tool.ts" , curNextLn)
 
+// 以命令MyTsCmd导入文件 _nativeFn_func04.ts
 //MyTsCmd//_replaceCurLineByTsFileContent("./_nativeFn_func04.ts" , curNextLn)
 
 
