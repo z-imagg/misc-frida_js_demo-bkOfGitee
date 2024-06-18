@@ -27,4 +27,8 @@ objdump --syms app.elf | grep fun
 # 0000000000001149 g     F .text  0000000000000055              func01_return_int
 objdump --syms app.elf | grep main
 
-frida  --load ./InterceptFnSym.js        --file ./app.elf  ; exitCode=$? && echo "退出代码=${exitCode}"
+# 从配置文件中读取应用名
+_appName=$(jq .appName config.json)
+
+# 以frida运行应用
+frida  --load ./InterceptFnSym.js        --file $_appName  ; exitCode=$? && echo "退出代码=${exitCode}"
