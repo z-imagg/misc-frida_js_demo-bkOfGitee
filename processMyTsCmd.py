@@ -10,13 +10,16 @@ MyTsCmdResult_Prefix:str='//MyTsCRst//'
 LF:str="\n"
 CRLF:str=f"\r{LF}"
 
+Idx_CurLn:int=0
+Idx_NextLn:int=1
+
+###################用户接口 开始
 def _fileName(fpath:str)->str:
     from pathlib import Path
     fname:str=Path(fpath).name
     return fname
 
 def _jsonLoad(configJsonF_fpath:str, name_path:str)->typing.List[str]:
-    
     from jsonpath_ng import parse,jsonpath,Child,DatumInContext
     configJsonTxt:str=readTxtFile(configJsonF_fpath)
     import json
@@ -26,7 +29,7 @@ def _jsonLoad(configJsonF_fpath:str, name_path:str)->typing.List[str]:
     valLs:typing.List[str]=[d.value for d in dLs]
     return valLs
 
-def _jsonLoad0(configJsonF_fpath:str, name_path:str)->typing.List[str]:
+def _jsonLoad0(configJsonF_fpath:str, name_path:str)->str:
     valLs:typing.List[str]=_jsonLoad(configJsonF_fpath, name_path)
     if valLs is None or valLs.__len__() == 0:
         return None
@@ -34,16 +37,7 @@ def _jsonLoad0(configJsonF_fpath:str, name_path:str)->typing.List[str]:
     val0:str=valLs[0]
     return val0
 
-def __test_jsonLoad():
-    appPath:str=_jsonLoad0("./config.json","$.appPath")
-    appName:str=_fileName(appPath)
-    print(f"appPath={appPath},appName={appName}")
-    return appPath,appName
-
-Idx_CurLn:int=0
-Idx_NextLn:int=1
-
-def _replaceSubStrInNextLine(srcTxt:str, targetTxt:str, curNextLn:typing.Tuple[str,str]):
+def _replaceSubStrInNextLine(srcTxt:str, targetTxt:str, curNextLn:typing.Tuple[str,str])->bool:
     assert curNextLn is not None and curNextLn.__len__() == 2
     curLn,nextLn=curNextLn
     nextLn_new:str=nextLn.replace(srcTxt,targetTxt)
@@ -54,7 +48,7 @@ def _replaceSubStrInNextLine(srcTxt:str, targetTxt:str, curNextLn:typing.Tuple[s
     curNextLn[Idx_CurLn]=f"{title}"
     return
 
-def _replaceCurLineByTsFileContent(tsF:str, curNextLn:typing.Tuple[str,str]):
+def _replaceCurLineByTsFileContent(tsF:str, curNextLn:typing.Tuple[str,str])->bool:
     assert curNextLn is not None and curNextLn.__len__() == 2
     curLn,nextLn=curNextLn
     tsF_txt:str=readTxtFile(tsF)
@@ -62,12 +56,13 @@ def _replaceCurLineByTsFileContent(tsF:str, curNextLn:typing.Tuple[str,str]):
     #当前行前追前执行结果指令行
     curNextLn[Idx_CurLn]=f"{title}{LF}{tsF_txt}"
     return
+###################用户接口 结束
 
+###################主逻辑(解析、执行) 开始
 def MyTsCmdReplacePrefix(MyTsCmd:str)->str:
     assert isMyTsCmd(MyTsCmd)
     myTsCmdResult:str=MyTsCmd.replace(MyTsCmd_Prefix,MyTsCmdResult_Prefix)
     return myTsCmdResult
-
 
 def isMyTsCmd(txt:str):
     if txt is None:
@@ -106,9 +101,8 @@ def writeTxtFile(fpath:str,txt:str)->int:
     ret:int=Path(fpath).write_text(txt)
     return ret
 
-
 #单行文本转换
-def lineK_transform(line_ls_new,lineCnt,k,curNextLn:typing.Tuple[str,str]):
+def lineK_transform(line_ls_new,lineCnt,k,curNextLn:typing.Tuple[str,str])->bool:
     curLn,nextLn=curNextLn
     #若是MyTsCmd，则执行，并返回执行结果
     if isMyTsCmd(curLn):
@@ -140,18 +134,26 @@ def process(fpath_mainTs:str)->None:
     #写入转换后ts文本
     fpath_mainTs_new:str=f"{fpath_mainTs}.generated"
     writeTxtFile(fpath_mainTs_new,mainTs_txt_2)
-    
-    pass
+    return
+###################主逻辑(解析、执行) 结束
+
+###################单元测试 开始
+def __test_jsonLoad():
+    appPath:str=_jsonLoad0("./config.json","$.appPath")
+    appName:str=_fileName(appPath)
+    print(f"appPath={appPath},appName={appName}")
+    return appPath,appName
 
 def _test__execMyTsCmd():
     execMyTsCmd('//MyTsCmd//_tsF_to_import="./_focus_fnAdr.ts"')
     pass
 
-
 def _test__process():
     process("InterceptFnSym.ts")
     pass
+###################单元测试 结束
 
+###################主入口 开始
 def _main():
     import sys
     assert(sys.argv.__len__()>1)
@@ -159,7 +161,8 @@ def _main():
     process(ts_fpath) # ts_fpath 比如 "InterceptFnSym.ts"
 
 if __name__=="__main__":
-    # _main()
+    _main()
     # val=__test_jsonLoad()
-    _test__process()
+    # _test__process()
     end=True
+###################主入口 结束
