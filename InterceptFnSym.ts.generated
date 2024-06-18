@@ -2,7 +2,7 @@
 
 const g_appName: string = "app.elf";
 
-//MyTsCR//_tsF_to_import="./_focus_fnAdr.ts"
+//MyTsCRst//_tsF_to_import="./_focus_fnAdr.ts"
 
 function focus_fnAdr(fnAdr:NativePointer,appName: string): boolean{
   //取得该地址的调试信息
@@ -75,7 +75,7 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
 
 }
 
-//MyTsCR//_tsF_to_import="./_tool.ts"
+//MyTsCRst//_tsF_to_import="./_tool.ts"
 
 
 //{4字节对齐 工具函数
@@ -92,7 +92,7 @@ function near4times(n:number){
 
 
 
-//MyTsCR//_tsF_to_import="./_nativeFn_func04.ts"
+//MyTsCRst//_tsF_to_import="./_nativeFn_func04.ts"
 
 
 
