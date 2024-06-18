@@ -37,11 +37,9 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
 //MyTsCmd//_replaceCurLineByTsFileContent("./_nativeFn_func04.ts" , curNextLn)
 
 
-//frida中表达 函数 func01_return_int 的签名
-// int func01_return_int(char ch, double real_num);
-type FnType_func01 = (ch: number, real_num: number) => number;
-//持有本地函数
-let nativeFn__func01_return_int:FnType_func01  |null;  
+// 以命令MyTsCmd导入文件 _nativeFn_func01.ts
+//MyTsCmd//_replaceCurLineByTsFileContent("./_nativeFn_func01.ts" , curNextLn)
+
 
 //frida中表达 函数 func03_retVoid_outArgPtrStructUser 的签名
 // void func03_retVoid_outArgPtrStructUser(int _userId, char sex, struct T_User* outArg_ptrStructUsr)
@@ -64,10 +62,7 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
   console.log(`[OnFnLeaveBusz],fnSym=[${fnSym}]`)
 
   //调用本地函数 func01_return_int
-  if(nativeFn__func01_return_int){
-    const ret_int:number=nativeFn__func01_return_int(32,-33); //结果应该是-9
-    console.log(`[nativeFn__func01_return_int],ret_int=[${ret_int}]`)
-  } 
+  demo_call_nativeFn_func01(  );
 
   //调用本地函数 func03_retVoid_outArgPtrStructUser
   if(nativeFn__func03_retVoid_outArgPtrStructUser.toInt32()!=NULL_num){
@@ -87,10 +82,8 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
 
 function _main_(){
 
-  //获取本地函数func01_return_int
-  const func01_return_int:NativePointer = DebugSymbol.fromName("func01_return_int").address;
-  nativeFn__func01_return_int=  new NativeFunction(func01_return_int, 'int',['char','double']);
-  console.log(`##nativeFn__func01_return_int=${nativeFn__func01_return_int}`)
+  //获取本地函数 func01_return_int
+  get__func01_return_int();
 
   //获取 本地函数 func03_retVoid_outArgPtrStructUser
   const func03_retVoid_outArgPtrStructUser:NativePointer = DebugSymbol.fromName("func03_retVoid_outArgPtrStructUser").address;
