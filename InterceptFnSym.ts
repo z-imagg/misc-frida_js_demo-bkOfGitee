@@ -1,4 +1,4 @@
-//MyTsCmd//fridaJs_Begin
+//MyTsBegin//
 
 const g_appName: string = "app.elf";
 

@@ -1,4 +1,4 @@
-//_//fridaJs_Begin
+//MyTsBegin//
 
 
 
