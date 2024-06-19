@@ -6,7 +6,7 @@
 #去此脚本所在目录
 cd /fridaAnlzAp/frida_js_demo/
 
-#py依赖安装、激活py环境
+#激活py环境 、 py依赖安装
 source py_envAct_depInstl.sh
 
 function build_proj(){

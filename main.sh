@@ -7,7 +7,7 @@ cd /fridaAnlzAp/frida_js_demo/
 #临时关闭ASLR(地址空间随机化)
 echo 0 |sudo tee  /proc/sys/kernel/randomize_va_space
 
-#py依赖安装、激活py环境
+#激活py环境 、 py依赖安装
 source py_envAct_depInstl.sh
 
 ### frida命令bash补全脚本生成
