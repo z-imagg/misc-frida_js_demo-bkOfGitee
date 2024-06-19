@@ -13,11 +13,17 @@ helpTxt2bashComplete.py --progFile frida
 source bash-complete--frida.sh
 echo "#frida --<tab><tab> 可获得补全"
 
+# 从配置文件中读取应用名
+_appPath=$(jq -r .appPath config.json)
+_appName=$(basename $_appPath)
+_appArgLsAsTxt=$(jq -r .appArgLsAsTxt config.json)
+
 # 编译 app.c
 gcc -c -g1 -O0 app.c -o app.obj
 gcc app.obj -o app.elf
-./app.elf argv1 argv2
+./app.elf $_appArgLsAsTxt
 
+#重新编译 ts 为 js 
 bash ./rebuild_ts.sh
 
 # 查找编译产物中的函数
@@ -25,16 +31,15 @@ objdump --syms app.elf | grep fun
 # 0000000000001149 g     F .text  0000000000000055              func01_return_int
 objdump --syms app.elf | grep main
 
-# 从配置文件中读取应用名
-_appPath=$(jq -r .appPath config.json)
-_appName=$(basename $_appPath)
-
 outJsFName=InterceptFnSym_generated.js
 
 # 以frida运行应用
-frida  --load $outJsFName        --file $_appPath  ; exitCode=$? && echo "退出代码=${exitCode}"
+frida  --load $outJsFName        --file $_appPath  $_appArgLsAsTxt  ; exitCode=$? && echo "退出代码=${exitCode}"
 # 不知道为什么 frida运行应用的退出代码 exitCode 总是1
-
+# argv[0]=/fridaAnlzAp/frida_js_demo/app.elf
+# argv[1]=arg1
+# argv[2]=2
+# argv[3]=arg3
 
 outTsFName=InterceptFnSym_generated.ts
 rm -v $outTsFName $outJsFName
