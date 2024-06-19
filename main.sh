@@ -7,10 +7,10 @@ cd /fridaAnlzAp/frida_js_demo/
 #临时关闭ASLR(地址空间随机化)
 echo 0 |sudo tee  /proc/sys/kernel/randomize_va_space
 
+#py依赖安装、激活py环境
+source py_envAct_depInstl.sh
+
 ### frida命令bash补全脚本生成
-set +x ; source /app/Miniconda3-py310_22.11.1-1/bin/activate ; set -x
-pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple > /dev/null
-pip install -r requirements.txt > /dev/null
 helpTxt2bashComplete.py --progFile frida
 source bash-complete--frida.sh
 echo "#frida --<tab><tab> 可获得补全"
@@ -35,3 +35,7 @@ outJsFName=InterceptFnSym_generated.js
 # 以frida运行应用
 frida  --load $outJsFName        --file $_appName  ; exitCode=$? && echo "退出代码=${exitCode}"
 # 不知道为什么 frida运行应用的退出代码 exitCode 总是1
+
+
+outTsFName=InterceptFnSym_generated.ts
+rm -v $outTsFName $outJsFName
