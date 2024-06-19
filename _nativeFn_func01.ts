@@ -12,7 +12,7 @@ function demo_call_nativeFn_func01( ){
   //调用本地函数 func01_return_int
   if(nativeFn__func01_return_int){
     const ret_int:number=nativeFn__func01_return_int(32,-33); //结果应该是-9
-    console.log(`[nativeFn__func01_return_int],ret_int=[${ret_int}]`)
+    logf.write(`[nativeFn__func01_return_int],ret_int=[${ret_int}]`)
   } 
 
 
@@ -23,6 +23,6 @@ function get__func01_return_int(){
   //获取本地函数func01_return_int
   const func01_return_int:NativePointer = DebugSymbol.fromName("func01_return_int").address;
   nativeFn__func01_return_int=  new NativeFunction(func01_return_int, 'int',['char','double']);
-  console.log(`##nativeFn__func01_return_int=${nativeFn__func01_return_int}`)
+  logf.write(`##nativeFn__func01_return_int=${nativeFn__func01_return_int}`)
 
 }

@@ -4,6 +4,8 @@
 //MyTsCmd//_replaceSubStrInNextLine("_appName_" ,  _fileName(_jsonLoad0("./config.json","$.appPath")) , curNextLn )
 const g_appName: string = "_appName_";
 
+const logf:File=new File("./InterceptFnSym.log","w");
+
 // 以命令MyTsCmd导入文件 _focus_fnAdr.ts
 //MyTsCmd//_replaceCurLineByTsFileContent("./_focus_fnAdr.ts" , curNextLn)
 
@@ -47,8 +49,6 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
 let nativeFn__func03_retVoid_outArgPtrStructUser:NativeFunction<void,[number,number,NativePointer]> ;  
 
 const M_ascii:number='M'.charCodeAt(0);
-
-const logf:File=new File("./InterceptFnSym.log","w");
 
 /**  OnLeave ，函数离开
  */
