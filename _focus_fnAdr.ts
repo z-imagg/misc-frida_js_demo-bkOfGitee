@@ -11,10 +11,10 @@ function focus_fnAdr(fnAdr:NativePointer,appName: string): boolean{
 
   //不关注名为空的函数
   if (fnSym.name==null || fnSym.name==undefined){
-    console.log(`##不关注名为空的函数.fnAdr=[${fnAdr}]`)
+    logWriteLn(`##不关注名为空的函数.fnAdr=[${fnAdr}]`)
     return false;
   }
-  // console.log(`@focus_fnAdr: moduleName=${moduleName}`)
+  // logWriteLn(`@focus_fnAdr: moduleName=${moduleName}`)
   //若为主模块
   if(moduleName==appName   ){
     //跳过:
