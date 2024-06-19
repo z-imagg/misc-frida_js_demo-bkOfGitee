@@ -2,10 +2,8 @@
 
 cd /fridaAnlzAp/frida_js_demo/
 
-###  临时关闭Linux的ASLR(地址空间随机化) ， 否则 x.so 中的函数地址 每次都不同
-# https://blog.csdn.net/counsellor/article/details/81543197
-#临时关闭ASLR(地址空间随机化)
-echo 0 |sudo tee  /proc/sys/kernel/randomize_va_space
+#临时关闭Linux的ASLR(地址空间随机化) ， 否则 x.so 中的函数地址 每次都不同
+bash ASLR_disable.sh
 
 #激活py环境 、 py依赖安装
 source py_envAct_depInstl.sh
