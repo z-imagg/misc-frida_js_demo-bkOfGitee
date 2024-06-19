@@ -22,7 +22,7 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
   const curThreadId:ThreadId=Process.getCurrentThreadId()
   const fnAdr:NativePointer=thiz.context.pc;
   const fnSym :DebugSymbol|undefined= findFnDbgSym(fnAdr)
-  console.log(`[OnFnEnterBusz],fnSym=[${fnSym}]`)
+  logf.write(`[OnFnEnterBusz],fnSym=[${fnSym}]`)
 
   thiz.fnAdr_OnFnEnterBusz=fnAdr;
 
@@ -48,7 +48,7 @@ let nativeFn__func03_retVoid_outArgPtrStructUser:NativeFunction<void,[number,num
 
 const M_ascii:number='M'.charCodeAt(0);
 
-
+const logf:File=new File("./InterceptFnSym.log","w");
 
 /**  OnLeave ，函数离开
  */
@@ -57,9 +57,9 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
   const fnAdr:NativePointer=thiz.context.pc;
   const fnSym :DebugSymbol|undefined= findFnDbgSym(fnAdr)
   if(fnAdr.readInt()!=thiz.fnAdr_OnFnEnterBusz.readInt()){
-    console.log(`##错误，进出函数地址不同`)
+    logf.write(`##错误，进出函数地址不同`)
   }
-  console.log(`[OnFnLeaveBusz],fnSym=[${fnSym}]`)
+  logf.write(`[OnFnLeaveBusz],fnSym=[${fnSym}]`)
 
   //调用本地函数 func01_return_int
   demo_call_nativeFn_func01(  );
@@ -71,7 +71,7 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
     nativeFn__func03_retVoid_outArgPtrStructUser.call(null,4,M_ascii,outArg_ptrStructUsr) ;
     //将c结构体'struct T_User'转为ts的类Struct_TUser
     const retStructTUser=new Struct_TUser(outArg_ptrStructUsr)
-    console.log(`[outArg_ptrStructUsr],{userId=${retStructTUser.userId},salary=${retStructTUser.salary}, sum=${retStructTUser.sum} }`)
+    logf.write(`[outArg_ptrStructUsr],{userId=${retStructTUser.userId},salary=${retStructTUser.salary}, sum=${retStructTUser.sum} }`)
     // {userId=204,salary=3000.10009765625, sum=-123 }, 结果正确
   } 
 
@@ -93,14 +93,14 @@ function _main_(){
 https://github.com/frida/frida/issues/1099
 
   */
-  console.log(`##nativeFn__func03_retVoid_outArgPtrStructUser=${nativeFn__func03_retVoid_outArgPtrStructUser}`)
+  logf.write(`##nativeFn__func03_retVoid_outArgPtrStructUser=${nativeFn__func03_retVoid_outArgPtrStructUser}`)
 
   //获取 本地函数 func04_retVoid_outArgCharBuffer
   get__func04_retVoid_outArgCharBuffer();
 
 
   const fnAdrLs:NativePointer[]=DebugSymbol.findFunctionsMatching("*");
-  console.log(`fnAdrLs.length=${fnAdrLs.length}`)
+  logf.write(`fnAdrLs.length=${fnAdrLs.length}`)
   const fnAdrCnt=fnAdrLs.length
   for (let [k,fnAdr] of  fnAdrLs.entries()){
     
@@ -109,7 +109,7 @@ https://github.com/frida/frida/issues/1099
     }
 
     const fnSym:DebugSymbol=DebugSymbol.fromAddress(fnAdr)
-    console.log(`关注函数 ${fnAdr}, ${fnSym}`)
+    logf.write(`关注函数 ${fnAdr}, ${fnSym}`)
     Interceptor.attach(fnAdr,{
       onEnter:function  (this: InvocationContext, args: InvocationArguments) {
         OnFnEnterBusz(this,args)
