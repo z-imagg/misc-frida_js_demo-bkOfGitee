@@ -28,14 +28,18 @@ objdump --syms app.elf | grep fun
 objdump --syms app.elf | grep main
 
 # 从配置文件中读取应用名
-_appName=$(jq -r .appPath config.json)
+_appPath=$(jq -r .appPath config.json)
+_appName=$(basename $_appPath)
 
 outJsFName=InterceptFnSym_generated.js
 
 # 以frida运行应用
-frida  --load $outJsFName        --file $_appName  ; exitCode=$? && echo "退出代码=${exitCode}"
+frida  --load $outJsFName        --file $_appPath  ; exitCode=$? && echo "退出代码=${exitCode}"
 # 不知道为什么 frida运行应用的退出代码 exitCode 总是1
 
 
 outTsFName=InterceptFnSym_generated.ts
 rm -v $outTsFName $outJsFName
+
+logFPattern="InterceptFnSym-$_appName-*"
+ls -lht $logFPattern
