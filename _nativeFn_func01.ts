@@ -1,3 +1,6 @@
+// [依赖] : 无
+// [描述] 描述 本地函数 func01_return_int
+
 //frida中表达 函数 func01_return_int 的签名
 // int func01_return_int(char ch, double real_num);
 type FnType_func01 = (ch: number, real_num: number) => number;
