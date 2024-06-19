@@ -6,9 +6,8 @@
 #去此脚本所在目录
 cd /fridaAnlzAp/frida_js_demo/
 
-set +x ; source /app/Miniconda3-py310_22.11.1-1/bin/activate ; set -x
-pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple > /dev/null
-pip install -r requirements.txt > /dev/null
+#py依赖安装、激活py环境
+source py_envAct_depInstl.sh
 
 function build_proj(){
 local inTsFName=./InterceptFnSym.ts
