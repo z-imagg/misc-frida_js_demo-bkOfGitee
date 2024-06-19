@@ -35,11 +35,10 @@ outJsFName=InterceptFnSym_generated.js
 
 # 以frida运行应用
 frida  --load $outJsFName        --file $_appPath  $_appArgLsAsTxt  ; exitCode=$? && echo "退出代码=${exitCode}"
-# 不知道为什么 frida运行应用的退出代码 exitCode 总是1
-# argv[0]=/fridaAnlzAp/frida_js_demo/app.elf
-# argv[1]=arg1
-# argv[2]=2
-# argv[3]=arg3
+# frida命令不支持应用参数带中划线, frida命令退出代码为2, 报错如下
+# usage: frida [options] target
+# frida: error: unrecognized arguments: -my_option4 value4
+
 
 outTsFName=InterceptFnSym_generated.ts
 rm -v $outTsFName $outJsFName
