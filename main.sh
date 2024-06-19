@@ -35,3 +35,7 @@ outJsFName=InterceptFnSym_generated.js
 # 以frida运行应用
 frida  --load $outJsFName        --file $_appName  ; exitCode=$? && echo "退出代码=${exitCode}"
 # 不知道为什么 frida运行应用的退出代码 exitCode 总是1
+
+
+outTsFName=InterceptFnSym_generated.ts
+rm -v $outTsFName $outJsFName
