@@ -5,7 +5,7 @@
 const _C_Lang__sizeof_short=2; // sizeof(short)
 //short字段 需 对齐到4字节
 const C_Lang__sizeof_short=is4times(_C_Lang__sizeof_short)?_C_Lang__sizeof_short:near4times(_C_Lang__sizeof_short)
-logf.write(`C_Lang__sizeof_short=${C_Lang__sizeof_short}`)
+logWriteLn(`C_Lang__sizeof_short=${C_Lang__sizeof_short}`)
 const C_Lang__sizeof_float=4; // sizeof(float)
 const C_Lang__sizeof_int=4; // sizeof(int)
 let C_Lang__sizeof_structTUser:number=C_Lang__sizeof_short+C_Lang__sizeof_float+C_Lang__sizeof_int;
@@ -70,12 +70,12 @@ function demo_call_nativeFn_func04(  ){
 
     //第1次调用
     let func04_ret_code:number=nativeFn__func04_retVoid_outArgCharBuffer(4.0,17,outArg_CharBuffer) ;
-    logf.write(`[调用1] func04_ret_code=${func04_ret_code}`)
+    logWriteLn(`[调用1] func04_ret_code=${func04_ret_code}`)
     // [调用1] func04_ret_code=0
     if(func04_ret_code==_OK){
       const ret_cstr:string|null=outArg_CharBuffer.readCString()
       if(ret_cstr){
-        logf.write(`[调用1] [frida] outArg_CharBuffer=[${ret_cstr}], ret_str.length=${ret_cstr.length}`)
+        logWriteLn(`[调用1] [frida] outArg_CharBuffer=[${ret_cstr}], ret_str.length=${ret_cstr.length}`)
         // [调用1] [frida] outArg_CharBuffer=[name:Zhangsan,id:4.000000,pi:17;zzzzzzzzzzzzz,hex:63,job_cnt:5,msg:hello_world,], ret_str.length=79
         //  结果正确
       }
@@ -83,12 +83,12 @@ function demo_call_nativeFn_func04(  ){
 
     //第2次调用
     func04_ret_code=nativeFn__func04_retVoid_outArgCharBuffer(-90909.2, -70070, outArg_CharBuffer) ;
-    logf.write(`[调用2] func04_ret_code=${func04_ret_code}`)
+    logWriteLn(`[调用2] func04_ret_code=${func04_ret_code}`)
     // [调用2] func04_ret_code=0
     if(func04_ret_code==_OK){
       const ret_cstr:string|null=outArg_CharBuffer.readCString()
       if(ret_cstr){
-        logf.write(`[调用2] [frida] outArg_CharBuffer=[${ret_cstr}], ret_str.length=${ret_cstr.length}`)
+        logWriteLn(`[调用2] [frida] outArg_CharBuffer=[${ret_cstr}], ret_str.length=${ret_cstr.length}`)
         // [调用2] [frida] outArg_CharBuffer=[name:Zhangsan,id:-90909.200000,pi:-70070;zzzzzzzzzzzzz,hex:63,job_cnt:5,msg:hello_world,], ret_str.length=88
         //  结果正确
       }
