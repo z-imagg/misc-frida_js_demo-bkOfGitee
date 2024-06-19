@@ -1,8 +1,10 @@
 
+// [依赖] : _DateTime_util.ts
 
-const logf:File=new File("./InterceptFnSym.log","w");
+const g_logFPath:string=`./InterceptFnSym-${g_appName}-${g_tsBeginDtMs}.log`
+const g_logF:File=new File(g_logFPath,"w");
 
 function logWriteLn(txt:string):void{
   const lineTxt:string=`${txt}\n`
-  logf.write(lineTxt)
+  g_logF.write(lineTxt)
 }

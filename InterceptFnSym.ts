@@ -4,6 +4,9 @@
 //MyTsCmd//_replaceSubStrInNextLine("_appName_" ,  _fileName(_jsonLoad0("./config.json","$.appPath")) , curNextLn )
 const g_appName: string = "_appName_";
 
+// 以命令MyTsCmd导入文件 _DateTime_util.ts
+//MyTsCmd//_replaceCurLineByTsFileContent("./_DateTime_util.ts" , curNextLn)
+
 // 以命令MyTsCmd导入文件 _logFile.ts
 //MyTsCmd//_replaceCurLineByTsFileContent("./_logFile.ts" , curNextLn)
 

@@ -1,4 +1,5 @@
 
+// [依赖] : 无
 
 //{4字节对齐 工具函数
 function is4times(n:number){
