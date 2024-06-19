@@ -6,19 +6,20 @@
 #去此脚本所在目录
 cd /fridaAnlzAp/frida_js_demo/
 
-
+set +x ; source /app/Miniconda3-py310_22.11.1-1/bin/activate ; set -x
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple > /dev/null
+pip install -r requirements.txt > /dev/null
 
 function build_proj(){
-local outTsFName=InterceptFnSym.ts.generated
-local ok_outTsFName=InterceptFnSym.generated.ts
-local outJsFName=InterceptFnSym.js.generated
+local inTsFName=./InterceptFnSym.ts
+local outTsFName=InterceptFnSym_generated.ts
+local outJsFName=InterceptFnSym_generated.js
 
-python3 processMyTsCmd.py ./InterceptFnSym.ts
-mv $outTsFName $ok_outTsFName #改名 是因为 frida-compile 会检查文件扩展名
-npx frida-compile  $ok_outTsFName --no-source-maps --output $outJsFName  && \
+#输出文件 $outTsFName
+python3 processMyTsCmd.py $inTsFName && \
+npx frida-compile  $outTsFName --no-source-maps --output $outJsFName  && \
 #删除frida-compile生成的 js文件开头 乱七八糟的 几行
 sed -i '1,/MyTsBegin/d' $outJsFName
-mv $ok_outTsFName $outTsFName
 }
 
 

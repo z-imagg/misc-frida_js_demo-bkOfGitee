@@ -132,9 +132,19 @@ def process(fpath_mainTs:str)->None:
     #新行们粘结成大文本
     mainTs_txt_2:str=LF.join(line_ls_new)
     #写入转换后ts文本
-    fpath_mainTs_new:str=f"{fpath_mainTs}.generated"
+    fpath_mainTs_new:str=_pathAddSuffix(fpath_mainTs,"_generated")
+    print(f"fpath_mainTs_new={fpath_mainTs_new}")
     writeTxtFile(fpath_mainTs_new,mainTs_txt_2)
     return
+
+#对 文件路径 中名称 加后缀, 其余不变
+def _pathAddSuffix(fpath:str,suffix:str)->str:
+    from pathlib import Path
+    fp:Path=Path(fpath)
+    fp_noExtend:str=fp.stem
+    fp_new:Path=fp.with_stem(f"{fp_noExtend}{suffix}")
+    fpath_new:str=fp_new.as_posix()
+    return fpath_new
 ###################主逻辑(解析、执行) 结束
 
 ###################单元测试 开始
