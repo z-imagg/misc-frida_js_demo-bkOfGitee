@@ -110,7 +110,7 @@ https://github.com/frida/frida/issues/1099
     }
 
     const fnSym:DebugSymbol=DebugSymbol.fromAddress(fnAdr)
-    logWriteLn(`关注函数 ${fnAdr}, ${fnSym}`)
+    logWriteLn(`[对函数做Interceptor.attach] ${fnAdr}, ${fnSym}`)
     Interceptor.attach(fnAdr,{
       onEnter:function  (this: InvocationContext, args: InvocationArguments) {
         OnFnEnterBusz(this,args)
