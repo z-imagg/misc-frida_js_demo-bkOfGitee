@@ -1,9 +1,14 @@
 //MyTsBegin//主ts文件开始标记
 
+
+// 导入 _msic_util.ts
+//MyTsCmd//_replaceCurLineByTsFileContent("./_msic_util.ts" , curNextLn)
+
 // 以命令MyTsCmd从配置文件config.json读取应用程序名 填充到下一行
 //MyTsCmd//_replaceSubStrInNextLine('{}' ,  readTxtFile("./config.json") , curNextLn )
 const g_cfg:{[key:string]:string} =  {};
 const g_appPath: string = g_cfg["appPath"];
+const g_appName: string =baseNameOfFilePath(g_appPath);
 
 // 以命令MyTsCmd导入文件 _DateTime_util.ts
 //MyTsCmd//_replaceCurLineByTsFileContent("./_DateTime_util.ts" , curNextLn)
@@ -15,7 +20,6 @@ const g_appPath: string = g_cfg["appPath"];
 //MyTsCmd//_replaceCurLineByTsFileContent("./_focus_fnAdr.ts" , curNextLn)
 
 
-type FnAdrHex=string;
 //填充函数符号表格
 function findFnDbgSym(fnAdr:NativePointer):DebugSymbol {
   const fnSym:DebugSymbol=DebugSymbol.fromAddress(fnAdr);
