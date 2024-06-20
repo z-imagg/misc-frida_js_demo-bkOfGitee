@@ -3,6 +3,8 @@
 // 以命令MyTsCmd从配置文件config.json读取应用程序名 填充到下一行
 //MyTsCmd//_replaceSubStrInNextLine('{}' ,  readTxtFile("./config.json") , curNextLn )
 const g_cfg:{[key:string]:string} =  {};
+// 为了简单, config.json中只能写一层 且 名字类型、值类型 都只能是字符串 
+// const g_cfg:{[key:string]:number|string|[]|{}} =  {}; //本来应该是这样的 值类型, 但是这样做 会导致 获得的 值类型不确定
 const g_appName: string = g_cfg["appPath"];
 
 // 以命令MyTsCmd导入文件 _DateTime_util.ts
