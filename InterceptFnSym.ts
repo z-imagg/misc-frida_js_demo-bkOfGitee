@@ -8,6 +8,7 @@
 //MyTsCmd//_replaceSubStrInNextLine('{}' ,  readTxtFile("./config.json") , curNextLn )
 const g_cfg:{[key:string]:string} =  {};
 const g_appPath: string = g_cfg["appPath"];
+const g_appArgLsAsTxt: string = g_cfg["appArgLsAsTxt"];
 const g_appName: string =baseNameOfFilePath(g_appPath);
 
 // 以命令MyTsCmd导入文件 _DateTime_util.ts
