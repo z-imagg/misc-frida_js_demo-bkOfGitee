@@ -1,8 +1,9 @@
 //MyTsBegin//主ts文件开始标记
 
 // 以命令MyTsCmd从配置文件config.json读取应用程序名 填充到下一行
-//MyTsCmd//_replaceSubStrInNextLine("_appName_" ,  _fileName(_jsonLoad0("./config.json","$.appPath")) , curNextLn )
-const g_appName: string = "_appName_";
+//MyTsCmd//_replaceSubStrInNextLine('{}' ,  readTxtFile("./config.json") , curNextLn )
+const g_cfg:{[key:string]:string} =  {};
+const g_appName: string = g_cfg["appPath"];
 
 // 以命令MyTsCmd导入文件 _DateTime_util.ts
 //MyTsCmd//_replaceCurLineByTsFileContent("./_DateTime_util.ts" , curNextLn)
