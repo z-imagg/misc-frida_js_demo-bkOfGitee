@@ -324,12 +324,14 @@ class MG_ModuleFilter {
         if (this.defaultAct == MG_Enum_DefaultAct.Include) {
             //关注 包含函数名们
             const __focus = this.fnNameLs_include.includes(fnName);
+            logWriteLn(`##包含动作,__focus=${__focus},fnAdr=[${fnAdr}],fnSym.json=${JSON.stringify(fnSym)}`);
             return __focus;
         }
         //默认动作 若为排除, 则讨厌
         else if (this.defaultAct == MG_Enum_DefaultAct.Exclude) {
             //讨厌 排除函数名们
             const __focus = (!this.fnNameLs_exclude.includes(fnName));
+            logWriteLn(`##排除动作,__focus=${__focus},fnAdr=[${fnAdr}],fnSym.json=${JSON.stringify(fnSym)}`);
             return __focus;
         }
         else {
