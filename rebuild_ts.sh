@@ -8,6 +8,7 @@ cd /fridaAnlzAp/frida_js_demo/
 
 #激活py环境 、 py依赖安装
 source py_envAct_depInstl.sh
+#输出 变量 _CondaPy 、_CondaFridaCompile
 
 function build_proj(){
 local inTsFName=./InterceptFnSym.ts
@@ -15,9 +16,10 @@ local outTsFName=InterceptFnSym_generated.ts
 local outJsFName=InterceptFnSym_generated.js
 
 #输出文件 $outTsFName
-python3 processMyTsCmd.py $inTsFName && \
+$_CondaPy processMyTsCmd.py $inTsFName && \
 npx frida-compile  $outTsFName --no-source-maps --output $outJsFName  && \
 #删除frida-compile生成的 js文件开头 乱七八糟的 几行
+# 删除文件 InterceptFnSym_generated.js 的第一行到含有的MyTsBegin行
 sed -i '1,/MyTsBegin/d' $outJsFName
 }
 

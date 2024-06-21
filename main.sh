@@ -7,6 +7,7 @@ bash ASLR_disable.sh
 
 #激活py环境 、 py依赖安装
 source py_envAct_depInstl.sh
+#输出 变量 _CondaFrida
 
 ### frida命令bash补全脚本生成
 # helpTxt2bashComplete.py --progFile frida
@@ -34,7 +35,7 @@ objdump --syms app.elf | grep main
 outJsFName=InterceptFnSym_generated.js
 
 # 以frida运行应用
-frida  --load $outJsFName        --file $_appPath  $_appArgLsAsTxt  ; exitCode=$? && echo "退出代码=${exitCode}"
+$_CondaFrida  --load $outJsFName        --file $_appPath  $_appArgLsAsTxt  ; exitCode=$? && echo "退出代码=${exitCode}"
 # 不知道为什么 frida运行应用的退出代码 exitCode 总是1
 # argv[0]=/fridaAnlzAp/frida_js_demo/app.elf
 # argv[1]=arg1
