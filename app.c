@@ -187,19 +187,19 @@ sizeof(struct T_User)=8
     //[app.c] func04_ret_code=0,CharBuffer=[name:Zhangsan,id:920,pi:3.141593;zzzzzzzzzzzzz,hex:63,job_cnt:5,msg:hello_world,]
     // 结果正确
     
-    #define _UserName1_Limit 64
-    char userName1[_UserName1_Limit];
+    // #define _UserName1_Limit 64
+    // char userName1[_UserName1_Limit];
     int userId1=1000;
-    int userName1_Len;
-    func05_userQuery('M', userId1, _UserName1_Limit, userName1, &userName1_Len );
-    printf("[app.c, func05_userQuery out] userName1=%s,userName1_Len=%d\n",userName1,userName1_Len);
+    // int userName1_Len;
+    func05_userQuery('M', userId1, 0, NULL, NULL );
+    // printf("[app.c, func05_userQuery out] userName1=%s,userName1_Len=%d\n",userName1,userName1_Len);
 
-    #define _UserName2_Limit 128
-    char userName2[_UserName2_Limit];
+    // #define _UserName2_Limit 128
+    // char userName2[_UserName2_Limit];
     int userId2=-901;
-    int userName2_Len;
-    func05_userQuery('F', userId2, _UserName2_Limit, userName2, &userName2_Len );
-    printf("[app.c, func05_userQuery out] userName2=%s,userName2_Len=%d\n",userName2,userName2_Len);
+    // int userName2_Len;
+    func05_userQuery('F', userId2, 0, NULL, NULL );
+    // printf("[app.c, func05_userQuery out] userName2=%s,userName2_Len=%d\n",userName2,userName2_Len);
 
     return 0;
 }
