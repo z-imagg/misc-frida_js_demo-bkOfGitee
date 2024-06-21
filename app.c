@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string.h>
+
 int func01_return_int(char ch, double real_num){
     int res=ch+real_num+10;
     if(res>3*ch){
@@ -93,20 +95,59 @@ int func04_retVoid_outArgCharBuffer(double _doubleNum, long _longInt, char* outA
     return _OK;
 }
 
+
+char* g_name_zhangsan="zhangsan1995";
+int g_name_zhangsan_len=12;
+char* g_name_LiSi="LiSi2040";
+int g_name_LiSi_len=8;
+char* g_name_Tom="TomCheryW";
+int g_name_Tom_len=9;
+char* g_name_RmZ="RoomZix080";
+int g_name_RmZ_len=10;
+float func05_userQuery(char sex, int userId, int userName_limit, char* userName_out_, int* userName_length_out_){
+    printf("[func05_userQuery args] sex=[%c][%d], userId=%d\n", sex,sex, userId);
+    if(sex=='M'){
+        if(userId>50){
+            strncpy(userName_out_,g_name_zhangsan,g_name_zhangsan_len);
+            (*userName_length_out_)=g_name_zhangsan_len;
+            return 1.4;
+        }else{
+            strncpy(userName_out_,g_name_LiSi,g_name_LiSi_len);
+            (*userName_length_out_)=g_name_LiSi_len;
+            return 2.9;
+        }
+    }
+    if(sex=='F'){
+        if(userId%2==0){
+            strncpy(userName_out_,g_name_Tom,g_name_Tom);
+            (*userName_length_out_)=g_name_Tom;
+            return 10.9;
+        }else{
+            strncpy(userName_out_,g_name_RmZ,g_name_RmZ_len);
+            (*userName_length_out_)=g_name_RmZ_len;
+            return 47.1;
+        }
+    }
+
+    userName_out_[0]='\0';
+    (*userName_length_out_)=0;
+    return -0.2;
+}
+
 float func02_skip(){
     printf("call func02_skip\n");
     return 4.1;
 }
 int main(int argc,char** argv){
-    printf("sizeof(char)=%d\n", sizeof(char));
-    printf("sizeof(short)=%d\n", sizeof(short));
-    printf("sizeof(int)=%d\n", sizeof(int));
-    printf("sizeof(long)=%d\n", sizeof(long));
-    printf("sizeof(float)=%d\n", sizeof(float));
-    printf("sizeof(double)=%d\n", sizeof(double));
-    printf("sizeof(int*)=%d\n", sizeof(int*));
-    printf("sizeof(main)=%d\n", sizeof(main));
-    printf("sizeof(struct T_User)=%d\n", sizeof(struct T_User));
+    // printf("sizeof(char)=%d\n", sizeof(char));
+    // printf("sizeof(short)=%d\n", sizeof(short));
+    // printf("sizeof(int)=%d\n", sizeof(int));
+    // printf("sizeof(long)=%d\n", sizeof(long));
+    // printf("sizeof(float)=%d\n", sizeof(float));
+    // printf("sizeof(double)=%d\n", sizeof(double));
+    // printf("sizeof(int*)=%d\n", sizeof(int*));
+    // printf("sizeof(main)=%d\n", sizeof(main));
+    // printf("sizeof(struct T_User)=%d\n", sizeof(struct T_User));
 /**
 sizeof(char)=1
 sizeof(short)=2
@@ -122,7 +163,7 @@ sizeof(struct T_User)=8
     func02_skip();
     if(argc>0 && argv!=NULL){
         for(int k=0; k <argc; k++){
-            printf("argv[%d]=%s\n",k,argv[k]);
+            // printf("argv[%d]=%s\n",k,argv[k]);
         }
     }
 
@@ -136,5 +177,19 @@ sizeof(struct T_User)=8
     //[app.c] func04_ret_code=0,CharBuffer=[name:Zhangsan,id:920,pi:3.141593;zzzzzzzzzzzzz,hex:63,job_cnt:5,msg:hello_world,]
     // 结果正确
     
+    #define _UserName1_Limit 64
+    char userName1[_UserName1_Limit];
+    int userId1=1000;
+    int userName1_Len;
+    func05_userQuery('M', userId1, _UserName1_Limit, userName1, &userName1_Len );
+    printf("userName1=%s,userName1_Len=%d\n",userName1,userName1_Len);
+
+    #define _UserName2_Limit 128
+    char userName2[_UserName2_Limit];
+    int userId2=-901;
+    int userName2_Len;
+    func05_userQuery('F', userId2, _UserName2_Limit, userName2, &userName2_Len );
+    printf("userName2=%s,userName2_Len=%d\n",userName2,userName2_Len);
+
     return 0;
 }
