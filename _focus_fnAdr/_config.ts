@@ -17,7 +17,13 @@ const _modules_exclude:string[]=[
   //排除 linux可执行elf文件的基础依赖
   "linux-vdso.so.1",
   "libc.so.6",
-  "/lib64/ld-linux-x86-64.so.2",
+  "ld-linux-x86-64.so.2",
+
+  //以下这些是谁带来的?  'ldd ...app.elf' 中貌似没有, 难道是 frida带来的
+  "libm.so.6",
+  "libpthread.so.0",
+  "librt.so.1",
+  "libdl.so.2"
 ];
 
 
