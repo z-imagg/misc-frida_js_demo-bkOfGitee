@@ -115,33 +115,38 @@ int userName_limit, // userName_limit == args[2].toInt32()
 char* userName_out_, // userName_out_ == args[3].readCString()
 int* userName_length_out_ // userName_length_out_ == args[4].readInt()
 ){
-    printf("[app.c, func05_userQuery args] sex=[%c][%d], userId=%d\n", sex,sex, userId);
+    float result=-0.2;
+    printf("[app.c, func05_userQuery args] sex=[%c][%d], userId=%d, userName_limit=%d, userName_out_=%x, userName_length_out_=%x \n", sex,sex, userId,userName_limit, userName_out_, userName_length_out_);
     if(sex=='M'){
         if(userId>50){
             strncpy(userName_out_,g_name_zhangsan,g_name_zhangsan_len);
             (*userName_length_out_)=g_name_zhangsan_len;
-            return 1.4;
+            result= 1.4;
         }else{
             strncpy(userName_out_,g_name_LiSi,g_name_LiSi_len);
             (*userName_length_out_)=g_name_LiSi_len;
-            return 2.9;
+            result= 2.9;
         }
-    }
+    }else
     if(sex=='F'){
         if(userId%2==0){
             strncpy(userName_out_,g_name_Tom,g_name_Tom);
             (*userName_length_out_)=g_name_Tom;
-            return 10.9;
+            result= 10.9;
         }else{
             strncpy(userName_out_,g_name_RmZ,g_name_RmZ_len);
             (*userName_length_out_)=g_name_RmZ_len;
-            return 47.1;
+            result= 47.1;
         }
-    }
-
+    }else{
     strncpy(userName_out_,g_name_NoFit,g_name_NoFit_len);
     (*userName_length_out_)=g_name_NoFit_len;
-    return -0.2;
+    }
+
+
+    printf("[app.c, end_func05_userQuery_out] userName_out_=%s,userName_length_out_=%d,userName_limit=%d \n",userName_out_,*userName_length_out_,userName_limit);
+
+    return result;
 }
 
 float func02_skip(){
@@ -187,19 +192,19 @@ sizeof(struct T_User)=8
     //[app.c] func04_ret_code=0,CharBuffer=[name:Zhangsan,id:920,pi:3.141593;zzzzzzzzzzzzz,hex:63,job_cnt:5,msg:hello_world,]
     // 结果正确
     
-    #define _UserName1_Limit 64
-    char userName1[_UserName1_Limit];
+    // #define _UserName1_Limit 64
+    // char userName1[_UserName1_Limit];
     int userId1=1000;
-    int userName1_Len;
-    func05_userQuery('M', userId1, _UserName1_Limit, userName1, &userName1_Len );
-    printf("[app.c, func05_userQuery out] userName1=%s,userName1_Len=%d\n",userName1,userName1_Len);
+    // int userName1_Len;
+    func05_userQuery('M', userId1, 0, NULL, NULL );
+    // printf("[app.c, func05_userQuery out] userName1=%s,userName1_Len=%d\n",userName1,userName1_Len);
 
-    #define _UserName2_Limit 128
-    char userName2[_UserName2_Limit];
+    // #define _UserName2_Limit 128
+    // char userName2[_UserName2_Limit];
     int userId2=-901;
-    int userName2_Len;
-    func05_userQuery('F', userId2, _UserName2_Limit, userName2, &userName2_Len );
-    printf("[app.c, func05_userQuery out] userName2=%s,userName2_Len=%d\n",userName2,userName2_Len);
+    // int userName2_Len;
+    func05_userQuery('F', userId2, 0, NULL, NULL );
+    // printf("[app.c, func05_userQuery out] userName2=%s,userName2_Len=%d\n",userName2,userName2_Len);
 
     return 0;
 }
