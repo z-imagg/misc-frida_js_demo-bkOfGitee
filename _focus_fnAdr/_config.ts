@@ -9,14 +9,10 @@ const _modules_include=[
   "other_module_1.so",
 ];
 // "libstdc++.so.6.0.30", //?如果libstdc++的代码 穿插在业务代码中， 若忽略之 则调用链条断裂
-// ldd /app2/sleuthkit/tools/autotools/tsk_recover  | awk '{print " \""$1"\","}'
+// ldd /fridaAnlzAp/frida_js_demo/app.elf  | awk '{print " \""$1"\","}'
 //讨厌其所有函数的模块
 const _modules_exclude:string[]=[
   "linux-vdso.so.1",
-  // "libstdc++.so.6",
-  "libz.so.1",
-  "libm.so.6",
-  "libgcc_s.so.1",
   "libc.so.6",
   "/lib64/ld-linux-x86-64.so.2",
 ];
@@ -52,11 +48,10 @@ const _moduleApp__clangVar_runtime_fnNameLs:string[]=[
 
 
 const _moduleApp__exclude_fnNameLs:string[]=[
-//跳过sleuthkit的巨量调用函数们
-//   sleuthkit暂无巨量调用函数
-
-//analyze_by_graph 打印大于1万次调用的函数们（方便返工修改frida_js以跳过大量调用函数）
-//   sleuthkit暂无调用次数大于1万次的函数
+//跳过被frida调用的本地函数
+  "func01_return_int",
+  "func03_retVoid_outArgPtrStructUser",
+  "func04_retVoid_outArgCharBuffer",
 ];
 
 
