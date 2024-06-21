@@ -29,7 +29,7 @@ const mg_moduleFilter_searchByModuleName:Record<string,MG_ModuleFilter>=mg_modul
 //是否关注该函数
 function focus_fnAdr(fnAdr:NativePointer){
   const fnSym=DebugSymbol.fromAddress(fnAdr);
-  logWriteLn(`[json(fnSym)]: ${JSON.stringify(fnSym)}`)
+  // logWriteLn(`[json(fnSym)]: ${JSON.stringify(fnSym)}`)
   const moduleName = fnSym.moduleName
   if(moduleName==null){
     throw new Error(`[focus_fnAdr:函数地址的模块名为空错误] fnAdr[${fnAdr}] `)

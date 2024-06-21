@@ -21,7 +21,7 @@ _appArgLsAsTxt=$(jq -r .appArgLsAsTxt config.json)
 # 编译 app.c
 gcc -c -g1 -O0 app.c -o app.obj
 gcc app.obj -o app.elf
-./app.elf $_appArgLsAsTxt
+# ./app.elf $_appArgLsAsTxt
 
 #重新编译 ts 为 js 
 bash ./rebuild_ts.sh

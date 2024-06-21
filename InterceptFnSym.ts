@@ -111,7 +111,7 @@ function _main_(){
     }
 
     const fnSym:DebugSymbol=DebugSymbol.fromAddress(fnAdr)
-    logWriteLn(`[对函数做Interceptor.attach] ${fnAdr}, ${fnSym}`)
+    logWriteLn(`##${nowTxt()}; [关注函数]; fnAdr=${fnAdr}, fnSym.json= ${JSON.stringify(fnSym)}`)
     Interceptor.attach(fnAdr,{
       onEnter:function  (this: InvocationContext, args: InvocationArguments) {
         OnFnEnterBusz(this,args)
