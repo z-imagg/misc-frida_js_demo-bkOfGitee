@@ -25,7 +25,10 @@ enum MG_Enum_FilterType{
   UseIncludeFilter = 3,
   UseExcludeFilter = 4,
 }
-const MG_Enum_ShortAct__Values:number[]=[ MG_Enum_FilterType.ExcludeAllFnInModule, MG_Enum_FilterType.IncludeAllFnInModule] ;
+const MG_Enum_ShortAct__Values:number[]=[ 
+MG_Enum_FilterType.ExcludeAllFnInModule, MG_Enum_FilterType.IncludeAllFnInModule,
+MG_Enum_FilterType.UseIncludeFilter, MG_Enum_FilterType.UseExcludeFilter,
+] ;
 //断言是合法枚举
 function assertIsValidEnum_DefaultAct(defaultAct:number):void{
   if(!MG_Enum_ShortAct__Values.includes (defaultAct) ){
