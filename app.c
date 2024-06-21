@@ -97,13 +97,16 @@ int func04_retVoid_outArgCharBuffer(double _doubleNum, long _longInt, char* outA
 
 
 char* g_name_zhangsan="zhangsan1995";
-int g_name_zhangsan_len=12;
+int g_name_zhangsan_len=12+1;
 char* g_name_LiSi="LiSi2040";
-int g_name_LiSi_len=8;
+int g_name_LiSi_len=8+1;
 char* g_name_Tom="TomCheryW";
-int g_name_Tom_len=9;
+int g_name_Tom_len=9+1;
 char* g_name_RmZ="RoomZix080";
-int g_name_RmZ_len=10;
+int g_name_RmZ_len=10+1;
+char* g_name_NoFit="_NoCondFit_";
+int g_name_NoFit_len=11+1;
+
 float func05_userQuery(
 // args:InvocationArguments
 char sex, // sex == args[0].toInt32()
@@ -112,7 +115,7 @@ int userName_limit, // userName_limit == args[2].toInt32()
 char* userName_out_, // userName_out_ == args[3].readCString()
 int* userName_length_out_ // userName_length_out_ == args[4].readInt()
 ){
-    printf("[func05_userQuery args] sex=[%c][%d], userId=%d\n", sex,sex, userId);
+    printf("[app.c, func05_userQuery args] sex=[%c][%d], userId=%d\n", sex,sex, userId);
     if(sex=='M'){
         if(userId>50){
             strncpy(userName_out_,g_name_zhangsan,g_name_zhangsan_len);
@@ -136,8 +139,8 @@ int* userName_length_out_ // userName_length_out_ == args[4].readInt()
         }
     }
 
-    userName_out_[0]='\0';
-    (*userName_length_out_)=0;
+    strncpy(userName_out_,g_name_NoFit,g_name_NoFit_len);
+    (*userName_length_out_)=g_name_NoFit_len;
     return -0.2;
 }
 
@@ -189,14 +192,14 @@ sizeof(struct T_User)=8
     int userId1=1000;
     int userName1_Len;
     func05_userQuery('M', userId1, _UserName1_Limit, userName1, &userName1_Len );
-    printf("userName1=%s,userName1_Len=%d\n",userName1,userName1_Len);
+    printf("[app.c, func05_userQuery out] userName1=%s,userName1_Len=%d\n",userName1,userName1_Len);
 
     #define _UserName2_Limit 128
     char userName2[_UserName2_Limit];
     int userId2=-901;
     int userName2_Len;
     func05_userQuery('F', userId2, _UserName2_Limit, userName2, &userName2_Len );
-    printf("userName2=%s,userName2_Len=%d\n",userName2,userName2_Len);
+    printf("[app.c, func05_userQuery out] userName2=%s,userName2_Len=%d\n",userName2,userName2_Len);
 
     return 0;
 }

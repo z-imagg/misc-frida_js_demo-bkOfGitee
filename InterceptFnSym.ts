@@ -25,7 +25,17 @@ function findFnDbgSym(fnAdr:NativePointer):DebugSymbol {
   return fnSym
 }
 
-
+function get_ascii(char_:string):number{
+  if(!char_ || char_.length!=1){
+    throw new Error(`[get_ascii] 入参错误，非单字符,char_=[${char_}]`);
+  }
+  const ascii:number= char_.charCodeAt(0);
+  return ascii;
+}
+function to_ascii(ascii:number):string{
+  const char_:string=String.fromCharCode(ascii);
+  return char_;
+}
 /** onEnter ， 函数进入
  */
 function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
@@ -44,21 +54,25 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
     // console.log(`arg0_readInt=[${arg0_readInt}]`);
 
     const arg0_toInt32:number=args[0].toInt32() // ==  sex
-    console.log(`arg0_toInt32=[${arg0_toInt32}]`);
+    const arg0_toInt32_toAscii:string=to_ascii(arg0_toInt32)
+    console.log(`[frida_js] arg0_toInt32=[${arg0_toInt32}], arg0_toInt32_toAscii=[${arg0_toInt32_toAscii}]`);
+    args[0]=new NativePointer(get_ascii("a"));// 修改 输入参数 sex 为 'a'
 
     const arg1_toInt32:number=args[1].toInt32() // == userId
-    console.log(`arg1_toInt32=[${arg1_toInt32}]`);
+    console.log(`[frida_js] arg1_toInt32=[${arg1_toInt32}]`);
+    args[1]=new NativePointer(-333);// 修改 输入参数 userId 为 -333
 
     const arg2_toInt32:number=args[2].toInt32() // == userName_limit
-    console.log(`arg2_toInt32=[${arg2_toInt32}]`);
+    console.log(`[frida_js] arg2_toInt32=[${arg2_toInt32}]`); 
+    args[2]=new NativePointer(32);// 修改 输入参数 userName_limit 为 32
     
     const arg3_readCString:string| null=args[3].readCString() // == userName_out_
     if(arg3_readCString){
-      console.log(`arg3_readCString=[${arg3_readCString}]`);
+      console.log(`[frida_js] arg3_readCString=[${arg3_readCString}]`);
     }
     
     const arg4_readInt:number=args[4].readInt() // == userName_length_out_
-    console.log(`arg4_readInt=[${arg4_readInt}]`);
+    console.log(`[frida_js] arg4_readInt=[${arg4_readInt}]`);
   }
   thiz.fnAdr_OnFnEnterBusz=fnAdr;
 
