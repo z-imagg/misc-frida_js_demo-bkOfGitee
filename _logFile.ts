@@ -7,4 +7,5 @@ const g_logF:File=new File(g_logFPath,"w+");
 function logWriteLn(txt:string):void{
   const lineTxt:string=`${txt}\n`
   g_logF.write(lineTxt)
+  g_logF.flush();
 }

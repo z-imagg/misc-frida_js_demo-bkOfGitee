@@ -38,6 +38,14 @@ function to_ascii(ascii:number):string{
   return char_;
 }
 
+/*
+bash main.sh ; cat InterceptFnSym-app.elf.log
+#有如下日志, 注意看 地址 userName_out_ 、 userName_length_out_ 在frida_js和app.c中是一样的, 说明app.c收到了frida_js传递给的指针参数
+[frida_js OnFnEnterBusz] userName_out_=0x7ffff40feb20
+[frida_js OnFnEnterBusz] userName_length_out_=0x7fffe6e61f20
+[app.c, func05_userQuery args] sex=[M][77], userId=1000, userName_out_=f40feb20, userName_length_out_=e6e61f20 
+
+ */
 
 //进入函数func05_userQuery的处理
 function On__func05_userQuery__Enter(fnSym :DebugSymbol, thiz:InvocationContext,  args:InvocationArguments){
@@ -58,14 +66,16 @@ function On__func05_userQuery__Enter(fnSym :DebugSymbol, thiz:InvocationContext,
 
 const _UserName1_Limit:number = 48;
 const arg2_toInt32:number=args[2].toInt32() // == userName_limit
-console.log(`[frida_js OnFnEnterBusz] arg2_toInt32=[${arg2_toInt32}]`); 
+logWriteLn(`[frida_js OnFnEnterBusz] arg2_toInt32=[${arg2_toInt32}]`); 
 args[2]=new NativePointer(_UserName1_Limit);// 修改 输入参数 userName_limit 为 48
 
 // const arg3_readCString:string| null=args[3].readCString() // == userName_out_
 args[3]=Memory.alloc(_UserName1_Limit-1)
+logWriteLn(`[frida_js OnFnEnterBusz] userName_out_=${args[3]}`)
 
 // const arg4_readInt:number=args[4].readInt() // == userName_length_out_
 args[4]=Memory.alloc(C_Lang__sizeof_int)
+logWriteLn(`[frida_js OnFnEnterBusz] userName_length_out_=${args[4]}`)
 
 //把参数args2保存到thiz下, 试图供给函数离开时候使用 
 thiz.userName_limit=args[2];
@@ -88,8 +98,10 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
   console.log(`fnSym=${JSON.stringify(fnSym)}`)
   //对函数func05_userQuery的特殊处理
   if(fnSym && fnSym.name=="func05_userQuery"){
-    console.log(`xxxxEnter`)
+    logWriteLn(`before On__func05_userQuery__Enter`); 
     On__func05_userQuery__Enter(fnSym, thiz, args);
+    logWriteLn(`after On__func05_userQuery__Enter`); 
+    //走到这里了
   }
 
 
@@ -159,7 +171,10 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:InvocationReturnValue ){
 
     //对函数func05_userQuery的特殊处理
   if(fnSym && fnSym.name=="func05_userQuery"){
+    //没有走到这里
+    logWriteLn(`before On__func05_userQuery__Leave`); 
     On__func05_userQuery__Leave(thiz)
+    logWriteLn(`after On__func05_userQuery__Leave`); 
   }
 
 }//end of OnFnLeaveBusz

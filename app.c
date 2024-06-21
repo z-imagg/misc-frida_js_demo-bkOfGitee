@@ -115,7 +115,7 @@ int userName_limit, // userName_limit == args[2].toInt32()
 char* userName_out_, // userName_out_ == args[3].readCString()
 int* userName_length_out_ // userName_length_out_ == args[4].readInt()
 ){
-    printf("[app.c, func05_userQuery args] sex=[%c][%d], userId=%d\n", sex,sex, userId);
+    printf("[app.c, func05_userQuery args] sex=[%c][%d], userId=%d, userName_limit=%d, userName_out_=%x, userName_length_out_=%x \n", sex,sex, userId,userName_limit, userName_out_, userName_length_out_);
     if(sex=='M'){
         if(userId>50){
             strncpy(userName_out_,g_name_zhangsan,g_name_zhangsan_len);
