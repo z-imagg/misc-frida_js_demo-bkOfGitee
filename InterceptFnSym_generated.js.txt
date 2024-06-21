@@ -430,6 +430,8 @@ const mg_moduleFilter_searchByModuleName = mg_moduleFilter_ls.reduce(
     return _dict;
 }, {} //reduce的函数2:  初始字典
 );
+logWriteLn(`mg_moduleFilter_searchByModuleName.json=${JSON.stringify(mg_moduleFilter_searchByModuleName)}`)
+
 //是否关注该函数
 function focus_fnAdr(fnAdr) {
     const fnSym = DebugSymbol.fromAddress(fnAdr);
