@@ -17,8 +17,6 @@ const g_appName: string =baseNameOfFilePath(g_appPath);
 // 以命令MyTsCmd导入文件 _logFile.ts
 //MyTsCmd//_replaceCurLineByTsFileContent("./_logFile.ts" , curNextLn)
 
-// 以命令MyTsCmd导入文件 _focus_fnAdr.ts
-//MyTsCmd//_replaceCurLineByTsFileContent("./_focus_fnAdr.ts" , curNextLn)
 
 
 //填充函数符号表格
