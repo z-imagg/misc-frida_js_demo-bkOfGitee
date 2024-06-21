@@ -307,9 +307,13 @@ class MG_ModuleFilter {
         const fnName = fnSym.name;
         const moduleName = fnSym.moduleName;
         if (moduleName == null) {
-            throw new Error(`[无模块名错误][疑似无该函数] DebugSymbol查找到 函数地址[${fnAdr}] 的moduleName为null`);
+            throw new Error(`[该函数地址无模块名错误][疑似无该函数] DebugSymbol查找到 函数地址[${fnAdr}] 的moduleName为null`);
         }
-        if (this.moduleName == moduleName) {
+        if (this.moduleName == null) {
+            throw new Error(`[该过滤器无模块名错误]  [this] ${JSON.stringify(this)}`);
+        }
+        // console.log(`typeof(moduleName)=${typeof(moduleName)}, typeof(this.moduleName)=${typeof(this.moduleName)},, ${this.moduleName} == ${moduleName}:: ${this.moduleName == moduleName}`)
+        if (this.moduleName != moduleName) {
             throw new Error(`[入参错误][疑似上层算法错误]   函数地址[${fnAdr}] 的moduleName[${moduleName}] 不等于 本MG_Module的moduleName[${this.moduleName}]`);
         }
         //讨厌名为空的函数
@@ -350,6 +354,7 @@ const _modules_include = [
 // ldd /fridaAnlzAp/frida_js_demo/app.elf  | awk '{print " \""$1"\","}'
 //讨厌其所有函数的模块
 const _modules_exclude = [
+    // "frida-agent-64.so",
     "linux-vdso.so.1",
     "libc.so.6",
     "/lib64/ld-linux-x86-64.so.2",
@@ -439,6 +444,9 @@ function focus_fnAdr(fnAdr) {
     }
     //查找该模块的函数名过滤器
     const moduleFilter = mg_moduleFilter_searchByModuleName[moduleName];
+    if(moduleFilter==null){
+        return false;
+    }
     console.log(`typeof(moduleFilter) = ${typeof(moduleFilter)}`);
     //执行该过滤器, 获得是否关注本函数
     const _focus = moduleFilter.focus(fnAdr);
