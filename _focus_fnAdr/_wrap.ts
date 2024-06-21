@@ -27,7 +27,7 @@ const mg_moduleFilter_searchByModuleName:Record<string,MG_ModuleFilter>=mg_modul
 );
 
 //是否关注该函数
-function focus_fnAdr(fnAdr:NativePointer, _g_appName:string){
+function focus_fnAdr(fnAdr:NativePointer){
   const fnSym=DebugSymbol.fromAddress(fnAdr);
   const moduleName = fnSym.moduleName
   if(moduleName==null){

@@ -106,7 +106,7 @@ function _main_(){
   const fnAdrCnt=fnAdrLs.length
   for (let [k,fnAdr] of  fnAdrLs.entries()){
     
-    if(!focus_fnAdr(fnAdr,g_appName)){
+    if(!focus_fnAdr(fnAdr)){
       continue;
     }
 
