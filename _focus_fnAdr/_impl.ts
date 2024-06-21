@@ -98,10 +98,14 @@ focus(fnAdr:NativePointer):boolean{
 
   const moduleName = fnSym.moduleName
   if(moduleName==null){
-    throw new Error(`[无模块名错误][疑似无该函数] DebugSymbol查找到 函数地址[${fnAdr}] 的moduleName为null`)
+    throw new Error(`[该函数地址无模块名错误][疑似无该函数] DebugSymbol查找到 函数地址[${fnAdr}] 的moduleName为null`)
   }
 
-  if(this.moduleName==moduleName){
+  if (this.moduleName == null) {
+    throw new Error(`[该过滤器无模块名错误]  [this] ${JSON.stringify(this)}`);
+  }
+
+  if(this.moduleName!=moduleName){
     throw new Error(`[入参错误][疑似上层算法错误]   函数地址[${fnAdr}] 的moduleName[${moduleName}] 不等于 本MG_Module的moduleName[${this.moduleName}]`)
   }
 

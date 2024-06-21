@@ -42,7 +42,9 @@ frida  --load $outJsFName        --file $_appPath  $_appArgLsAsTxt  ; exitCode=$
 # argv[3]=arg3
 
 outTsFName=InterceptFnSym_generated.ts
-rm -v $outTsFName $outJsFName
+# rm -v $outTsFName $outJsFName
+mv  $outTsFName  ${outTsFName}.txt
+mv  $outJsFName  ${outJsFName}.txt
 
 logFPattern="InterceptFnSym-$_appName-*"
 ls -lht $logFPattern
