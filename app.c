@@ -104,7 +104,14 @@ char* g_name_Tom="TomCheryW";
 int g_name_Tom_len=9;
 char* g_name_RmZ="RoomZix080";
 int g_name_RmZ_len=10;
-float func05_userQuery(char sex, int userId, int userName_limit, char* userName_out_, int* userName_length_out_){
+float func05_userQuery(
+// args:InvocationArguments
+char sex, // sex == args[0].toInt32()
+int userId, // userId == args[1].toInt32()
+int userName_limit, // userName_limit == args[2].toInt32()
+char* userName_out_, // userName_out_ == args[3].readCString()
+int* userName_length_out_ // userName_length_out_ == args[4].readInt()
+){
     printf("[func05_userQuery args] sex=[%c][%d], userId=%d\n", sex,sex, userId);
     if(sex=='M'){
         if(userId>50){

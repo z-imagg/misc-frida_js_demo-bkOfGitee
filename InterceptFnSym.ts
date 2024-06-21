@@ -35,25 +35,29 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
   logWriteLn(`[OnFnEnterBusz],fnSym=[${fnSym}]`)
 
   if(fnSym && fnSym.name=="func05_userQuery"){
+// func05_userQuery 函数签名
+// /fridaAnlzAp/frida_js_demo/app.c
+// float func05_userQuery(char sex, int userId, int userName_limit, char* userName_out_, int* userName_length_out_);
+
     //错误, 'Error: access violation accessing 0x...'
     // const arg0_readInt:number=args[0].readInt(); 
     // console.log(`arg0_readInt=[${arg0_readInt}]`);
 
-    const arg0_toInt32:number=args[0].toInt32(); 
+    const arg0_toInt32:number=args[0].toInt32() // ==  sex
     console.log(`arg0_toInt32=[${arg0_toInt32}]`);
 
-    const arg1_toInt32:number=args[1].toInt32(); 
+    const arg1_toInt32:number=args[1].toInt32() // == userId
     console.log(`arg1_toInt32=[${arg1_toInt32}]`);
 
-    const arg2_toInt32:number=args[2].toInt32();
+    const arg2_toInt32:number=args[2].toInt32() // == userName_limit
     console.log(`arg2_toInt32=[${arg2_toInt32}]`);
     
-    const arg3_readCString:string| null=args[3].readCString();
+    const arg3_readCString:string| null=args[3].readCString() // == userName_out_
     if(arg3_readCString){
       console.log(`arg3_readCString=[${arg3_readCString}]`);
     }
     
-    const arg4_readInt:number=args[4].readInt();
+    const arg4_readInt:number=args[4].readInt() // == userName_length_out_
     console.log(`arg4_readInt=[${arg4_readInt}]`);
   }
   thiz.fnAdr_OnFnEnterBusz=fnAdr;
