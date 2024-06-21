@@ -9,9 +9,9 @@ bash ASLR_disable.sh
 source py_envAct_depInstl.sh
 
 ### frida命令bash补全脚本生成
-helpTxt2bashComplete.py --progFile frida
-source bash-complete--frida.sh
-echo "#frida --<tab><tab> 可获得补全"
+# helpTxt2bashComplete.py --progFile frida
+# source bash-complete--frida.sh
+# echo "#frida --<tab><tab> 可获得补全"
 
 # 从配置文件中读取应用名
 _appPath=$(jq -r .appPath config.json)
