@@ -15,19 +15,21 @@ ldd /app/可执行elf文件路径
 */
 
 //默认行文枚举: 包括 或 排除
-enum MG_Enum_DefaultAct{
+enum MG_Enum_FilterType{
   // 包括 
   //   包含 对应 关注
-  Include = 1,
+  IncludeAllFnInModule = 1,
   // 排除
   //   排除 对应 讨厌
-  Exclude = 2,
+  ExcludeAllFnInModule = 2,
+  UseIncludeFilter = 3,
+  UseExcludeFilter = 4,
 }
-const MG_Enum_DefaultAct__Values:number[]=[ MG_Enum_DefaultAct.Exclude, MG_Enum_DefaultAct.Include] ;
+const MG_Enum_ShortAct__Values:number[]=[ MG_Enum_FilterType.ExcludeAllFnInModule, MG_Enum_FilterType.IncludeAllFnInModule] ;
 //断言是合法枚举
 function assertIsValidEnum_DefaultAct(defaultAct:number):void{
-  if(!MG_Enum_DefaultAct__Values.includes (defaultAct) ){
-    throw new Error(`[枚举量取值不合法] defaultAct[${defaultAct}] , 而MG_Enum_DefaultAct允许的列表为{${MG_Enum_DefaultAct__Values}}`)
+  if(!MG_Enum_ShortAct__Values.includes (defaultAct) ){
+    throw new Error(`[枚举量取值不合法] defaultAct[${defaultAct}] , 而MG_Enum_DefaultAct允许的列表为{${MG_Enum_ShortAct__Values}}`)
   }
 }
 
@@ -40,54 +42,52 @@ class MG_ModuleFilter{
 
   //关注该模块中的一些函数
   static build_includeFuncLs(moduleName:string, fnNameLs_include:string[]){
-    return new MG_ModuleFilter(moduleName, MG_Enum_DefaultAct.Include,fnNameLs_include, []);
+    return new MG_ModuleFilter(moduleName, MG_Enum_FilterType.IncludeAllFnInModule,fnNameLs_include );
   }
   
   //讨厌该模块中的一些函数
   static build_excludeFuncLs(moduleName:string, fnNameLs_exclude:string[]){
-    return new MG_ModuleFilter(moduleName, MG_Enum_DefaultAct.Exclude,[], fnNameLs_exclude);
+    return new MG_ModuleFilter(moduleName, MG_Enum_FilterType.ExcludeAllFnInModule,  fnNameLs_exclude);
   }
 
   //讨厌该模块中的全部函数
-  static build_excludeAllFunc(moduleName:string){
-    return new MG_ModuleFilter(moduleName, MG_Enum_DefaultAct.Exclude,[], []);
+  static build_excludeAllFn(moduleName:string){
+    return new MG_ModuleFilter(moduleName, MG_Enum_FilterType.ExcludeAllFnInModule,[] );
   }
   
   //给定模块们, 讨厌任意一个模块的全部函数
-  static build_excludeAllFunc_moduleLs(moduleName_ls:string[]){
+  static build_excludeAllFn_moduleLs(moduleName_ls:string[]){
     const filterLs:MG_ModuleFilter[] = moduleName_ls.map((moduleNameK)=>{
-      return MG_ModuleFilter.build_excludeAllFunc(moduleNameK)
+      return MG_ModuleFilter.build_excludeAllFn(moduleNameK)
     });
     return filterLs;
   }
 
   //关注该模块中的全部函数
-  static build_includeAllFunc(moduleName:string){
-    return new MG_ModuleFilter(moduleName, MG_Enum_DefaultAct.Include,[], []);
+  static build_includeAllFn(moduleName:string){
+    return new MG_ModuleFilter(moduleName, MG_Enum_FilterType.IncludeAllFnInModule,[] );
   }
   
   //给定模块们, 关注任意一个模块的全部函数
-  static build_includeAllFunc_moduleLs(moduleName_ls:string[]){
+  static build_includeAllFn_moduleLs(moduleName_ls:string[]){
     const filterLs:MG_ModuleFilter[] = moduleName_ls.map((moduleNameK)=>{
-      return MG_ModuleFilter.build_includeAllFunc(moduleNameK)
+      return MG_ModuleFilter.build_includeAllFn(moduleNameK)
     });
     return filterLs;
   }
 
 
 moduleName:string;
-defaultAct:MG_Enum_DefaultAct;
-fnNameLs_include:string[];
-fnNameLs_exclude:string[];
+filterType:MG_Enum_FilterType;
+fnNameLs:string[];
 
-constructor (moduleName:string, defaultAct:MG_Enum_DefaultAct, fnNameLs_include:string[], fnNameLs_exclude:string[]){
+constructor (moduleName:string, defaultAct:MG_Enum_FilterType, fnNameLs_include:string[] ){
   //断言是合法枚举
   assertIsValidEnum_DefaultAct(defaultAct);
 
   this.moduleName=moduleName;
-  this.defaultAct = defaultAct;
-  this.fnNameLs_include=fnNameLs_include;
-  this.fnNameLs_exclude=fnNameLs_exclude;
+  this.filterType = defaultAct;
+  this.fnNameLs=fnNameLs_include;
 
 
 }
@@ -115,24 +115,30 @@ focus(fnAdr:NativePointer):boolean{
     return _NOT_FOCUS;
   }
 
-  //默认动作 若为包含, 则关注
-  if(this.defaultAct==MG_Enum_DefaultAct.Include){
-    //关注 包含函数名们
-    const __focus:boolean=this.fnNameLs_include.includes(fnName);
-    return __focus;
-
-  } 
-  //默认动作 若为排除, 则讨厌
-  else if(this.defaultAct==MG_Enum_DefaultAct.Exclude){
-
-    //讨厌 排除函数名们
-    const __focus:boolean=(!this.fnNameLs_exclude.includes(fnName));
-    return __focus;
-
-  }else{
+  switch(this.filterType){
+    case MG_Enum_FilterType.IncludeAllFnInModule:{
+      return _FOCUS;
+      // break;
+    }
+    case MG_Enum_FilterType.ExcludeAllFnInModule:{
+      return _NOT_FOCUS;
+      // break;
+    }
+    case MG_Enum_FilterType.UseIncludeFilter:{
+      const __focus:boolean=(this.fnNameLs.includes(fnName));
+      return __focus;
+      // break;
+    }
+    case MG_Enum_FilterType.UseExcludeFilter:{
+      const __focus:boolean=(!this.fnNameLs.includes(fnName));
+      return __focus;
+      // break;
+    }
+    default:{
     //断言是合法枚举
-    assertIsValidEnum_DefaultAct(this.defaultAct);
-  }
+    assertIsValidEnum_DefaultAct(this.filterType);
+    }
+  }//end_of_switch
 
   throw new Error(`[不应该能走到MG_Module.focus函数的最末尾][自身逻辑错误]   函数地址[${fnAdr}] ,json(fnSym)[${JSON.stringify(fnSym)}] , json(this)[${JSON.stringify(this)}]`)
 

@@ -9,10 +9,10 @@ const mg_moduleFilter_ls: MG_ModuleFilter[]=[
   ..._moduleFilterLs,
   //讨厌其所有函数的模块
   //   linux操作系统基础库、本应用调用的一些不需要关注的库
-  ...MG_ModuleFilter.build_excludeAllFunc_moduleLs(_modules_exclude),
+  ...MG_ModuleFilter.build_excludeAllFn_moduleLs(_modules_exclude),
   //关注其所有函数的模块
   //   实际没有这样的模块
-  ...MG_ModuleFilter.build_includeAllFunc_moduleLs(_modules_include)
+  ...MG_ModuleFilter.build_includeAllFn_moduleLs(_modules_include)
 
 ];
 
