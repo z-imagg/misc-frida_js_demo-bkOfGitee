@@ -80,6 +80,16 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
 
 }//end of OnFnLeaveBusz
 
+// '包装' 使用了  '实现' 和 '配置'
+// '配置' 使用了  '实现'
+// 导入 '模块的函数名过滤器 实现 '
+//MyTsCmd//_replaceCurLineByTsFileContent("./_focus_fnAdr/_impl.ts" , curNextLn)
+// 导入 '模块的函数名过滤器 配置 '
+//MyTsCmd//_replaceCurLineByTsFileContent("./_focus_fnAdr/_config.ts" , curNextLn)
+// 导入 '模块的函数名过滤器 包装 '
+//MyTsCmd//_replaceCurLineByTsFileContent("./_focus_fnAdr/_wrap.ts" , curNextLn)
+
+
 function _main_(){
 
   //获取本地函数 func01_return_int
