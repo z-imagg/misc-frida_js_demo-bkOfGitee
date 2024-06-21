@@ -42,12 +42,12 @@ class MG_ModuleFilter{
 
   //关注该模块中的一些函数
   static build_includeFuncLs(moduleName:string, fnNameLs_include:string[]){
-    return new MG_ModuleFilter(moduleName, MG_Enum_FilterType.IncludeAllFnInModule,fnNameLs_include );
+    return new MG_ModuleFilter(moduleName, MG_Enum_FilterType.UseIncludeFilter,fnNameLs_include );
   }
   
   //讨厌该模块中的一些函数
   static build_excludeFuncLs(moduleName:string, fnNameLs_exclude:string[]){
-    return new MG_ModuleFilter(moduleName, MG_Enum_FilterType.ExcludeAllFnInModule,  fnNameLs_exclude);
+    return new MG_ModuleFilter(moduleName, MG_Enum_FilterType.UseExcludeFilter,  fnNameLs_exclude);
   }
 
   //讨厌该模块中的全部函数
