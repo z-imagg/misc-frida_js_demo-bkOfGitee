@@ -18,7 +18,7 @@ const g_appName: string =baseNameOfFilePath(g_appPath);
 //MyTsCmd//_replaceCurLineByTsFileContent("./_logFile.ts" , curNextLn)
 
 
-
+const C_Lang__sizeof_int=4; // sizeof(int)
 
 //填充函数符号表格
 function findFnDbgSym(fnAdr:NativePointer):DebugSymbol {
@@ -38,15 +38,10 @@ function to_ascii(ascii:number):string{
   return char_;
 }
 
-/*
-bash main.sh ; cat InterceptFnSym-app.elf.log
-#有如下日志, 注意看 地址 userName_out_ 、 userName_length_out_ 在frida_js和app.c中是一样的, 说明app.c收到了frida_js传递给的指针参数
-[frida_js OnFnEnterBusz] userName_out_=0x7ffff40feb20
-[frida_js OnFnEnterBusz] userName_length_out_=0x7fffe6e61f20
-[app.c, func05_userQuery args] sex=[M][77], userId=1000, userName_out_=f40feb20, userName_length_out_=e6e61f20 
 
- */
-
+const _UserName1_Limit:number = 48;
+const g_buf:NativePointer=Memory.alloc(_UserName1_Limit-1)
+const g_int:NativePointer=Memory.alloc(C_Lang__sizeof_int);
 //进入函数func05_userQuery的处理
 function On__func05_userQuery__Enter(fnSym :DebugSymbol, thiz:InvocationContext,  args:InvocationArguments){
 // 实践表明， args能在onEnter内用, args不能在onLeave内用 。
@@ -64,17 +59,16 @@ function On__func05_userQuery__Enter(fnSym :DebugSymbol, thiz:InvocationContext,
 // console.log(`[frida_js OnFnEnterBusz] arg1_toInt32=[${arg1_toInt32}]`);
 // args[1]=new NativePointer(-333);// 修改 输入参数 userId 为 -333
 
-const _UserName1_Limit:number = 48;
 const arg2_toInt32:number=args[2].toInt32() // == userName_limit
 logWriteLn(`[frida_js OnFnEnterBusz] arg2_toInt32=[${arg2_toInt32}]`); 
 args[2]=new NativePointer(_UserName1_Limit);// 修改 输入参数 userName_limit 为 48
 
 // const arg3_readCString:string| null=args[3].readCString() // == userName_out_
-args[3]=Memory.alloc(_UserName1_Limit-1)
+args[3]=g_buf
 logWriteLn(`[frida_js OnFnEnterBusz] userName_out_=${args[3]}`)
 
 // const arg4_readInt:number=args[4].readInt() // == userName_length_out_
-args[4]=Memory.alloc(C_Lang__sizeof_int)
+args[4]=g_int
 logWriteLn(`[frida_js OnFnEnterBusz] userName_length_out_=${args[4]}`)
 
 //把参数args2保存到thiz下, 试图供给函数离开时候使用 

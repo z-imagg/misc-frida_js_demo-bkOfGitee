@@ -115,33 +115,38 @@ int userName_limit, // userName_limit == args[2].toInt32()
 char* userName_out_, // userName_out_ == args[3].readCString()
 int* userName_length_out_ // userName_length_out_ == args[4].readInt()
 ){
+    float result=-0.2;
     printf("[app.c, func05_userQuery args] sex=[%c][%d], userId=%d, userName_limit=%d, userName_out_=%x, userName_length_out_=%x \n", sex,sex, userId,userName_limit, userName_out_, userName_length_out_);
     if(sex=='M'){
         if(userId>50){
             strncpy(userName_out_,g_name_zhangsan,g_name_zhangsan_len);
             (*userName_length_out_)=g_name_zhangsan_len;
-            return 1.4;
+            result= 1.4;
         }else{
             strncpy(userName_out_,g_name_LiSi,g_name_LiSi_len);
             (*userName_length_out_)=g_name_LiSi_len;
-            return 2.9;
+            result= 2.9;
         }
-    }
+    }else
     if(sex=='F'){
         if(userId%2==0){
             strncpy(userName_out_,g_name_Tom,g_name_Tom);
             (*userName_length_out_)=g_name_Tom;
-            return 10.9;
+            result= 10.9;
         }else{
             strncpy(userName_out_,g_name_RmZ,g_name_RmZ_len);
             (*userName_length_out_)=g_name_RmZ_len;
-            return 47.1;
+            result= 47.1;
         }
-    }
-
+    }else{
     strncpy(userName_out_,g_name_NoFit,g_name_NoFit_len);
     (*userName_length_out_)=g_name_NoFit_len;
-    return -0.2;
+    }
+
+
+    printf("[app.c, end_func05_userQuery_out] userName_out_=%s,userName_length_out_=%d,userName_limit=%d \n",userName_out_,*userName_length_out_,userName_limit);
+
+    return result;
 }
 
 float func02_skip(){
