@@ -40,8 +40,6 @@ function to_ascii(ascii:number):string{
 
 
 const _UserName1_Limit:number = 48;
-const g_buf:NativePointer=Memory.alloc(_UserName1_Limit-1)
-const g_int:NativePointer=Memory.alloc(C_Lang__sizeof_int);
 //进入函数func05_userQuery的处理
 function On__func05_userQuery__Enter(fnSym :DebugSymbol, thiz:InvocationContext,  args:InvocationArguments){
 // 实践表明， args能在onEnter内用, args不能在onLeave内用 。
@@ -53,6 +51,9 @@ function On__func05_userQuery__Enter(fnSym :DebugSymbol, thiz:InvocationContext,
 // const arg0_toInt32:number=args[0].toInt32() // ==  sex
 
 // const arg1_toInt32:number=args[1].toInt32() // == userId
+
+const g_buf:NativePointer=Memory.alloc(_UserName1_Limit-1)
+const g_int:NativePointer=Memory.alloc(C_Lang__sizeof_int);
 
 const arg2_toInt32:number=args[2].toInt32() // == userName_limit
 logWriteLn(`[frida_js OnFnEnterBusz] arg2_toInt32=[${arg2_toInt32}]`); 
