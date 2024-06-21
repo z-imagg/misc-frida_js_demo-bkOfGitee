@@ -34,6 +34,28 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
   const fnSym :DebugSymbol|undefined= findFnDbgSym(fnAdr)
   logWriteLn(`[OnFnEnterBusz],fnSym=[${fnSym}]`)
 
+  if(fnSym && fnSym.name=="func05_userQuery"){
+    //错误, 'Error: access violation accessing 0x...'
+    // const arg0_readInt:number=args[0].readInt(); 
+    // console.log(`arg0_readInt=[${arg0_readInt}]`);
+
+    const arg0_toInt32:number=args[0].toInt32(); 
+    console.log(`arg0_toInt32=[${arg0_toInt32}]`);
+
+    const arg1_toInt32:number=args[1].toInt32(); 
+    console.log(`arg1_toInt32=[${arg1_toInt32}]`);
+
+    const arg2_toInt32:number=args[2].toInt32();
+    console.log(`arg2_toInt32=[${arg2_toInt32}]`);
+    
+    const arg3_readCString:string| null=args[3].readCString();
+    if(arg3_readCString){
+      console.log(`arg3_readCString=[${arg3_readCString}]`);
+    }
+    
+    const arg4_readInt:number=args[4].readInt();
+    console.log(`arg4_readInt=[${arg4_readInt}]`);
+  }
   thiz.fnAdr_OnFnEnterBusz=fnAdr;
 
 
@@ -74,7 +96,7 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:any ){
   demo_call_nativeFn_func03(  );
 
   //调用本地函数 func04_retVoid_outArgCharBuffer
-  demo_call_nativeFn_func04(  );
+  // demo_call_nativeFn_func04(  );
 
 }//end of OnFnLeaveBusz
 
