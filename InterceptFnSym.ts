@@ -45,7 +45,7 @@ function to_ascii(ascii:number):string{
 //MyTsCmd//_replaceCurLineByTsFileContent("./_nativeFn__fridaHelper__cxxFuncWrap__std_string.ts" , curNextLn)
 
 // 导入 ' CxxFnOutArg_stdString__Fn06.ts  修改函数的类型为std::string的出参   '
-//MyTsCmd//_replaceCurLineByTsFileContent("./CxxFnOutArg_stdString__Fn06.ts" , curNextLn)
+//MyTsCmd//_replaceCurLineByTsFileContent("./_CxxFnOutArg_stdString__Fn06.ts" , curNextLn)
 
 
 /** onEnter ， 函数进入
