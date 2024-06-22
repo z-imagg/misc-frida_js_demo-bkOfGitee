@@ -21,6 +21,7 @@ let nativeFn__fridaHelper__cxxFuncWrap__std_string_new:NativeFunction<NativePoin
 function get__fridaHelper__cxxFuncWrap__std_string_new(){
     const fridaHelper__cxxFuncWrap__std_string_new:NativePointer = DebugSymbol.getFunctionByName("_Z40fridaHelper__cxxFuncWrap__std_string_newv");
     // void* fridaHelper__cxxFuncWrap__std_string_new();
+    logWriteLn(`[frida_js, get__fridaHelper__cxxFuncWrap__std_string_new] fridaHelper__cxxFuncWrap__std_string_new=${fridaHelper__cxxFuncWrap__std_string_new}`)
     nativeFn__fridaHelper__cxxFuncWrap__std_string_new=  new NativeFunction(fridaHelper__cxxFuncWrap__std_string_new, 'pointer',[ ]);
 }
 
