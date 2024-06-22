@@ -1,6 +1,6 @@
 
 // [依赖] : 无
-// [描述] 描述 本地函数 func04_retVoid_outArgCharBuffer
+// [描述] 描述 本地函数 func03_retVoid_outArgPtrStructUser
 
 
 //{结构体 'struct T_User'

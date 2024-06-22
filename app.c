@@ -38,64 +38,6 @@ void func03_retVoid_outArgPtrStructUser(int _userId, char sex, struct T_User* ou
 }
 
 
-//指针参数携带返回字符串
-#define _Concat_Limit 50
-#define _Concat_CntTop 4
-#define _Buffer_Limit  (_Concat_CntTop * _Concat_Limit)
-#define _Err__CharBuffer_NULL 1
-#define _Err__concat_outOf_Limit 2
-#define _Err__k_outOf_Limit 3
-#define _Err__buffer_outOf_Limit 4
-#define _OK 0
-#define _Concat_single_ \
-    k++; \
-    printf("k=%d,concat_ret_n=%d; concatBuf=[%s]\n",k,concat_ret_n,concatBuf); \
-    if(concat_ret_n>_Concat_Limit){ \
-        return _Err__concat_outOf_Limit; \
-    } \
-    if(k>=_Concat_CntTop){ \
-        return _Err__k_outOf_Limit; \
-    } \
-    buffer_begin_k=outArg_CharBuffer+longConcat_ret_n; \
-    longLen_k=k*_Concat_Limit; \
-    longConcat_ret_n=snprintf(buffer_begin_k,longLen_k,"%s%s",buffer_begin_k, concatBuf); \
-    if(longConcat_ret_n>longLen_k){ \
-        return _Err__buffer_outOf_Limit; \
-    } \
-    printf("k=%d,longConcat_ret_n=%d; outArg_CharBuffer=[%s]\n",k,longConcat_ret_n,outArg_CharBuffer);
-    //宏_Concat_single_结束
-    
-
-int func04_retVoid_outArgCharBuffer(double _doubleNum, long _longInt, char* outArg_CharBuffer){
-    if(outArg_CharBuffer==NULL){
-        return _Err__CharBuffer_NULL;
-    }
-
-    char concatBuf[_Concat_Limit+1];
-    concatBuf[0]='\0';
-
-    //初始化缓存为空串
-    outArg_CharBuffer[0]='\0';
-
-    int concat_ret_n=0;
-    int longConcat_ret_n=0;
-    int k=0;
-    int longLen_k=0;
-    char* buffer_begin_k=NULL;
-
-    //拼接第1个字符串到缓存, 若超长则返回错误
-    concat_ret_n=snprintf(concatBuf,_Concat_Limit,"name:%s,id:%f,pi:%d;","Zhangsan", _doubleNum, _longInt);
-    _Concat_single_
-
-    int hex=99;
-    //拼接第2个字符串到缓存, 若超长则返回错误
-    concat_ret_n=snprintf(concatBuf,_Concat_Limit,"zzzzzzzzzzzzz,hex:%x,job_cnt:%d,msg:%s,", hex, 5, "hello_world");
-    _Concat_single_
-
-    return _OK;
-}
-
-
 char* g_name_zhangsan="zhangsan1995";
 int g_name_zhangsan_len=12+1;
 char* g_name_LiSi="LiSi2040";
@@ -183,14 +125,6 @@ sizeof(struct T_User)=8
     }
 
 
-    char CharBuffer[_Buffer_Limit];
-    int func04_ret_code=func04_retVoid_outArgCharBuffer(4.0, 17, CharBuffer);
-    printf("[app.c] func04_ret_code=%d,",func04_ret_code);
-    if(func04_ret_code==_OK){
-        printf("CharBuffer=[%s]\n",CharBuffer);
-    }
-    //[app.c] func04_ret_code=0,CharBuffer=[name:Zhangsan,id:920,pi:3.141593;zzzzzzzzzzzzz,hex:63,job_cnt:5,msg:hello_world,]
-    // 结果正确
     
     // #define _UserName1_Limit 64
     // char userName1[_UserName1_Limit];
