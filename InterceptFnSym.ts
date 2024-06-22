@@ -58,7 +58,7 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
   thiz.fnAdr_OnFnEnterBusz=fnAdr;
 
   // 对 函数 cxxFunc06_outArgString 做特定处理
-  if(fnSym && fnSym.name==mg_abiName__cxxFunc06_outArgString){
+  if(fnSym && fnSym.name==mg_fnName__cxxFunc06_outArgString){
     logWriteLn(`[frida_js, OnFnEnterBusz] before Fn05OutArg Enter`); 
     const arg1_num:number = 19;
     thiz.cxxFnOutArg_stdString__Fn06=CxxFnOutArg_stdString__Fn06.Enter(args,arg1_num);
@@ -83,7 +83,7 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:InvocationReturnValue ){
   logWriteLn(`[OnFnLeaveBusz],fnSym=[${fnSym}]`)
 
   //对 函数 cxxFunc06_outArgString 做特定处理
-  if(thiz && thiz.fnEnterLog && thiz.fnEnterLog.fnSym && thiz.fnEnterLog.fnSym.name==mg_abiName__cxxFunc06_outArgString && thiz.cxxFnOutArg_stdString__Fn06){
+  if(thiz && thiz.fnEnterLog && thiz.fnEnterLog.fnSym && thiz.fnEnterLog.fnSym.name==mg_fnName__cxxFunc06_outArgString && thiz.cxxFnOutArg_stdString__Fn06){
     logWriteLn(`[frida_js, OnFnLeaveBusz] before FnOutArg_DestroyRtC00 Leave`); 
     thiz.cxxFnOutArg_stdString__Fn06.Leave();
     logWriteLn(`[frida_js, OnFnLeaveBusz] after FnOutArg_DestroyRtC00 Leave`); 

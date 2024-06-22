@@ -1,7 +1,8 @@
 // [依赖] : _logFile.ts/logWriteLn
 // [描述] : clang-var插件中runtime c00中destroy函数json串出参 操纵
 
-const mg_abiName__cxxFunc06_outArgString:string="_Z22cxxFunc06_outArgStringiPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE";
+// const mg_abiName__cxxFunc06_outArgString:string="_Z22cxxFunc06_outArgStringiPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE";
+const mg_fnName__cxxFunc06_outArgString:string="cxxFunc06_outArgString";
 
 enum FnArgIdx_Fn06{
 // cxxFunc06_outArgString 函数签名
