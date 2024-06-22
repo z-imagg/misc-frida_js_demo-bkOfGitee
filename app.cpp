@@ -12,7 +12,7 @@ bool cxxFunc06_outArgString(int num,  std::string * numDescOut_){
 
 int main(int argc,char** argv){
     std::string numDesc;
-    cxxFunc06_outArgString(31, &numDesc);
-    cxxFunc06_outArgString(-120, &numDesc);
+    cxxFunc06_outArgString(31, nullptr);
+    cxxFunc06_outArgString(-120, nullptr);
     return 0;
 }

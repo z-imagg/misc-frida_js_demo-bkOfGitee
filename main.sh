@@ -22,13 +22,15 @@ _appArgLsAsTxt=$(jq -r .appArgLsAsTxt config.json)
 # 编译 app.cpp
 g++ -c -g1 -O0 app.cpp -o app.obj
 g++ app.obj -o app.elf
-# ./app.elf $_appArgLsAsTxt
+./app.elf $_appArgLsAsTxt || echo "直接运行app.elf报错,退出代码=$?"
 
 #重新编译 ts 为 js 
 bash ./rebuild_ts.sh
 
 # 查找编译产物中的函数
-objdump --syms app.elf | grep fun
+#  查找编译产物中 std::string的无参构造函数
+objdump  --syms  app.elf |grep 12basic_stringIcSt11char_traitsIcESaIcEE |grep C1Ev
+# 0000000000000000       F *UND*	0000000000000000              _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEC1Ev@GLIBCXX_3.4.21
 objdump --syms app.elf | grep main
 
 outJsFName=InterceptFnSym_generated.js
