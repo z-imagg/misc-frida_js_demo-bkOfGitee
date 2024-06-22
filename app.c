@@ -1,15 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 
-int func01_return_int(char ch, double real_num){
-    int res=ch+real_num+10;
-    if(res>3*ch){
-        return res;
-    }else{
-        return -res;
-    }
-}
-
 char* g_name_zhangsan="zhangsan1995";
 int g_name_zhangsan_len=12+1;
 char* g_name_LiSi="LiSi2040";

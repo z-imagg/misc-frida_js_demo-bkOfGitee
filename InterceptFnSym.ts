@@ -75,10 +75,6 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
 // 以命令MyTsCmd导入文件 _tool.ts
 //MyTsCmd//_replaceCurLineByTsFileContent("./_tool.ts" , curNextLn)
 
-// 以命令MyTsCmd导入文件 _nativeFn_func01.ts
-//MyTsCmd//_replaceCurLineByTsFileContent("./_nativeFn_func01.ts" , curNextLn)
-
-
 const M_ascii:number='M'.charCodeAt(0);
 
 /**  OnLeave ，函数离开
@@ -91,9 +87,6 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:InvocationReturnValue ){
     logWriteLn(`##错误，进出函数地址不同`)
   }
   logWriteLn(`[OnFnLeaveBusz],fnSym=[${fnSym}]`)
-
-  //调用本地函数 func01_return_int
-  demo_call_nativeFn_func01(  );
 
     //对函数func05_userQuery的特殊处理
   if(fnSym && fnSym.name=="func05_userQuery"){
@@ -115,10 +108,6 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:InvocationReturnValue ){
 
 
 function _main_(){
-
-  //获取本地函数 func01_return_int
-  get__func01_return_int();
-
 
   const fnAdrLs:NativePointer[]=DebugSymbol.findFunctionsMatching("*");
   logWriteLn(`fnAdrLs.length=${fnAdrLs.length}`)
