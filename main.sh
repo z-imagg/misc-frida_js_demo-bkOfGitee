@@ -29,8 +29,9 @@ bash ./rebuild_ts.sh
 
 # 查找编译产物中的函数
 #  查找编译产物中 std::string的无参构造函数
-objdump  --syms  app.elf |grep 12basic_stringIcSt11char_traitsIcESaIcEE |grep C1Ev
-# 0000000000000000       F *UND*	0000000000000000              _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEC1Ev@GLIBCXX_3.4.21
+objdump --syms app.elf | grep fridaHelper
+# 00000000000012f1 g     F .text	000000000000002b              _Z40fridaHelper__cxxFuncWrap__std_string_newv
+# 000000000000131c g     F .text	000000000000003e              _Z43fridaHelper__cxxFuncWrap__std_string_deletePv
 objdump --syms app.elf | grep  " main"
 # 0000000000001217 g     F .text	000000000000009a              main
 objdump  --syms  app.elf | grep cxxFunc06_outArgString
