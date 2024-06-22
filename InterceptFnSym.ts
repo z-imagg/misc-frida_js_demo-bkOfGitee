@@ -63,7 +63,6 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
     logWriteLn(`[frida_js, OnFnEnterBusz] before Fn05OutArg Enter`); 
     thiz.func05OutArg=Fn05OutArg.Enter(args,_UserName1_Limit,g_buf,g_int);
     logWriteLn(`[frida_js, OnFnEnterBusz] after Fn05OutArg Enter`); 
-    //走到这里了
   }
 
 
@@ -106,7 +105,6 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:InvocationReturnValue ){
 
     //对函数func05_userQuery的特殊处理
   if(fnSym && fnSym.name=="func05_userQuery"){
-    //没有走到这里
     logWriteLn(`[frida_js, OnFnLeaveBusz] before Fn05OutArg Leave`); 
     thiz.func05OutArg.Leave()
     logWriteLn(`[frida_js, OnFnLeaveBusz] after Fn05OutArg Leave`); 
