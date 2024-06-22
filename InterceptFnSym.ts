@@ -41,10 +41,12 @@ function to_ascii(ascii:number):string{
   return char_;
 }
 
+// 导入 ' _nativeFn__fridaHelper__cxxFuncWrap__std_string.ts    frida 通过本地助手函数 间接调用 c++ std::string 的new 、 delete   '
+//MyTsCmd//_replaceCurLineByTsFileContent("./_nativeFn__fridaHelper__cxxFuncWrap__std_string.ts" , curNextLn)
 
-const _UserName1_Limit:number = 48;
-const g_buf:NativePointer=Memory.alloc(_UserName1_Limit-1)
-const g_int:NativePointer=Memory.alloc(C_Lang__sizeof_int);
+// 导入 ' CxxFnOutArg_stdString__Fn06.ts  修改函数的类型为std::string的出参   '
+//MyTsCmd//_replaceCurLineByTsFileContent("./_CxxFnOutArg_stdString__Fn06.ts" , curNextLn)
+
 
 /** onEnter ， 函数进入
  */
@@ -55,7 +57,13 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
   logWriteLn(`[frida_js, OnFnEnterBusz],fnSym=[${fnSym}]`)
   thiz.fnAdr_OnFnEnterBusz=fnAdr;
 
-
+  // 对 函数 cxxFunc06_outArgString 做特定处理
+  if(fnSym && fnSym.name==mg_fnName__cxxFunc06_outArgString){
+    logWriteLn(`[frida_js, OnFnEnterBusz] before Fn05OutArg Enter`); 
+    const arg1_num:number = 19;
+    thiz.cxxFnOutArg_stdString__Fn06=CxxFnOutArg_stdString__Fn06.Enter(args,arg1_num);
+    logWriteLn(`[frida_js, OnFnEnterBusz] after Fn05OutArg Enter`); 
+  }
 }
 
 // 以命令MyTsCmd导入文件 _tool.ts
@@ -74,6 +82,12 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:InvocationReturnValue ){
   }
   logWriteLn(`[OnFnLeaveBusz],fnSym=[${fnSym}]`)
 
+  //对 函数 cxxFunc06_outArgString 做特定处理
+  if(fnSym && fnSym.name==mg_fnName__cxxFunc06_outArgString      && thiz  && thiz.cxxFnOutArg_stdString__Fn06){
+    logWriteLn(`[frida_js, OnFnLeaveBusz] before FnOutArg_DestroyRtC00 Leave`); 
+    thiz.cxxFnOutArg_stdString__Fn06.Leave();
+    logWriteLn(`[frida_js, OnFnLeaveBusz] after FnOutArg_DestroyRtC00 Leave`); 
+  }
 
 }//end of OnFnLeaveBusz
 
@@ -88,6 +102,17 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:InvocationReturnValue ){
 
 
 function _main_(){
+
+    // 获取 本地函数 fridaHelper__cxxFuncWrap__std_string_new
+    get__fridaHelper__cxxFuncWrap__std_string_new();
+    //获取 本地函数 fridaHelper__cxxFuncWrap__std_string_delete
+    get__fridaHelper__cxxFuncWrap__std_string_delete();
+    //获取 本地函数 get__fridaHelper__cxxFuncWrap__std_string_size
+    get__fridaHelper__cxxFuncWrap__std_string_size();
+    //获取 本地函数 get__fridaHelper__cxxFuncWrap__std_string_cstr
+    get__fridaHelper__cxxFuncWrap__std_string_cstr();
+
+
 
   const fnAdrLs:NativePointer[]=DebugSymbol.findFunctionsMatching("*");
   logWriteLn(`fnAdrLs.length=${fnAdrLs.length}`)
