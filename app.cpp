@@ -1,5 +1,6 @@
 #include <string>
 #include <stdio.h>
+#include <string.h>
 
 bool cxxFunc06_outArgString(int num,  std::string * numDescOut_){
     if(num>=0){
@@ -36,4 +37,23 @@ void fridaHelper__cxxFuncWrap__std_string_delete(void* ptr_CxxStdString){
     std::string* ptr=(std::string*)(ptr_CxxStdString);
     printf("[app.cpp, fridaHelper__cxxFuncWrap__std_string_delete] ptr=%x\n",ptr);
     delete ptr;
+}
+int fridaHelper__cxxFuncWrap__std_string_size(void* ptr_CxxStdString){
+    std::string* ptr=(std::string*)(ptr_CxxStdString);
+    int size_CxxStdString=ptr->size();
+    printf("[app.cpp, fridaHelper__cxxFuncWrap__std_string_size] size_CxxStdString=%d\n",size_CxxStdString);
+    return size_CxxStdString;
+}
+
+int fridaHelper__cxxFuncWrap__std_string_cstr(void* ptr_CxxStdString, int cStrOutLen, char * cStrOut_){
+#define _Err1 1
+#define _OK 0
+    std::string* ptr=(std::string*)(ptr_CxxStdString);
+    int size_CxxStdString=ptr->size();
+    if(size_CxxStdString+1<cStrOutLen){
+        return _Err1;
+    }
+    const char* cstr=ptr->c_str();
+    strncpy(cStrOut_,cstr, size_CxxStdString);
+    return _OK;
 }

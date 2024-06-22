@@ -34,6 +34,23 @@ function get__fridaHelper__cxxFuncWrap__std_string_delete(){
     nativeFn__fridaHelper__cxxFuncWrap__std_string_delete=  new NativeFunction(fridaHelper__cxxFuncWrap__std_string_delete, 'void',[ 'pointer']);
 }
 
+//持有本地函数
+let nativeFn__fridaHelper__cxxFuncWrap__std_string_size:NativeFunction<number,[NativePointer]> ;  
+//获取 本地函数 fridaHelper__cxxFuncWrap__std_string_size
+function get__fridaHelper__cxxFuncWrap__std_string_size(){
+    const fridaHelper__cxxFuncWrap__std_string_size:NativePointer = DebugSymbol.getFunctionByName("_Z41fridaHelper__cxxFuncWrap__std_string_sizePv");
+    // int fridaHelper__cxxFuncWrap__std_string_size(void* ptr_CxxStdString);
+    nativeFn__fridaHelper__cxxFuncWrap__std_string_size=  new NativeFunction(fridaHelper__cxxFuncWrap__std_string_size, 'int',[ 'pointer']);
+}
+
+//持有本地函数
+let nativeFn__fridaHelper__cxxFuncWrap__std_string_cstr:NativeFunction<number,[NativePointer, number, NativePointer]> ;  
+//获取 本地函数 fridaHelper__cxxFuncWrap__std_string_cstr
+function get__fridaHelper__cxxFuncWrap__std_string_cstr(){
+    const fridaHelper__cxxFuncWrap__std_string_cstr:NativePointer = DebugSymbol.getFunctionByName("_Z41fridaHelper__cxxFuncWrap__std_string_cstrPviPc");
+    //int fridaHelper__cxxFuncWrap__std_string_cstr(void* ptr_CxxStdString, int cStrOutLen, char * cStrOut_);
+    nativeFn__fridaHelper__cxxFuncWrap__std_string_cstr=  new NativeFunction(fridaHelper__cxxFuncWrap__std_string_cstr, 'int',[ 'pointer','int','pointer']);
+}
 
 /**   frida 通过助手函数 间接调用 c++ std::string 的new 、 delete
  */
