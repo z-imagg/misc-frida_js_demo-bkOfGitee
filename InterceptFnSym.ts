@@ -103,6 +103,12 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:InvocationReturnValue ){
 
 function _main_(){
 
+    // 获取 本地函数 fridaHelper__cxxFuncWrap__std_string_new
+    get__fridaHelper__cxxFuncWrap__std_string_new();
+    //获取 本地函数 fridaHelper__cxxFuncWrap__std_string_delete
+    get__fridaHelper__cxxFuncWrap__std_string_delete();
+
+
   const fnAdrLs:NativePointer[]=DebugSymbol.findFunctionsMatching("*");
   logWriteLn(`fnAdrLs.length=${fnAdrLs.length}`)
   const fnAdrCnt=fnAdrLs.length
