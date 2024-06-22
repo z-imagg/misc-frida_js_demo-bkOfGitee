@@ -19,7 +19,7 @@
 let nativeFn__fridaHelper__cxxFuncWrap__std_string_new:NativeFunction<NativePointer,[]> ;  
 //获取 本地函数 fridaHelper__cxxFuncWrap__std_string_new
 function get__fridaHelper__cxxFuncWrap__std_string_new(){
-    const fridaHelper__cxxFuncWrap__std_string_new:NativePointer = DebugSymbol.fromName("_Z40fridaHelper__cxxFuncWrap__std_string_newv").address;
+    const fridaHelper__cxxFuncWrap__std_string_new:NativePointer = DebugSymbol.getFunctionByName("_Z40fridaHelper__cxxFuncWrap__std_string_newv");
     // void* fridaHelper__cxxFuncWrap__std_string_new();
     nativeFn__fridaHelper__cxxFuncWrap__std_string_new=  new NativeFunction(fridaHelper__cxxFuncWrap__std_string_new, 'pointer',[ ]);
 }
@@ -28,7 +28,7 @@ function get__fridaHelper__cxxFuncWrap__std_string_new(){
 let nativeFn__fridaHelper__cxxFuncWrap__std_string_delete:NativeFunction<void,[NativePointer]> ;  
 //获取 本地函数 fridaHelper__cxxFuncWrap__std_string_delete
 function get__fridaHelper__cxxFuncWrap__std_string_delete(){
-    const fridaHelper__cxxFuncWrap__std_string_delete:NativePointer = DebugSymbol.fromName("_Z43fridaHelper__cxxFuncWrap__std_string_deletePv").address;
+    const fridaHelper__cxxFuncWrap__std_string_delete:NativePointer = DebugSymbol.getFunctionByName("_Z43fridaHelper__cxxFuncWrap__std_string_deletePv");
     // void fridaHelper__cxxFuncWrap__std_string_delete(void* ptr_CxxStdString);
     nativeFn__fridaHelper__cxxFuncWrap__std_string_delete=  new NativeFunction(fridaHelper__cxxFuncWrap__std_string_delete, 'void',[ 'pointer']);
 }
