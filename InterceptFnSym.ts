@@ -42,10 +42,6 @@ function to_ascii(ascii:number):string{
 }
 
 
-const _UserName1_Limit:number = 48;
-const g_buf:NativePointer=Memory.alloc(_UserName1_Limit-1)
-const g_int:NativePointer=Memory.alloc(C_Lang__sizeof_int);
-
 // 导入 ' CxxFnOutArg_stdString__Fn06.ts  修改函数的类型为std::string的出参   '
 //MyTsCmd//_replaceCurLineByTsFileContent("./CxxFnOutArg_stdString__Fn06.ts" , curNextLn)
 
