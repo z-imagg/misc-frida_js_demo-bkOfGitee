@@ -11,6 +11,9 @@ const g_appPath: string = g_cfg["appPath"];
 const g_appArgLsAsTxt: string = g_cfg["appArgLsAsTxt"];
 const g_appName: string =baseNameOfFilePath(g_appPath);
 
+
+const NULL_num=NULL.toInt32();
+
 // 以命令MyTsCmd导入文件 _DateTime_util.ts
 //MyTsCmd//_replaceCurLineByTsFileContent("./_DateTime_util.ts" , curNextLn)
 
@@ -43,11 +46,6 @@ const _UserName1_Limit:number = 48;
 const g_buf:NativePointer=Memory.alloc(_UserName1_Limit-1)
 const g_int:NativePointer=Memory.alloc(C_Lang__sizeof_int);
 
-// 以命令MyTsCmd导入文件 _Fn05OutArg.ts
-//MyTsCmd//_replaceCurLineByTsFileContent("./_Fn05OutArg.ts" , curNextLn)
-
-
-
 /** onEnter ， 函数进入
  */
 function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
@@ -57,30 +55,11 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
   logWriteLn(`[frida_js, OnFnEnterBusz],fnSym=[${fnSym}]`)
   thiz.fnAdr_OnFnEnterBusz=fnAdr;
 
-  logWriteLn(`fnSym=${JSON.stringify(fnSym)}`)
-  //对函数func05_userQuery的特殊处理
-  if(fnSym && fnSym.name=="func05_userQuery"){
-    logWriteLn(`[frida_js, OnFnEnterBusz] before Fn05OutArg Enter`); 
-    thiz.func05OutArg=Fn05OutArg.Enter(args,_UserName1_Limit,g_buf,g_int);
-    logWriteLn(`[frida_js, OnFnEnterBusz] after Fn05OutArg Enter`); 
-    //走到这里了
-  }
-
-
 
 }
 
 // 以命令MyTsCmd导入文件 _tool.ts
 //MyTsCmd//_replaceCurLineByTsFileContent("./_tool.ts" , curNextLn)
-
-// 以命令MyTsCmd导入文件 _nativeFn_func01.ts
-//MyTsCmd//_replaceCurLineByTsFileContent("./_nativeFn_func01.ts" , curNextLn)
-
-// 以命令MyTsCmd导入文件 _nativeFn_func03.ts
-//MyTsCmd//_replaceCurLineByTsFileContent("./_nativeFn_func03.ts" , curNextLn)
-
-// 以命令MyTsCmd导入文件 _nativeFn_func04.ts
-//MyTsCmd//_replaceCurLineByTsFileContent("./_nativeFn_func04.ts" , curNextLn)
 
 const M_ascii:number='M'.charCodeAt(0);
 
@@ -95,22 +74,6 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:InvocationReturnValue ){
   }
   logWriteLn(`[OnFnLeaveBusz],fnSym=[${fnSym}]`)
 
-  //调用本地函数 func01_return_int
-  demo_call_nativeFn_func01(  );
-
-  //调用本地函数 func03_retVoid_outArgPtrStructUser
-  demo_call_nativeFn_func03(  );
-
-  //调用本地函数 func04_retVoid_outArgCharBuffer
-  // demo_call_nativeFn_func04(  );
-
-    //对函数func05_userQuery的特殊处理
-  if(fnSym && fnSym.name=="func05_userQuery"){
-    //没有走到这里
-    logWriteLn(`[frida_js, OnFnLeaveBusz] before Fn05OutArg Leave`); 
-    thiz.func05OutArg.Leave()
-    logWriteLn(`[frida_js, OnFnLeaveBusz] after Fn05OutArg Leave`); 
-  }
 
 }//end of OnFnLeaveBusz
 
@@ -125,17 +88,6 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:InvocationReturnValue ){
 
 
 function _main_(){
-
-  //获取本地函数 func01_return_int
-  get__func01_return_int();
-
-
-  //获取 本地函数 func03_retVoid_outArgPtrStructUser
-  get__func03_retVoid_outArgPtrStructUser();
-
-  //获取 本地函数 func04_retVoid_outArgCharBuffer
-  get__func04_retVoid_outArgCharBuffer();
-
 
   const fnAdrLs:NativePointer[]=DebugSymbol.findFunctionsMatching("*");
   logWriteLn(`fnAdrLs.length=${fnAdrLs.length}`)

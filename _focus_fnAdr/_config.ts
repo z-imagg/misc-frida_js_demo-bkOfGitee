@@ -58,9 +58,6 @@ const _moduleApp__clangVar_runtime_fnNameLs:string[]=[
 
 const _moduleApp__exclude_fnNameLs:string[]=[
 //跳过被frida调用的本地函数
-  "func01_return_int",
-  "func03_retVoid_outArgPtrStructUser",
-  "func04_retVoid_outArgCharBuffer",
 ];
 
 

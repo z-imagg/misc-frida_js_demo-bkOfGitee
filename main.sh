@@ -29,7 +29,6 @@ bash ./rebuild_ts.sh
 
 # 查找编译产物中的函数
 objdump --syms app.elf | grep fun
-# 0000000000001149 g     F .text  0000000000000055              func01_return_int
 objdump --syms app.elf | grep main
 
 outJsFName=InterceptFnSym_generated.js
@@ -47,5 +46,5 @@ outTsFName=InterceptFnSym_generated.ts
 mv  $outTsFName  ${outTsFName}.txt
 mv  $outJsFName  ${outJsFName}.txt
 
-logFPattern="InterceptFnSym-$_appName-*"
+logFPattern="InterceptFnSym-$_appName*"
 ls -lht $logFPattern
