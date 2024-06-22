@@ -18,12 +18,14 @@ const _modules_exclude:string[]=[
   "linux-vdso.so.1",
   "libc.so.6",
   "ld-linux-x86-64.so.2",
+  "libstdc++.so.6", "libstdc++.so.6.0.30",
 
   //以下这些是谁带来的?  'ldd ...app.elf' 中貌似没有, 难道是 frida带来的
   "libm.so.6",
   "libpthread.so.0",
   "librt.so.1",
-  "libdl.so.2"
+  "libdl.so.2",
+  "libgcc_s.so.1"
 ];
 
 
@@ -58,6 +60,8 @@ const _moduleApp__clangVar_runtime_fnNameLs:string[]=[
 
 const _moduleApp__exclude_fnNameLs:string[]=[
 //跳过被frida调用的本地函数
+"fridaHelper__cxxFuncWrap__std_string_new",
+"fridaHelper__cxxFuncWrap__std_string_delete"
 ];
 
 
