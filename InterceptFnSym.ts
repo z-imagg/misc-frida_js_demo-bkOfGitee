@@ -46,11 +46,6 @@ const _UserName1_Limit:number = 48;
 const g_buf:NativePointer=Memory.alloc(_UserName1_Limit-1)
 const g_int:NativePointer=Memory.alloc(C_Lang__sizeof_int);
 
-// 以命令MyTsCmd导入文件 _Fn05OutArg.ts
-//MyTsCmd//_replaceCurLineByTsFileContent("./_Fn05OutArg.ts" , curNextLn)
-
-
-
 /** onEnter ， 函数进入
  */
 function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
@@ -59,15 +54,6 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
   const fnSym :DebugSymbol|undefined= findFnDbgSym(fnAdr)
   logWriteLn(`[frida_js, OnFnEnterBusz],fnSym=[${fnSym}]`)
   thiz.fnAdr_OnFnEnterBusz=fnAdr;
-
-  logWriteLn(`fnSym=${JSON.stringify(fnSym)}`)
-  //对函数func05_userQuery的特殊处理
-  if(fnSym && fnSym.name=="func05_userQuery"){
-    logWriteLn(`[frida_js, OnFnEnterBusz] before Fn05OutArg Enter`); 
-    thiz.func05OutArg=Fn05OutArg.Enter(args,_UserName1_Limit,g_buf,g_int);
-    logWriteLn(`[frida_js, OnFnEnterBusz] after Fn05OutArg Enter`); 
-  }
-
 
 
 }
@@ -88,12 +74,6 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:InvocationReturnValue ){
   }
   logWriteLn(`[OnFnLeaveBusz],fnSym=[${fnSym}]`)
 
-    //对函数func05_userQuery的特殊处理
-  if(fnSym && fnSym.name=="func05_userQuery"){
-    logWriteLn(`[frida_js, OnFnLeaveBusz] before Fn05OutArg Leave`); 
-    thiz.func05OutArg.Leave()
-    logWriteLn(`[frida_js, OnFnLeaveBusz] after Fn05OutArg Leave`); 
-  }
 
 }//end of OnFnLeaveBusz
 
