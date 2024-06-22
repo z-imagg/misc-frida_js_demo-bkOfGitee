@@ -26,8 +26,13 @@ class CxxFnOutArg_stdString__Fn06{
   let  _ptrCxxStdStr__numDescOut_:NativePointer;
     //调用本地函数 fridaHelper__cxxFuncWrap__std_string_new 
   if(nativeFn__fridaHelper__cxxFuncWrap__std_string_new.toInt32()!=NULL_num){
+
     _ptrCxxStdStr__numDescOut_=nativeFn__fridaHelper__cxxFuncWrap__std_string_new( ) ;
+    //等效c++语句为
+    //std::string* _ptrCxxStdStr__numDescOut_=new std::string()
+
     logWriteLn(`[frida_js Fn05OutArg.Enter] _ptrCxxStdStr__numDescOut_=[${_ptrCxxStdStr__numDescOut_}]`); 
+    
     if(_ptrCxxStdStr__numDescOut_){
       return new CxxFnOutArg_stdString__Fn06(args, _int__num  ,_ptrCxxStdStr__numDescOut_);
     }
@@ -46,11 +51,11 @@ class CxxFnOutArg_stdString__Fn06{
 
     // args[1].toInt32() // == num
     args[FnArgIdx_Fn06.num]=new NativePointer(_int__num);// 修改 输入参数 num 为 _int__num
-    logWriteLn(`[frida_js Fn05OutArg.constructor] num=[${_int__num}]`); 
     this.int__num=_int__num
+    logWriteLn(`[frida_js Fn05OutArg.constructor] num=[${_int__num}]`); 
     
     // args[2].readCString() // == numDescOut_
-    args[FnArgIdx_Fn06.numDescOut_]=_ptrCxxStdStr__numDescOut_ // 修改 入参 numDescOut_ 为 _ptrCxxStdStr__numDescOut_
+    args[FnArgIdx_Fn06.numDescOut_]=_ptrCxxStdStr__numDescOut_ // 修改此次函数调用 出参 numDescOut_ 为 _ptrCxxStdStr__numDescOut_
     this.ptrCxxStdStr__numDescOut_=_ptrCxxStdStr__numDescOut_ //保留 之
     
     }
@@ -72,9 +77,12 @@ class CxxFnOutArg_stdString__Fn06{
     if(arg3_readCString){
       logWriteLn(`[frida_js  Fn05OutArg.Leave] arg3_readCString=[${arg3_readCString}]`);
     }
+
     if(this.ptrCxxStdStr__numDescOut_){
       if(nativeFn__fridaHelper__cxxFuncWrap__std_string_delete.toInt32()!=NULL_num){
         nativeFn__fridaHelper__cxxFuncWrap__std_string_delete(this.ptrCxxStdStr__numDescOut_ ) ;
+        //等效 c++语句为
+        //delete ptrCxxStdStr__numDescOut_
       }
     }
     
