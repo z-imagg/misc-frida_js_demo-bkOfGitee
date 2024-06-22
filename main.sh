@@ -47,5 +47,5 @@ outTsFName=InterceptFnSym_generated.ts
 mv  $outTsFName  ${outTsFName}.txt
 mv  $outJsFName  ${outJsFName}.txt
 
-logFPattern="InterceptFnSym-$_appName-*"
+logFPattern="InterceptFnSym-$_appName*"
 ls -lht $logFPattern
