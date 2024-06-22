@@ -15,7 +15,14 @@ enum FnArgIdx_Fn06{
 
 //clang-var插件中runtime c00中destroy函数json串出参 操纵.
 class CxxFnOutArg_stdString__Fn06{
-    
+
+  //  /fridaAnlzAp/frida_js_demo/app.cpp / fridaHelper__cxxFuncWrap__std_string_cstr / _Err1 == 1
+  static  stdStr_2_fridaBuf__Err1:number = 1;
+  //  /fridaAnlzAp/frida_js_demo/app.cpp / fridaHelper__cxxFuncWrap__std_string_cstr / _OK == 0
+  static  stdStr_2_fridaBuf__OK:number = 0;
+  //  /fridaAnlzAp/frida_js_demo/app.cpp / fridaHelper__cxxFuncWrap__std_string_cstr / _stdStr_2_fridaBuf_gap == 11
+  static   stdStr_2_fridaBuf_gap:number = 11;
+
   int__num:number
   ptrCxxStdStr__numDescOut_:NativePointer
     
@@ -26,8 +33,6 @@ class CxxFnOutArg_stdString__Fn06{
 
   let  _ptrCxxStdStr__numDescOut_:NativePointer;
     //调用本地函数 fridaHelper__cxxFuncWrap__std_string_new 
-  if(nativeFn__fridaHelper__cxxFuncWrap__std_string_new.toInt32()!=NULL_num){
-
     _ptrCxxStdStr__numDescOut_=nativeFn__fridaHelper__cxxFuncWrap__std_string_new( ) ;
     //等效c++语句为
     //std::string* _ptrCxxStdStr__numDescOut_=new std::string()
@@ -37,7 +42,6 @@ class CxxFnOutArg_stdString__Fn06{
     if(_ptrCxxStdStr__numDescOut_){
       return new CxxFnOutArg_stdString__Fn06(args, _int__num  ,_ptrCxxStdStr__numDescOut_);
     }
-  }
 
   return null;
 
@@ -60,7 +64,7 @@ class CxxFnOutArg_stdString__Fn06{
     this.ptrCxxStdStr__numDescOut_=_ptrCxxStdStr__numDescOut_ //保留 之
     
     }
-    
+  
   //拿出参内容
   Leave(){
     //现在是函数离开时, 由于函数进入时 参数们args[k]被保存在thiz下, 因此此时可以拿出来
@@ -74,17 +78,21 @@ class CxxFnOutArg_stdString__Fn06{
     logWriteLn(`[frida_js  Fn05OutArg.Leave] int__num=[${this.int__num}]`); 
 
     //函数离开时, 获取到 函数出参 numDescOut_
-    const arg3_readCString:string| null=this.ptrCxxStdStr__numDescOut_.readCString() // == numDescOut_
-    if(arg3_readCString){
-      logWriteLn(`[frida_js  Fn05OutArg.Leave] arg3_readCString=[${arg3_readCString}]`);
-    }
-
     if(this.ptrCxxStdStr__numDescOut_){
-      if(nativeFn__fridaHelper__cxxFuncWrap__std_string_delete.toInt32()!=NULL_num){
+        //调用std::string::size方法
+        const stdStr_size:number=nativeFn__fridaHelper__cxxFuncWrap__std_string_size(this.ptrCxxStdStr__numDescOut_)
+        //为cstr分配缓冲区
+        const cStrBuf:NativePointer=Memory.alloc(stdStr_size+CxxFnOutArg_stdString__Fn06.stdStr_2_fridaBuf_gap+1);
+        //调用std::string::c_str方法
+        const retCode:number=nativeFn__fridaHelper__cxxFuncWrap__std_string_cstr(this.ptrCxxStdStr__numDescOut_, stdStr_size, cStrBuf);
+        if(retCode==CxxFnOutArg_stdString__Fn06.stdStr_2_fridaBuf__OK){
+          const numDescOut_CStr:string| null=cStrBuf.readCString() // == numDescOut_
+          if(numDescOut_CStr){
+            logWriteLn(`[frida_js  CxxFnOutArg_stdString__Fn06.Leave] numDescOut_CStr=[${numDescOut_CStr}]`);
+          }
+        }
+        //等效 c++语句为 delete ptrCxxStdStr__numDescOut_
         nativeFn__fridaHelper__cxxFuncWrap__std_string_delete(this.ptrCxxStdStr__numDescOut_ ) ;
-        //等效 c++语句为
-        //delete ptrCxxStdStr__numDescOut_
-      }
     }
     
     }

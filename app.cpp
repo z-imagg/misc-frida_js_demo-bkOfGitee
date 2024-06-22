@@ -46,11 +46,16 @@ int fridaHelper__cxxFuncWrap__std_string_size(void* ptr_CxxStdString){
 }
 
 int fridaHelper__cxxFuncWrap__std_string_cstr(void* ptr_CxxStdString, int cStrOutLen, char * cStrOut_){
+// CxxFnOutArg_stdString__Fn06.stdStr_2_fridaBuf__Err1==1
 #define _Err1 1
+// CxxFnOutArg_stdString__Fn06.stdStr_2_fridaBuf__OK==0
 #define _OK 0
+// CxxFnOutArg_stdString__Fn06.stdStr_2_fridaBuf_gap==11
+#define _stdStr_2_fridaBuf_gap 11
+
     std::string* ptr=(std::string*)(ptr_CxxStdString);
     int size_CxxStdString=ptr->size();
-    if(size_CxxStdString+1<cStrOutLen){
+    if(size_CxxStdString+_stdStr_2_fridaBuf_gap<cStrOutLen){
         return _Err1;
     }
     const char* cstr=ptr->c_str();

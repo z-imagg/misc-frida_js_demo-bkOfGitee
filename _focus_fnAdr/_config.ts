@@ -61,7 +61,9 @@ const _moduleApp__clangVar_runtime_fnNameLs:string[]=[
 const _moduleApp__exclude_fnNameLs:string[]=[
 //跳过被frida调用的本地函数
 "fridaHelper__cxxFuncWrap__std_string_new",
-"fridaHelper__cxxFuncWrap__std_string_delete"
+"fridaHelper__cxxFuncWrap__std_string_delete",
+"_Z41fridaHelper__cxxFuncWrap__std_string_sizePv",
+"_Z41fridaHelper__cxxFuncWrap__std_string_cstrPviPc",
 ];
 
 

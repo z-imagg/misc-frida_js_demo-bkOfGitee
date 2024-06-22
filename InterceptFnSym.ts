@@ -107,6 +107,11 @@ function _main_(){
     get__fridaHelper__cxxFuncWrap__std_string_new();
     //获取 本地函数 fridaHelper__cxxFuncWrap__std_string_delete
     get__fridaHelper__cxxFuncWrap__std_string_delete();
+    //获取 本地函数 get__fridaHelper__cxxFuncWrap__std_string_size
+    get__fridaHelper__cxxFuncWrap__std_string_size();
+    //获取 本地函数 get__fridaHelper__cxxFuncWrap__std_string_cstr
+    get__fridaHelper__cxxFuncWrap__std_string_cstr();
+
 
 
   const fnAdrLs:NativePointer[]=DebugSymbol.findFunctionsMatching("*");
