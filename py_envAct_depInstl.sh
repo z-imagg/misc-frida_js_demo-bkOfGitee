@@ -16,9 +16,9 @@ _CondaFridaCompile=$_CondaBin/frida-compile
 # source $_CondaActv ; 
 
 #升级pip
-$_CondaPy -m pip install --upgrade pip 
+$_CondaPy -m pip install --upgrade pip 1>/dev/null 
 #pip清华镜像
 $_CondaPip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple > /dev/null
 # py依赖安装
-$_CondaPip   install -r requirements.txt 
+$_CondaPip   install -r requirements.txt  1>/dev/null 
 
