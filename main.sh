@@ -31,7 +31,10 @@ bash ./rebuild_ts.sh
 #  查找编译产物中 std::string的无参构造函数
 objdump  --syms  app.elf |grep 12basic_stringIcSt11char_traitsIcESaIcEE |grep C1Ev
 # 0000000000000000       F *UND*	0000000000000000              _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEC1Ev@GLIBCXX_3.4.21
-objdump --syms app.elf | grep main
+objdump --syms app.elf | grep  " main"
+# 0000000000001217 g     F .text	000000000000009a              main
+objdump  --syms  app.elf | grep cxxFunc06_outArgString
+# 00000000000011c9 g     F .text	000000000000004e              _Z22cxxFunc06_outArgStringiPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
 
 outJsFName=InterceptFnSym_generated.js
 
