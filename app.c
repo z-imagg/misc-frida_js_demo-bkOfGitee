@@ -10,34 +10,6 @@ int func01_return_int(char ch, double real_num){
     }
 }
 
-struct T_User{
-short userId;
-float salary;
-int sum;
-};
-
-//指针参数携带返回结构体
-void func03_retVoid_outArgPtrStructUser(int _userId, char sex, struct T_User* outArg_ptrStructUsr){
-    if(_userId<30 && sex=='M'){
-        outArg_ptrStructUsr->userId=_userId+200;
-        outArg_ptrStructUsr->salary=3000.1f;
-        outArg_ptrStructUsr->sum=-123;
-        return  ;
-    }
-    
-    if(_userId>30 && sex=='F'){
-        outArg_ptrStructUsr->userId=_userId+1000;
-        outArg_ptrStructUsr->salary=7000.9;
-        outArg_ptrStructUsr->sum=-654;
-        return  ;
-    }
-
-    outArg_ptrStructUsr->userId=0;
-    outArg_ptrStructUsr->salary=-1;
-    return ;
-}
-
-
 char* g_name_zhangsan="zhangsan1995";
 int g_name_zhangsan_len=12+1;
 char* g_name_LiSi="LiSi2040";

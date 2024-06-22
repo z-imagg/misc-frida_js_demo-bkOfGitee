@@ -78,9 +78,6 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
 // 以命令MyTsCmd导入文件 _nativeFn_func01.ts
 //MyTsCmd//_replaceCurLineByTsFileContent("./_nativeFn_func01.ts" , curNextLn)
 
-// 以命令MyTsCmd导入文件 _nativeFn_func03.ts
-//MyTsCmd//_replaceCurLineByTsFileContent("./_nativeFn_func03.ts" , curNextLn)
-
 
 const M_ascii:number='M'.charCodeAt(0);
 
@@ -97,9 +94,6 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:InvocationReturnValue ){
 
   //调用本地函数 func01_return_int
   demo_call_nativeFn_func01(  );
-
-  //调用本地函数 func03_retVoid_outArgPtrStructUser
-  demo_call_nativeFn_func03(  );
 
     //对函数func05_userQuery的特殊处理
   if(fnSym && fnSym.name=="func05_userQuery"){
@@ -124,10 +118,6 @@ function _main_(){
 
   //获取本地函数 func01_return_int
   get__func01_return_int();
-
-
-  //获取 本地函数 func03_retVoid_outArgPtrStructUser
-  get__func03_retVoid_outArgPtrStructUser();
 
 
   const fnAdrLs:NativePointer[]=DebugSymbol.findFunctionsMatching("*");
