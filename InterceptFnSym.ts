@@ -42,11 +42,21 @@ function to_ascii(ascii:number):string{
 const _UserName1_Limit:number = 48;
 const g_buf:NativePointer=Memory.alloc(_UserName1_Limit-1)
 const g_int:NativePointer=Memory.alloc(C_Lang__sizeof_int);
-//进入函数func05_userQuery的处理
-function On__func05_userQuery__Enter(fnSym :DebugSymbol, thiz:InvocationContext,  args:InvocationArguments){
-// 实践表明， args能在onEnter内用, args不能在onLeave内用 。
+class Fn05OutArg{
+  
+  int__userName_limit:number
+  charArr__userName_out_:NativePointer
+  intPtr_userName_length_out_:NativePointer
 
-// func05_userQuery 函数签名
+
+//进入函数func05_userQuery的处理
+  constructor(args:InvocationArguments,
+     _int__userName_limit:number,
+     _charArr__userName_out_:NativePointer,
+     _intPtr_userName_length_out_:NativePointer
+     ){
+
+    // func05_userQuery 函数签名
 // /fridaAnlzAp/frida_js_demo/app.c
 // float func05_userQuery(char sex, int userId, int userName_limit, char* userName_out_, int* userName_length_out_);
 
@@ -54,24 +64,46 @@ function On__func05_userQuery__Enter(fnSym :DebugSymbol, thiz:InvocationContext,
 
 // const arg1_toInt32:number=args[1].toInt32() // == userId
 
-const arg2_toInt32:number=args[2].toInt32() // == userName_limit
-logWriteLn(`[frida_js OnFnEnterBusz] arg2_toInt32=[${arg2_toInt32}]`); 
-args[2]=new NativePointer(_UserName1_Limit);// 修改 输入参数 userName_limit 为 48
+// args[2].toInt32() // == userName_limit
+args[2]=new NativePointer(_int__userName_limit);// 修改 输入参数 userName_limit 为 _userName_limit
+this.int__userName_limit=_int__userName_limit
 
 // const arg3_readCString:string| null=args[3].readCString() // == userName_out_
-args[3]=g_buf
-logWriteLn(`[frida_js OnFnEnterBusz] userName_out_=${args[3]}`)
+args[3]=_charArr__userName_out_ // 修改 入参 userName_out_ 为 _charArr__userName_out_
+this.charArr__userName_out_=_charArr__userName_out_ //保留 之
 
 // const arg4_readInt:number=args[4].readInt() // == userName_length_out_
-args[4]=g_int
-logWriteLn(`[frida_js OnFnEnterBusz] userName_length_out_=${args[4]}`)
+args[4]=_intPtr_userName_length_out_ // 修改 入参 userName_length_out_ 为 _intPtr_userName_length_out_
+this.intPtr_userName_length_out_=_intPtr_userName_length_out_ //保留 之
+  }
 
-//把参数args2保存到thiz下, 试图供给函数离开时候使用 
-thiz.userName_limit=args[2];
-//把参数args3保存到thiz下, 试图供给函数离开时候使用 
-thiz.userName_out_=args[3];
-//把参数args4保存到thiz下, 试图供给函数离开时候使用 
-thiz.userName_length_out_=args[4];
+//离开函数func05_userQuery的处理
+  Leave(){
+  //现在是函数离开时, 由于函数进入时 参数们args[k]被保存在thiz下, 因此此时可以拿出来
+  // const userName_limit:NativePointer=this.int__userName_limit
+  const userName_out_:NativePointer=this.charArr__userName_out_
+  const userName_length_out_:NativePointer=this.intPtr_userName_length_out_
+  console.log(`[frida_js Fn05OutArg Leave] json(this)=[${JSON.stringify(this)}]`);
+
+  // func05_userQuery 函数签名
+  // /fridaAnlzAp/frida_js_demo/app.c
+  // float func05_userQuery(char sex, int userId, int userName_limit, char* userName_out_, int* userName_length_out_);
+  
+  const arg2_toInt32:number=this.int__userName_limit // == userName_limit
+  console.log(`[frida_js  Fn05OutArg Leave] arg2_toInt32=[${arg2_toInt32}]`); 
+
+  //函数离开时, 获取到 函数出参 userName_out_
+  const arg3_readCString:string| null=this.charArr__userName_out_.readCString() // == userName_out_
+  if(arg3_readCString){
+    console.log(`[frida_js  Fn05OutArg Leave] arg3_readCString=[${arg3_readCString}]`);
+  }
+  
+  //函数离开时, 获取到 函数出参 userName_length_out_
+  const arg4_readInt:number=this.intPtr_userName_length_out_.readInt() // == userName_length_out_
+  console.log(`[frida_js  Fn05OutArg Leave] arg4_readInt=[${arg4_readInt}]`);
+  userName_length_out_.writeInt(-88); // 修改 输入参数 userName_length_out_ 为 -88; 这句是为了实验，并无业务目的
+  }
+
 }
 
 
@@ -87,9 +119,9 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
   console.log(`fnSym=${JSON.stringify(fnSym)}`)
   //对函数func05_userQuery的特殊处理
   if(fnSym && fnSym.name=="func05_userQuery"){
-    logWriteLn(`before On__func05_userQuery__Enter`); 
-    On__func05_userQuery__Enter(fnSym, thiz, args);
-    logWriteLn(`after On__func05_userQuery__Enter`); 
+    logWriteLn(`before func05OutArg_Enter`); 
+    thiz.func05OutArg=new Fn05OutArg(args,_UserName1_Limit,g_buf,g_int);
+    logWriteLn(`after func05OutArg_Enter`); 
     //走到这里了
   }
 
@@ -111,33 +143,6 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
 
 const M_ascii:number='M'.charCodeAt(0);
 
-//离开函数func05_userQuery的处理
-function On__func05_userQuery__Leave( thiz:InvocationContext ){
-
-  //现在是函数离开时, 由于函数进入时 参数们args[k]被保存在thiz下, 因此此时可以拿出来
-  const userName_limit:NativePointer=thiz.userName_limit
-  const userName_out_:NativePointer=thiz.userName_out_
-  const userName_length_out_:NativePointer=thiz.userName_length_out_
-  console.log(`[frida_js OnFnLeaveBusz] json(thiz)=[${JSON.stringify(thiz)}]`);
-
-  // func05_userQuery 函数签名
-  // /fridaAnlzAp/frida_js_demo/app.c
-  // float func05_userQuery(char sex, int userId, int userName_limit, char* userName_out_, int* userName_length_out_);
-  
-  const arg2_toInt32:number=userName_limit.toInt32() // == userName_limit
-  console.log(`[frida_js OnFnEnterBusz] arg2_toInt32=[${arg2_toInt32}]`); 
-
-  //函数离开时, 获取到 函数出参 userName_out_
-  const arg3_readCString:string| null=userName_out_.readCString() // == userName_out_
-  if(arg3_readCString){
-    console.log(`[frida_js OnFnLeaveBusz] arg3_readCString=[${arg3_readCString}]`);
-  }
-  
-  //函数离开时, 获取到 函数出参 userName_length_out_
-  const arg4_readInt:number=userName_length_out_.readInt() // == userName_length_out_
-  console.log(`[frida_js OnFnLeaveBusz] arg4_readInt=[${arg4_readInt}]`);
-  userName_length_out_.writeInt(-88); // 修改 输入参数 userName_length_out_ 为 -88
-}
 /**  OnLeave ，函数离开
  */
 function OnFnLeaveBusz(thiz:InvocationContext,  retval:InvocationReturnValue ){
@@ -161,9 +166,9 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:InvocationReturnValue ){
     //对函数func05_userQuery的特殊处理
   if(fnSym && fnSym.name=="func05_userQuery"){
     //没有走到这里
-    logWriteLn(`before On__func05_userQuery__Leave`); 
-    On__func05_userQuery__Leave(thiz)
-    logWriteLn(`after On__func05_userQuery__Leave`); 
+    logWriteLn(`before func05OutArg.Leave`); 
+    thiz.func05OutArg.Leave()
+    logWriteLn(`after func05OutArg.Leave`); 
   }
 
 }//end of OnFnLeaveBusz
