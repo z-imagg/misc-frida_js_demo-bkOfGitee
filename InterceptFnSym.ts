@@ -59,6 +59,12 @@ class Fn05OutArg{
   charArr__userName_out_:NativePointer
   intPtr_userName_length_out_:NativePointer
 
+  static Enter(args:InvocationArguments,
+    _int__userName_limit:number,
+    _charArr__userName_out_:NativePointer,
+    _intPtr_userName_length_out_:NativePointer){
+      return new Fn05OutArg(args, _int__userName_limit, _charArr__userName_out_,_intPtr_userName_length_out_);
+  }
 
 //进入函数func05_userQuery的处理
   constructor(args:InvocationArguments,
@@ -131,7 +137,7 @@ function OnFnEnterBusz(thiz:InvocationContext,  args:InvocationArguments){
   //对函数func05_userQuery的特殊处理
   if(fnSym && fnSym.name=="func05_userQuery"){
     logWriteLn(`before func05OutArg_Enter`); 
-    thiz.func05OutArg=new Fn05OutArg(args,_UserName1_Limit,g_buf,g_int);
+    thiz.func05OutArg=Fn05OutArg.Enter(args,_UserName1_Limit,g_buf,g_int);
     logWriteLn(`after func05OutArg_Enter`); 
     //走到这里了
   }
