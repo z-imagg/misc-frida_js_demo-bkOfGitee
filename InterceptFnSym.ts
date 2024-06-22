@@ -51,13 +51,8 @@ function On__func05_userQuery__Enter(fnSym :DebugSymbol, thiz:InvocationContext,
 // float func05_userQuery(char sex, int userId, int userName_limit, char* userName_out_, int* userName_length_out_);
 
 // const arg0_toInt32:number=args[0].toInt32() // ==  sex
-// const arg0_toInt32_toAscii:string=to_ascii(arg0_toInt32)
-// console.log(`[frida_js OnFnEnterBusz] arg0_toInt32=[${arg0_toInt32}], arg0_toInt32_toAscii=[${arg0_toInt32_toAscii}]`);
-// args[0]=new NativePointer(get_ascii("a"));// 修改 输入参数 sex 为 'a'
 
 // const arg1_toInt32:number=args[1].toInt32() // == userId
-// console.log(`[frida_js OnFnEnterBusz] arg1_toInt32=[${arg1_toInt32}]`);
-// args[1]=new NativePointer(-333);// 修改 输入参数 userId 为 -333
 
 const arg2_toInt32:number=args[2].toInt32() // == userName_limit
 logWriteLn(`[frida_js OnFnEnterBusz] arg2_toInt32=[${arg2_toInt32}]`); 
@@ -129,8 +124,8 @@ function On__func05_userQuery__Leave( thiz:InvocationContext ){
   // /fridaAnlzAp/frida_js_demo/app.c
   // float func05_userQuery(char sex, int userId, int userName_limit, char* userName_out_, int* userName_length_out_);
   
-  const userName_limit_toInt32:number=userName_limit.toInt32() // == userName_limit
-  console.log(`[frida_js OnFnEnterBusz] userName_limit_toInt32=[${userName_limit_toInt32}]`); 
+  const arg2_toInt32:number=userName_limit.toInt32() // == userName_limit
+  console.log(`[frida_js OnFnEnterBusz] arg2_toInt32=[${arg2_toInt32}]`); 
 
   //函数离开时, 获取到 函数出参 userName_out_
   const arg3_readCString:string| null=userName_out_.readCString() // == userName_out_
