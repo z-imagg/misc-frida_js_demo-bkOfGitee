@@ -36,7 +36,7 @@ function get__fridaHelper__cxxFuncWrap__std_string_delete(){
 
 /**   frida 通过助手函数 间接调用 c++ std::string 的new 、 delete
  */
-function demoCall__nativeFn__fridaHelper__cxxFuncWrap__std_string_new(  ){
+function demoCall__nativeFn__fridaHelper__cxxFuncWrap__std_string_newThenDelete(  ){
 
   //调用本地函数 fridaHelper__cxxFuncWrap__std_string_new 
   if(nativeFn__fridaHelper__cxxFuncWrap__std_string_new.toInt32()!=NULL_num){
