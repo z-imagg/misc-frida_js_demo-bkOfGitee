@@ -34,5 +34,6 @@ void* fridaHelper__cxxFuncWrap__std_string_new(){
 }
 void fridaHelper__cxxFuncWrap__std_string_delete(void* ptr_CxxStdString){
     std::string* ptr=(std::string*)(ptr_CxxStdString);
+    printf("[app.cpp, fridaHelper__cxxFuncWrap__std_string_delete] ptr=%x\n",ptr);
     delete ptr;
 }
