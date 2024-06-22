@@ -1,4 +1,5 @@
 #include <string>
+#include <stdio.h>
 
 bool cxxFunc06_outArgString(int num,  std::string * numDescOut_){
     if(num>=0){
@@ -27,7 +28,9 @@ objdump --syms app.elf | grep fridaHelper
 # 000000000000131c g     F .text	000000000000003e              _Z43fridaHelper__cxxFuncWrap__std_string_deletePv
 */
 void* fridaHelper__cxxFuncWrap__std_string_new(){
-    return new std::string();
+    std::string *ptr= new std::string();
+    printf("[app.cpp, fridaHelper__cxxFuncWrap__std_string_new] ptr=%x\n",ptr);
+    return ptr;
 }
 void fridaHelper__cxxFuncWrap__std_string_delete(void* ptr_CxxStdString){
     std::string* ptr=(std::string*)(ptr_CxxStdString);
