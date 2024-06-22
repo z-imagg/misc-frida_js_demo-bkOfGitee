@@ -41,12 +41,11 @@ function to_ascii(ascii:number):string{
   return char_;
 }
 
+// 导入 ' _nativeFn__fridaHelper__cxxFuncWrap__std_string.ts    frida 通过本地助手函数 间接调用 c++ std::string 的new 、 delete   '
+//MyTsCmd//_replaceCurLineByTsFileContent("./_nativeFn__fridaHelper__cxxFuncWrap__std_string.ts" , curNextLn)
 
 // 导入 ' CxxFnOutArg_stdString__Fn06.ts  修改函数的类型为std::string的出参   '
 //MyTsCmd//_replaceCurLineByTsFileContent("./CxxFnOutArg_stdString__Fn06.ts" , curNextLn)
-
-// 导入 ' _nativeFn__fridaHelper__cxxFuncWrap__std_string.ts    frida 通过本地助手函数 间接调用 c++ std::string 的new 、 delete   '
-//MyTsCmd//_replaceCurLineByTsFileContent("./_nativeFn__fridaHelper__cxxFuncWrap__std_string.ts" , curNextLn)
 
 const abiName__cxxFunc06_outArgString:string="_Z22cxxFunc06_outArgStringiPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE";
 /** onEnter ， 函数进入
