@@ -84,9 +84,9 @@ function OnFnLeaveBusz(thiz:InvocationContext,  retval:InvocationReturnValue ){
 
   //对 函数 cxxFunc06_outArgString 做特定处理
   if(fnSym && fnSym.name==mg_fnName__cxxFunc06_outArgString      && thiz  && thiz.cxxFnOutArg_stdString__Fn06){
-    logWriteLn(`[frida_js, OnFnLeaveBusz] before FnOutArg_DestroyRtC00 Leave`); 
+    logWriteLn(`[frida_js, OnFnLeaveBusz] before FnOutArg_DestroyRtCxx Leave`); 
     thiz.cxxFnOutArg_stdString__Fn06.Leave();
-    logWriteLn(`[frida_js, OnFnLeaveBusz] after FnOutArg_DestroyRtC00 Leave`); 
+    logWriteLn(`[frida_js, OnFnLeaveBusz] after FnOutArg_DestroyRtCxx Leave`); 
   }
 
 }//end of OnFnLeaveBusz

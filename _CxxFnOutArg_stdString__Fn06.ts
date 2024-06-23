@@ -1,5 +1,5 @@
 // [依赖] : _logFile.ts/logWriteLn
-// [描述] : clang-var插件中runtime c00中destroy函数json串出参 操纵
+// [描述] : clang-var插件中runtime cxx中destroy函数json串出参 操纵
 
 // const mg_abiName__cxxFunc06_outArgString:string="_Z22cxxFunc06_outArgStringiPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE";
 const mg_fnName__cxxFunc06_outArgString:string="cxxFunc06_outArgString";
@@ -13,7 +13,7 @@ enum FnArgIdx_Fn06{
     // arg2Name=2, //这一行是举例而已，此函数只有以上两个参数
 }
 
-//clang-var插件中runtime c00中destroy函数json串出参 操纵.
+//clang-var插件中runtime cxx中destroy函数json串出参 操纵.
 class CxxFnOutArg_stdString__Fn06{
 
   //  /fridaAnlzAp/frida_js_demo/app.cpp / fridaHelper__cxxFuncWrap__std_string_cstr / _Err1 == 1
